@@ -1,5 +1,5 @@
 title = "Jam's Blog"
-base_url = "https://blog.fullstackjam.dev"
+base_url = "https://blog.fullstackjam.com"
 generate_feeds = true
 feed_filenames = ["rss.xml"]
 minify_html = true
