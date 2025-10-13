@@ -36,7 +36,7 @@ Proxmox 功能很强大，配置也很多。这里只介绍一些我自己在用
 
 - 删除lvm，使用整个硬盘的空间
 
-  ```shell
+  ```bash
   df -h
   lvdisplay
   umount /dev/pve/data
