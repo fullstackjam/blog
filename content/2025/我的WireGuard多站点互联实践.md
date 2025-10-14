@@ -98,25 +98,6 @@ umask 077
 wg genkey > priv_key && wg pubkey < priv_key > pub_key && echo "priv_key" && cat priv_key && echo "pub_key" && cat pub_key && rm -f priv_key pub_key
 ```
 
-**配置示例：**
-假设为服务器生成了密钥对：
-```
-priv_key: ABC123...（服务器私钥）
-pub_key: XYZ789...（服务器公钥）
-```
-
-服务器配置文件中使用自己的私钥：
-```ini
-[Interface]
-PrivateKey = ABC123...  # 服务器自己的私钥
-```
-
-客户端配置文件中引用服务器的公钥：
-```ini
-[Peer]
-PublicKey = XYZ789...   # 服务器的公钥
-```
-
 需要为每个节点（服务器、路由器、手机等）都生成独立的密钥对，然后交叉配置彼此的公钥。
 
 比较重要的一个配置是 `AllowedIPs`，这个参数有两个作用：一是告诉系统哪些 IP 要走 VPN 隧道，二是限制对端能使用哪些 IP。配置的时候需要注意，比如我给家庭网络 A 设置了 `192.168.151.2/32, 192.168.2.0/24`，意思是这个节点可以用 .2 这个 VPN IP，同时也代表整个 192.168.2.0 网段。
@@ -147,26 +128,16 @@ PublicKey = <笔记本的公钥>
 AllowedIPs = 192.168.151.4/32
 ```
 
-**重要配置说明：**
-
-上述iptables规则的作用：
-- **FORWARD规则**：允许WireGuard接口的流量转发，实现不同VPN客户端间通信
-- **MASQUERADE规则**：对出口流量进行NAT，让VPN客户端可以访问互联网
-- **eth0接口**：需要根据服务器实际网卡名称调整（可能是ens3、ens33等）
-
+启动服务并开放端口：
 ```bash
-# 检查网卡名称
-ip route | grep default
-
 # 启用服务
 systemctl enable --now wg-quick@wg0
 
-# 开放防火墙端口（根据云服务商调整）
+# 开放防火墙端口
 ufw allow 24356/udp
 
-# 验证连接状态和路由
+# 验证连接状态
 wg show
-ip route show table all | grep wg0
 ```
 
 #### 4. 客户端配置详解
@@ -184,68 +155,54 @@ AllowedIPs = 192.168.151.0/24, 192.168.4.0/24
 PersistentKeepalive = 25
 ```
 
-**移动设备配置模板：**
-
-**MacBook 配置 (macOS)：**
+**移动设备配置：**
 ```ini
 [Interface]
-PrivateKey = <MacBook私钥>
+PrivateKey = <设备私钥>
 Address = 192.168.151.4/24
-DNS = 192.168.151.1, 1.1.1.1
+DNS = 192.168.151.1
 
 [Peer]
 PublicKey = <服务器公钥>
-Endpoint = 203.0.113.1:24356
+Endpoint = <服务器IP>:24356
 AllowedIPs = 192.168.151.0/24, 192.168.2.0/24, 192.168.4.0/24
 PersistentKeepalive = 25
 ```
 
-OpenWrt 的配置比较麻烦，需要在 Web 界面里设置。基本流程是添加 WireGuard 接口，填好密钥和 IP，然后配置防火墙规则。对端设置里需要打开路由允许的 IP，这样才能保证在局域网内的设备可以通过 OpenWrt 访问异地局域网内的设备。
+OpenWrt 路由器在 Web 界面配置 WireGuard 接口和防火墙规则即可。
 
 #### 5. 连接验证
-配置完成后，验证网络连通性：
-
 ```bash
-# 在移动设备上测试连接
-ping 192.168.151.1  # 测试到 ECS 服务器
-ping 192.168.2.100  # 测试到家庭网络 A 的 NAS
-ping 192.168.4.1  # 测试到家庭网络 B 的设备
+# 测试连通性
+ping 192.168.151.1  # 服务器
+ping 192.168.2.100  # 家庭网络 A
+ping 192.168.4.1   # 家庭网络 B
 
-# 检查路由表
-ip route show table all | grep wg0
-
-# 查看WireGuard状态
+# 查看状态
 wg show
 ```
 
-### 四、关键技术细节与排错
+### 四、注意事项与排错
 
-#### 1. 连接稳定性优化
-由于大多数网络环境都存在 NAT 超时机制，建议配置 `PersistentKeepalive = 25`（单位：秒），定期发送保活包维持连接。
+**稳定性**：配置 `PersistentKeepalive = 25` 保持连接。
 
-#### 2. 一些安全注意事项
-端口我没用默认的 51820，改成了 24356，虽然作用不大但至少能避开一些自动扫描。密钥文件权限记得设成 600，这个很重要。另外 AllowedIPs 不要设成 0.0.0.0/0 除非你真的需要所有流量都走 VPN，否则会影响正常上网。
+**安全性**：
+- 端口改为非默认值（如 24356）
+- 密钥文件权限设为 600
+- AllowedIPs 避免使用 0.0.0.0/0
 
-#### 3. 常见问题排查
-- **连接失败**：首先检查密钥是否匹配，确认防火墙规则是否放行 UDP 流量
-- **路由不通**：使用 `wg show` 命令检查对等体状态，确认各节点的 AllowedIPs 设置正确
-- **性能问题**：确保中心节点有足够的网络带宽处理所有流量转发
-- **DNS 解析**：如需内网 DNS，在客户端配置 DNS = 192.168.151.1
+**常见问题**：
+- **连接失败**：检查密钥匹配，确认防火墙放行 UDP 流量
+- **路由不通**：用 `wg show` 检查状态，确认 AllowedIPs 设置正确
 
-### 五、方案总结与优化思考
+### 五、使用体验
 
-用了几个月下来，感觉 WireGuard 真的很香。最明显的是手机连接很稳定，从 4G 切 WiFi 基本不会断，比之前用过的那些 VPN 靠谱多了。而且配置好了之后基本不用管，偶尔重启一下服务器也会自动重连。
+用了几个月下来，WireGuard 的稳定性很不错，手机从 5G 切 WiFi 基本不会断线。配置好之后基本免维护，偶尔服务器重启也会自动重连。
 
-唯一稍微麻烦的就是 OpenWrt 那边的配置，需要在界面里点来点去设置路由和防火墙，不过设置好一次就不用动了。如果以后设备多了，可能考虑搞个 wg-easy 这种 Web 界面来管理，不过目前这个规模手动管理完全够用。
+OpenWrt 配置稍微麻烦一些，但设置好一次就不用动了。设备多了可以考虑用 wg-easy 这种 Web 界面管理。
 
-### 六、推荐资源
+### 六、相关资源
 
-对于家庭用户，以下资源可能会有帮助：
-
-**简化管理工具：**
-- [wg-easy](https://github.com/wg-easy/wg-easy): 提供 Web 界面，方便添加和管理设备
-- WireGuard 官方移动端 App: iOS 和 Android 都有，界面简洁易用
-
-**参考文档：**
-- [WireGuard 官方快速入门](https://www.wireguard.com/quickstart/)
-- [OpenWrt WireGuard 配置](https://openwrt.org/docs/guide-user/services/vpn/wireguard/start)
+- [wg-easy](https://github.com/wg-easy/wg-easy)：Web 管理界面
+- [WireGuard 官方文档](https://www.wireguard.com/quickstart/)
+- [OpenWrt WireGuard 配置指南](https://openwrt.org/docs/guide-user/services/vpn/wireguard/start)
