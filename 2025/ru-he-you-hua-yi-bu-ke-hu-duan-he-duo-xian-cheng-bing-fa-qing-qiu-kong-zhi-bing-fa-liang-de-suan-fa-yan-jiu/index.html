@@ -1,0 +1,199 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Jam's Blog" name=description><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>如何优化异步客户端和多线程并发请求：控制并发量的算法研究 - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam's Blog</a><a href=https://blog.fullstackjam.com/about/>About</a><a href=https://blog.fullstackjam.com/friends/>Friends</a><a href=https://blog.fullstackjam.com/projects/>Projects</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ id=title>如何优化异步客户端和多线程并发请求：控制并发量的算法研究</a><div id=date>2025-02-06</div><div id=content><p>在现代应用中，<strong>异步客户端（<code>asyncclient</code>）<strong>和</strong>多线程</strong>是高并发请求的两种常用方式。然而，在处理大量请求时，这两种方式也带来了不少挑战，尤其是在<strong>事件循环阻塞</strong>和<strong>线程池过度加载</strong>的情况下。本文将探讨如何通过并发控制算法来优化异步客户端和多线程请求，并引出如何通过动态调整并发量来避免这些问题。<h3 id=1-yi-bu-ke-hu-duan-shi-jian-xun-huan-zu-sai-yu-bing-fa-kong-zhi><strong>1. 异步客户端：事件循环阻塞与并发控制</strong></h3><p>异步客户端（比如 <code>httpx.AsyncClient</code> 和 <code>asyncio</code>）让我们能够在单线程中发起多个请求，并通过事件循环并发执行。然而，当批量任务过多时，事件循环可能会被阻塞，导致响应延迟或者错过请求。<h4 id=wen-ti-shi-jian-xun-huan-bei-zu-sai><strong>问题：事件循环被阻塞</strong></h4><ul><li><strong>原因</strong>：当一次性发送过多请求时，事件循环会被阻塞在某些任务上，导致其他任务无法及时执行。虽然 <code>asyncio</code> 是非阻塞的，但如果请求数量过多，事件循环可能会被某些任务占用，延迟响应。</ul><h4 id=jie-jue-fang-an-xin-hao-liang-kong-zhi-bing-fa-liang><strong>解决方案：信号量控制并发量</strong></h4><p>为了解决这个问题，我们可以通过<strong>信号量Semaphore</strong>来控制并发任务的数量。信号量限制了同时执行的任务数量，防止事件循环被阻塞。<ul><li><strong>信号量的工作原理</strong>： <ul><li>信号量通过限制最大并发量来确保系统不会一次性处理过多任务，从而避免阻塞事件循环。<li>如果任务的数量超过了信号量限制，后续任务将等待，直到信号量释放。</ul></ul><h5 id=ren-gong-diao-zheng-xin-hao-liang-de-ju-xian-xing><strong>人工调整信号量的局限性</strong></h5><p>在初期阶段，信号量控制并发量时，我们可能需要通过人工测试来得到一个相对合理的并发数。这种方法在不同请求量和服务端负载下并不一定能达到最佳效果。因此，手动调整信号量限制的并发量是不可持续的，且不能适应系统负载变化。<h4 id=dai-ma-shi-li-xin-hao-liang-kong-zhi-yi-bu-qing-qiu-bing-fa><strong>代码示例：信号量控制异步请求并发</strong></h4><pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+
+# 使用信号量控制并发请求数
+async def fetch_url(semaphore, client, url):
+    async with semaphore:
+        response = await client.get(url)
+        return response.status_code
+
+async def main():
+    urls = ["http://example.com" for _ in range(50)]  # 50 个请求
+    semaphore = asyncio.Semaphore(10)  # 限制最多同时执行 10 个请求
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_url(semaphore, client, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+    print(results)
+
+# 执行异步任务
+asyncio.run(main())
+</code></pre><p><strong>解释</strong>：<ul><li>这里使用信号量来限制最多同时发起 10 个请求。即使有 50 个任务，最多只有 10 个请求在同一时间内并发执行，避免了事件循环被阻塞。</ul><hr><h3 id=2-duo-xian-cheng-bing-fa-xian-cheng-chi-diao-zheng-yu-fu-zai-kong-zhi><strong>2. 多线程并发：线程池调整与负载控制</strong></h3><p>在多线程场景下，线程池的大小直接影响并发执行的效率和目标接口的压力。如果线程池大小设置不合理，可能会带来以下问题：<ul><li><strong>线程池过大</strong>：一次性启动大量线程，可能导致目标接口承受过大的压力，甚至引发拒绝服务。<li><strong>线程池过小</strong>：线程池的任务处理速度过慢，导致任务执行的总时间过长。</ul><h4 id=jie-jue-fang-an-dong-tai-diao-zheng-xian-cheng-chi-da-xiao><strong>解决方案：动态调整线程池大小</strong></h4><p>在初期，我们可能需要通过人工调整线程池的大小来找到一个合适的值。<h5 id=ren-gong-diao-zheng-xian-cheng-chi-da-xiao-de-ju-xian-xing><strong>人工调整线程池大小的局限性</strong></h5><p>当我们首次进行调优时，需要根据实际情况逐步增加或减少线程池的大小。然而，在面对不同的任务数量和服务器负载时，手动调整并不可靠。此时我们需要使用动态调整算法来自动管理线程池大小。<h4 id=dai-ma-shi-li-dong-tai-diao-zheng-xian-cheng-chi-da-xiao><strong>代码示例：动态调整线程池大小</strong></h4><pre class=language-python data-lang=python><code class=language-python data-lang=python>import concurrent.futures
+import random
+import time
+
+def process_task(task_id):
+    print(f"Processing task {task_id}")
+    time.sleep(random.uniform(0.1, 0.5))  # 模拟处理时间
+
+def dynamic_thread_pool_executor(max_workers, tasks):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = []
+        for task_id in tasks:
+            futures.append(executor.submit(process_task, task_id))
+        concurrent.futures.wait(futures)
+
+# 模拟任务列表
+tasks = list(range(1, 21))  # 20 个任务
+
+# 动态调整线程池大小的示例
+max_workers = 5  # 初始线程池大小
+dynamic_thread_pool_executor(max_workers, tasks)
+</code></pre><h4 id=dong-tai-diao-zheng-de-xu-qiu><strong>动态调整的需求</strong></h4><p>通过上面的代码，您会发现，虽然可以初步设定线程池大小，但若没有动态调整机制，线程池的大小很可能不能始终满足系统负载的需求。为了更好地适应负载，我们需要使用动态调整算法，如 PID 控制器或令牌桶来自动调整线程池的大小。<hr><h3 id=3-dong-tai-diao-zheng-bing-fa-liang-de-suan-fa><strong>3. 动态调整并发量的算法</strong></h3><p>为了避免人工调整信号量或线程池大小带来的问题，我们可以引入一些自动调节并发量的算法。这些算法可以根据系统负载动态调整并发任务数量，保证系统在高效处理任务的同时，避免因过高的并发量而引起接口过载。<h4 id=pid-kong-zhi-qi-dong-tai-diao-zheng-bing-fa-liang><strong>PID 控制器：动态调整并发量</strong></h4><p><strong>PID 控制器</strong>（比例-积分-微分控制器）可以根据任务的反馈（如失败率、响应时间等）动态调整并发量，确保系统负载处于合理范围。<h5 id=pid-kong-zhi-suan-fa-yuan-li><strong>PID 控制算法原理：</strong></h5><ul><li><strong>比例（P）</strong>：根据当前的误差（如失败率）来调整并发量。<li><strong>积分（I）</strong>：累计历史误差，消除长期偏差。<li><strong>微分（D）</strong>：根据误差变化的速率调整并发量，避免过冲。</ul><h4 id=dai-ma-shi-li-pid-kong-zhi-qi-dong-tai-diao-zheng-bing-fa-liang><strong>代码示例：PID 控制器动态调整并发量</strong></h4><pre class=language-python data-lang=python><code class=language-python data-lang=python>class PIDController:
+    def __init__(self, P, I, D, target, max_output, min_output):
+        self.P = P
+        self.I = I
+        self.D = D
+        self.target = target
+        self.max_output = max_output
+        self.min_output = min_output
+
+        self.prev_error = 0
+        self.integral = 0
+
+    def calculate(self, error):
+        proportional = self.P * error
+        self.integral += error
+        integral = self.I * self.integral
+        derivative = self.D * (error - self.prev_error)
+
+        output = proportional + integral + derivative
+        output = max(self.min_output, min(self.max_output, output))
+        self.prev_error = error
+        return output
+</code></pre><hr><h4 id=ling-pai-tong-suan-fa-qing-qiu-su-lu-kong-zhi><strong>令牌桶算法：请求速率控制</strong></h4><p>令牌桶算法是另一种<strong>动态调整并发量的有效工具</strong>，特别适用于<strong>控制请求速率</strong>。<ul><li><strong>令牌桶原理</strong>：令牌桶允许令牌以固定速率生成，桶的容量决定了最多可以积累多少令牌。每个任务执行前，必须从桶中获取一个令牌。如果桶中没有令牌，任务必须等待。</ul><p><strong>应用场景</strong>：<ul><li><strong>API 请求控制</strong>：限制接口的请求速率，避免目标服务器过载。<li><strong>任务调度</strong>：确保任务按照一定速率执行，避免过多请求导致系统资源过度消耗。</ul><h4 id=dai-ma-shi-li-ling-pai-tong-suan-fa-qing-qiu-su-lu-kong-zhi><strong>代码示例：令牌桶算法：请求速率控制</strong></h4><pre class=language-python data-lang=python><code class=language-python data-lang=python>import threading
+import time
+import random
+
+class TokenBucket:
+    def __init__(self, rate, capacity):
+        self.capacity = capacity  # 桶的容量
+        self.tokens = capacity  # 初始令牌数量
+        self.rate = rate  # 令牌生成速率（每秒生成多少个令牌）
+        self.lock = threading.Lock()  # 锁，用于线程安全地操作令牌桶
+
+        # 启动一个定时任务以固定速率生成令牌
+        self.last_checked = time.time()
+        threading.Thread(target=self._generate_tokens, daemon=True).start()
+
+    def _generate_tokens(self):
+        while True:
+            time.sleep(1)  # 每秒生成令牌
+            current_time = time.time()
+            elapsed = current_time - self.last_checked
+
+            # 根据经过的时间生成令牌
+            if elapsed > 0:
+                new_tokens = int(elapsed * self.rate)
+                with self.lock:
+                    self.tokens = min(self.tokens + new_tokens, self.capacity)  # 不超过桶的最大容量
+
+                self.last_checked = current_time
+
+    def acquire(self):
+        """获取一个令牌，成功则返回 True，否则返回 False"""
+        with self.lock:
+            if self.tokens > 0:
+                self.tokens -= 1
+                return True
+            return False
+
+class TaskExecutor:
+    def __init__(self, token_bucket, max_concurrency):
+        self.token_bucket = token_bucket  # 令牌桶实例
+        self.max_concurrency = max_concurrency  # 最大并发数
+
+    def execute_task(self, task_id):
+        """模拟执行任务"""
+        print(f"Task {task_id} waiting for token...")
+        # 获取令牌
+        if self.token_bucket.acquire():
+            print(f"Task {task_id} started.")
+            time.sleep(random.uniform(0.1, 0.5))  # 模拟任务处理
+            print(f"Task {task_id} completed.")
+        else:
+            print(f"Task {task_id} waiting... No token available.")
+
+    def run(self, tasks):
+        """执行任务，最多允许 max_concurrency 个任务并发"""
+        with threading.ThreadPoolExecutor(max_workers=self.max_concurrency) as executor:
+            for task_id in tasks:
+                executor.submit(self.execute_task, task_id)
+
+# 设置令牌桶：每秒生成 5 个令牌，最多容纳 10 个令牌
+token_bucket = TokenBucket(rate=5, capacity=10)
+
+# 创建任务执行器：设置最大并发数为 5
+task_executor = TaskExecutor(token_bucket, max_concurrency=5)
+
+# 执行 20 个任务
+tasks = list(range(20))
+task_executor.run(tasks)
+
+</code></pre><hr><h4 id=di-zeng-bing-fa-shu-liang-dao-zui-da-shi-bai-lu><strong>递增并发数量到最大失败率</strong>：</h4><p>为了更好地控制并发量，我们还可以引入<strong>递增并发数量</strong>到最大限制的策略。这种策略的工作原理如下：<ol><li><strong>增加并发量</strong>：首先逐步增加并发任务数量，直到达到最大并发量或失败率设定的最大值。<li><strong>减少并发量</strong>：如果失败率超过了设定阈值，则开始减少并发量，以降低负载。</ol><p>这种算法结合了<strong>PID 控制器</strong>和<strong>令牌桶</strong>的优点，能够动态调整并发量，确保系统平稳运行。<h4 id=dai-ma-shi-li-di-zeng-bing-fa-shu-liang-dao-zui-da-shi-bai-lu><strong>代码示例：递增并发数量到最大失败率</strong></h4><pre class=language-python data-lang=python><code class=language-python data-lang=python>import random
+import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+class TaskExecutor:
+    def __init__(self, max_concurrency, max_failure_rate, max_retries=3):
+        self.max_concurrency = max_concurrency  # 最大并发数
+        self.current_concurrency = 1  # 当前并发数，从 1 开始
+        self.max_failure_rate = max_failure_rate  # 最大失败率
+        self.failed_tasks = 0
+        self.successful_tasks = 0
+        self.max_retries = max_retries
+
+    def execute_task(self, task_id):
+        """模拟执行任务，随机模拟成功或失败"""
+        if random.random() < 0.2:  # 20% 失败率
+            self.failed_tasks += 1
+            print(f"Task {task_id} failed.")
+            return False
+        else:
+            self.successful_tasks += 1
+            print(f"Task {task_id} succeeded.")
+            return True
+
+    def adjust_concurrency(self):
+        """根据失败率动态调整并发数"""
+        total_tasks = self.successful_tasks + self.failed_tasks
+        failure_rate = self.failed_tasks / total_tasks if total_tasks > 0 else 0
+
+        # 如果失败率超过最大失败率，减少并发数
+        if failure_rate > self.max_failure_rate:
+            self.current_concurrency = max(1, self.current_concurrency - 1)  # 最小并发为 1
+            print(f"Failure rate is {failure_rate:.2f}, reducing concurrency to {self.current_concurrency}")
+        # 如果失败率较低，可以增加并发数
+        else:
+            if self.current_concurrency < self.max_concurrency:
+                self.current_concurrency += 1
+                print(f"Failure rate is {failure_rate:.2f}, increasing concurrency to {self.current_concurrency}")
+
+    def execute_batch(self, task_ids):
+        """执行任务批次，返回执行结果"""
+        with ThreadPoolExecutor(max_workers=self.current_concurrency) as executor:
+            futures = [executor.submit(self.execute_task, task_id) for task_id in task_ids]
+            results = [future.result() for future in futures]
+        return results
+
+    def run(self, total_tasks):
+        """模拟执行多个任务，并动态调整并发数"""
+        task_ids = list(range(total_tasks))
+        batch_size = 5  # 每次执行的任务数量
+
+        for i in range(0, total_tasks, batch_size):
+            print(f"\nExecuting batch {i // batch_size + 1}")
+            # 执行当前批次的任务
+            batch_tasks = task_ids[i:i + batch_size]
+            self.execute_batch(batch_tasks)
+            self.adjust_concurrency()  # 根据当前任务执行结果调整并发数
+
+# 模拟执行 30 个任务
+total_tasks = 30
+max_concurrency = 10  # 最大并发数
+max_failure_rate = 0.3  # 最大允许失败率 30%
+
+task_executor = TaskExecutor(max_concurrency, max_failure_rate)
+task_executor.run(total_tasks)
+
+</code></pre><hr><h3 id=jie-lun-ru-he-xuan-ze-he-gua-de-bing-fa-kong-zhi-ce-lue><strong>结论：如何选择合适的并发控制策略</strong></h3><ol><li><p><strong>异步客户端（<code>asyncio</code>）</strong>：</p> <ul><li>使用**信号量（Semaphore）**来控制并发请求数量，避免事件循环被阻塞。<li>需要避免手动设定并发数，动态调整更为合理。<li><strong>PID 控制器</strong>和<strong>令牌桶</strong>可以进一步动态调整并发数，以适应负载波动。</ul><li><p><strong>多线程</strong>：</p> <ul><li>初期通过人工调整线程池大小来控制并发量，但这种方法无法适应负载的动态变化。<li><strong>PID 控制器</strong>和<strong>令牌桶</strong>能更精确地动态调整线程池大小和任务并发数，保证系统平稳运行。</ul></ol><p>通过<strong>动态调整并发量</strong>的策略，无论是<strong>异步客户端</strong>还是<strong>多线程并发</strong>，都能够在提高任务执行效率的同时，避免目标接口的过载和延迟。</div><div id=comments-issue-id style=display:none>7</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

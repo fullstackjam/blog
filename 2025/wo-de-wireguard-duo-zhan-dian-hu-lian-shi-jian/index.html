@@ -1,0 +1,112 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Jam's Blog" name=description><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>我的 WireGuard 多站点互联实践 - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam's Blog</a><a href=https://blog.fullstackjam.com/about/>About</a><a href=https://blog.fullstackjam.com/friends/>Friends</a><a href=https://blog.fullstackjam.com/projects/>Projects</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ id=title>我的 WireGuard 多站点互联实践</a><div id=date>2025-10-13</div><div id=content><p>家里有两个地方都有网络设备，加上经常需要在外面访问家里的 NAS，一直想搭个 VPN 把这些网络连起来。试过几种方案后，最终选择了 WireGuard，主要是因为它性能好，而且相对来说比较好搞。<h3 id=yi-wo-de-wang-luo-tuo-bu>一、我的网络拓扑</h3><p>我的需求其实很简单：<ul><li>在外面时能访问家里的设备，虚拟机或者 K8s<li>两个家庭网络能互通，在家里时每个设备上不需要单独启动 WireGuard 的客户端就能访问另一家里的设备<li>手机和笔记本随时能连回家，特别是用公共 WiFi 的时候<li>不想用第三方 VPN 服务，数据还是自己掌控比较放心</ul><p>最后选择了 Hub-and-Spoke 的架构，就是用一台有公网 IP 的云服务器做中转。所有设备都连到这台服务器，然后由它来转发流量。虽然看起来单点故障的风险大一些，但对于家庭使用来说够用，也好管理。<p><strong>网络拓扑架构：</strong><pre class=mermaid>
+flowchart TD
+    Internet[Public Internet]
+
+    subgraph Cloud[Alibaba Cloud ECS Relay Server]
+        ECS[&LTstrong>ECS Relay Server&LT/strong>&LTbr>Public IP: 203.0.113.1&LTbr>VPN IP: 192.168.151.1/24&LTbr>Port: 24356/UDP]
+    end
+
+    subgraph HomeA[Home Network A]
+        OP1[&LTstrong>OpenWrt Gateway A&LT/strong>&LTbr>LAN: 192.168.2.1/24&LTbr>VPN: 192.168.151.2/24]
+        OtherA[Other Devices&LTbr>192.168.2.0/24]
+    end
+
+    subgraph HomeB[Home Network B]
+        OP2[&LTstrong>OpenWrt Gateway B&LT/strong>&LTbr>LAN: 192.168.4.1/24&LTbr>VPN: 192.168.151.3/24]
+        OtherB[Other Devices&LTbr>192.168.4.0/24]
+    end
+
+    subgraph Mobile[Mobile Devices]
+        MAC[&LTstrong>MacBook&LT/strong>&LTbr>VPN IP: 192.168.151.4/24]
+        IPH[&LTstrong>iPhone&LT/strong>&LTbr>VPN IP: 192.168.151.5/24]
+    end
+
+    Internet -- Internet Connection --> ECS
+
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP1
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP2
+    MAC -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+    IPH -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+
+    OP1 -- LAN Network --> OtherA
+    OP2 -- LAN Network --> OtherB
+</pre><p>上面这个拓扑图基本就是我现在的网络结构。虽然所有流量都要经过云服务器，但是架构也并不复杂。<h3 id=er-wireguardji-ben-yuan-li>二、WireGuard基本原理</h3><p>WireGuard 的核心就是公钥加密，每个设备都有一对密钥。你把自己的公钥给别人，别人的公钥配到自己这里，这样就能相互认证了。跟其他 VPN 方案比起来，不用搞什么证书授权中心那一套麻烦事。<p><strong>连接建立过程：</strong><pre class=mermaid>
+sequenceDiagram
+    participant S as 服务器&LTbr/>(私钥S_priv, 公钥S_pub)
+    participant C as 客户端&LTbr/>(私钥C_priv, 公钥C_pub)
+
+    Note over S,C: 配置阶段：交换公钥
+    S->>S: 配置文件中添加C_pub
+    C->>C: 配置文件中添加S_pub
+
+    Note over S,C: 握手建立过程
+    C->>S: 1. 发送握手初始化包&LTbr/>(用S_pub加密，用C_priv签名)
+    S->>S: 2. 用S_priv解密，用C_pub验证签名
+    S->>C: 3. 发送握手响应包&LTbr/>(用C_pub加密，用S_priv签名)
+    C->>C: 4. 用C_priv解密，用S_pub验证签名
+
+    Note over S,C: 双方协商会话密钥
+    Note over S,C: 5. 握手完成，生成共享密钥
+
+    Note over S,C: 数据传输
+    S->>C: 发送加密数据
+    C->>S: 发送加密数据
+</pre><p>WireGuard 用的加密算法比较新，连接建立很快，基本上就是 1-2 秒的事。<h3 id=san-shi-ji-da-jian-guo-cheng>三、实际搭建过程</h3><h4 id=1-an-zhuang-wireguard>1. 安装WireGuard</h4><p>这一步比较简单，Ubuntu 上直接 <code>apt install wireguard</code>，OpenWrt 路由器上也有现成的包，手机和电脑就下官方 App 就行。<h4 id=2-mi-yao-dui-sheng-cheng>2. 密钥对生成</h4><p>在 ECS 上执行以下命令为每个节点生成密钥对：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 设置适当权限并生成密钥对（适合批量生成多对密钥）
+umask 077
+wg genkey > priv_key && wg pubkey < priv_key > pub_key && echo "priv_key" && cat priv_key && echo "pub_key" && cat pub_key && rm -f priv_key pub_key
+</code></pre><p>需要为每个节点（服务器、路由器、手机等）都生成独立的密钥对，然后交叉配置彼此的公钥。<p>比较重要的一个配置是 <code>AllowedIPs</code>，这个参数有两个作用：一是告诉系统哪些 IP 要走 VPN 隧道，二是限制对端能使用哪些 IP。配置的时候需要注意，比如我给家庭网络 A 设置了 <code>192.168.151.2/32, 192.168.2.0/24</code>，意思是这个节点可以用 .2 这个 VPN IP，同时也代表整个 192.168.2.0 网段。<h4 id=3-zhong-xin-jie-dian-pei-zhi-ecsfu-wu-qi>3. 中心节点配置（ECS服务器）</h4><p>在云服务器上创建 <code>/etc/wireguard/wg0.conf</code>，示例如下：<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+Address = 192.168.151.1/24
+ListenPort = 24356
+PrivateKey = <服务器私钥>
+# 启用IP转发
+PostUp = sysctl -w net.ipv4.ip_forward=1
+# 配置iptables规则允许转发和NAT
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer] # 家庭网络A的路由器
+PublicKey = <路由器A的公钥>
+AllowedIPs = 192.168.151.2/32, 192.168.2.0/24
+
+[Peer] # 家庭网络B的路由器
+PublicKey = <路由器B的公钥>
+AllowedIPs = 192.168.151.3/32, 192.168.4.0/24
+
+[Peer] # 笔记本电脑
+PublicKey = <笔记本的公钥>
+AllowedIPs = 192.168.151.4/32
+</code></pre><p>启动服务并开放端口：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 启用服务
+systemctl enable --now wg-quick@wg0
+
+# 开放防火墙端口
+ufw allow 24356/udp
+
+# 验证连接状态
+wg show
+</code></pre><h4 id=4-ke-hu-duan-pei-zhi-xiang-jie>4. 客户端配置详解</h4><p><strong>OpenWrt 路由器配置：</strong><pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = <路由器私钥>
+Address = 192.168.151.2/24
+
+[Peer]
+PublicKey = <服务器公钥>
+Endpoint = <服务器公网IP>:24356
+AllowedIPs = 192.168.151.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p><strong>移动设备配置：</strong><pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = <设备私钥>
+Address = 192.168.151.4/24
+DNS = 192.168.151.1
+
+[Peer]
+PublicKey = <服务器公钥>
+Endpoint = <服务器IP>:24356
+AllowedIPs = 192.168.151.0/24, 192.168.2.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p>OpenWrt 路由器在 Web 界面配置 WireGuard 接口和防火墙规则即可。<h4 id=5-lian-jie-yan-zheng>5. 连接验证</h4><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 测试连通性
+ping 192.168.151.1  # 服务器
+ping 192.168.2.100  # 家庭网络 A
+ping 192.168.4.1   # 家庭网络 B
+
+# 查看状态
+wg show
+</code></pre><h3 id=si-zhu-yi-shi-xiang-yu-pai-cuo>四、注意事项与排错</h3><p><strong>稳定性</strong>：配置 <code>PersistentKeepalive = 25</code> 保持连接。<p><strong>安全性</strong>：<ul><li>端口改为非默认值（如 24356）<li>密钥文件权限设为 600<li>AllowedIPs 避免使用 0.0.0.0/0</ul><p><strong>常见问题</strong>：<ul><li><strong>连接失败</strong>：检查密钥匹配，确认防火墙放行 UDP 流量<li><strong>路由不通</strong>：用 <code>wg show</code> 检查状态，确认 AllowedIPs 设置正确</ul><h3 id=wu-shi-yong-ti-yan>五、使用体验</h3><p>用了几个月下来，WireGuard 的稳定性很不错，手机从 5G 切 WiFi 基本不会断线。配置好之后基本免维护，偶尔服务器重启也会自动重连。<p>OpenWrt 配置稍微麻烦一些，但设置好一次就不用动了。设备多了可以考虑用 wg-easy 这种 Web 界面管理。<h3 id=liu-xiang-guan-zi-yuan>六、相关资源</h3><ul><li><a href=https://github.com/wg-easy/wg-easy>wg-easy</a>：Web 管理界面<li><a href=https://www.wireguard.com/quickstart/>WireGuard 官方文档</a><li><a href=https://openwrt.org/docs/guide-user/services/vpn/wireguard/start>OpenWrt WireGuard 配置指南</a></ul></div><div id=comments-issue-id style=display:none>11</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>
