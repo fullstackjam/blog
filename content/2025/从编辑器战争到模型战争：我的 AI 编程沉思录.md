@@ -3,7 +3,7 @@ title = "从编辑器战争到模型战争：我的AI编程沉思录"
 date = 2025-09-24
 
 [extra.comments]
-issue_id = 8
+issue_id = 9
 +++
 
 昨天又收到了Cursor Pro的账单，20美元。

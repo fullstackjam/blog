@@ -3,7 +3,7 @@ title = "我的WireGuard多站点互联实践"
 date = 2025-10-13
 
 [extra.comments]
-issue_id = 9
+issue_id = 11
 +++
 
 家里有两个地方都有网络设备，加上经常需要在外面访问家里的 NAS，一直想搭个 VPN 把这些网络连起来。试过几种方案后，最终选择了 WireGuard，主要是因为它性能好，而且相对来说比较好搞。

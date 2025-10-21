@@ -3,7 +3,7 @@ title = "我的 Homelab 如何践行现代 DevOps 核心理念"
 date = 2025-09-25
 
 [extra.comments]
-issue_id = 9
+issue_id = 10
 +++
 
 三年前折腾 [k8s-gitops](https://github.com/fullstackjam/k8s-gitops) 的时候，我只是想搭个能跑的 K8s 环境玩玩。没想到这一路折腾下来，竟然把企业级的 DevOps 实践都给搞全了。

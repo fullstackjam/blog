@@ -3,7 +3,7 @@ title = "私家 homelab 篇一: proxmox 安装和基本配置"
 date = 2024-03-04
 
 [extra.comments]
-issue_id = 3
+issue_id = 4
 +++
 
 折腾 homelab 有一段时间了，今天有空记录下基于 proxmox 虚拟化平台的安装和基础配置。

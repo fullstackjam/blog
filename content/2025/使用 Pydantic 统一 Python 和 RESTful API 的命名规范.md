@@ -3,7 +3,7 @@ title = "使用 Pydantic 统一 Python 和 RESTful API 的命名规范"
 date = 2025-02-05
 
 [extra.comments]
-issue_id = 5
+issue_id = 6
 +++
 
 在现代 Web 开发中，API 风格和命名规范是确保前后端顺畅协作的重要方面。尤其是前后端分离的架构，前端通常使用 `camelCase` 风格，而后端（尤其是 Python）则遵循 PEP 8 风格，即 `snake_case`。为了在前后端之间保持一致性，我们可以使用 Pydantic 这个模块来自动转换和映射命名风格。本文将介绍如何使用 Pydantic 统一 Python 后端和 RESTful API 的命名规范，并在 **GET** 和 **POST** 请求中实现参数和请求体的命名统一。
