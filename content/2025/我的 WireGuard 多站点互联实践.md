@@ -1,5 +1,5 @@
 +++
-title = "我的WireGuard多站点互联实践"
+title = "我的 WireGuard 多站点互联实践"
 date = 2025-10-13
 
 [extra.comments]
