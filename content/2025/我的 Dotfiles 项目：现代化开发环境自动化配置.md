@@ -112,19 +112,6 @@ stow-zsh:
     @stow --target="$HOME" --restow zsh
 ```
 
-### SSH 密钥加密
-
-SSH 密钥这种敏感文件用 git-crypt 加密，避免泄露：
-
-```bash
-# 检查并解锁加密文件
-if [ -f "$DOTFILES_DIR/git-crypt-key" ]; then
-    if git-crypt status | grep -q "encrypted"; then
-        git-crypt unlock "$DOTFILES_DIR/git-crypt-key"
-    fi
-fi
-```
-
 ## 包含的工具
 
 主要包含这些工具和配置：
