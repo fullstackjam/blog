@@ -617,5 +617,6 @@ If you want to check out what I've been working on, head over to [OpenBoot](http
 - [chezmoi](https://chezmoi.io) — Dotfile management
 - [nix-darwin](https://github.com/LnL7/nix-darwin) — Declarative macOS config
 - [awesome-mac](https://github.com/jaywcjlove/awesome-mac) — Curated Mac app list
+- [Discussion on r/macapps](https://www.reddit.com/r/macapps/comments/1r245va/os_new_mac_day_is_supposed_to_be_exciting_not_a/) — Community feedback and tips
 
 
