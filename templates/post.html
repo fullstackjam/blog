@@ -1,5 +1,29 @@
 {% extends "base.html" %}
 
+{% block seo %}
+{# FAQ Schema - Add this to article front matter if needed #}
+{% if page.extra.faq %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in page.extra.faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.question | json_encode() | safe }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.answer | json_encode() | safe }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+{% endblock seo %}
+
 {% block content %}
 <a id="title" href="{{ page.permalink | safe }}">{{ page.title | safe }}</a>
 <div id="date">{{ page.date | safe }}</div>

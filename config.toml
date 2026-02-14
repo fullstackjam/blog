@@ -1,4 +1,5 @@
 title = "Jam's Blog"
+description = "A developer's journey through code, automation, and modern web development."
 base_url = "https://blog.fullstackjam.com"
 generate_feeds = true
 feed_filenames = ["rss.xml"]
