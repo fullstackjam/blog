@@ -1,6 +1,7 @@
 +++
 title = "Linux Basics and System Startup"
 date = 2022-04-17
+description = "Understanding Linux filesystems, partitions, and the complete boot process from BIOS to user interface"
 
 [extra.comments]
 issue_id = 1

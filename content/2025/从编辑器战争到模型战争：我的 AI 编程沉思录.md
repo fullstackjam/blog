@@ -1,6 +1,7 @@
 +++
 title = "从编辑器战争到模型战争：我的 AI 编程沉思录"
 date = 2025-09-24
+description = "使用 Cursor 几个月后的真实感受：AI 编程工具带来的效率提升与职业焦虑"
 
 [extra.comments]
 issue_id = 9

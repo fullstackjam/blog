@@ -1,6 +1,7 @@
 +++
 title = "我的 WireGuard 多站点互联实践"
 date = 2025-10-13
+description = "使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭网络和移动设备的安全互联"
 
 [extra.comments]
 issue_id = 11

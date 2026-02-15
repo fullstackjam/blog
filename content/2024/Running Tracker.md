@@ -1,6 +1,7 @@
 +++
 title = "Running Tracker"
 date = 2024-04-25
+description = "My running journey and progress tracker - documenting the process"
 
 [extra.comments]
 issue_id = 5

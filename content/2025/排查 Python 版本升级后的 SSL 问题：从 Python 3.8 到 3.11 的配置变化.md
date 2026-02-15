@@ -1,6 +1,7 @@
 +++
 title = "排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化"
 date = 2025-02-06
+description = "深入分析 Python 3.8 升级到 3.11 后 SSL 证书验证失败的原因及解决方案"
 
 [extra.comments]
 issue_id = 8

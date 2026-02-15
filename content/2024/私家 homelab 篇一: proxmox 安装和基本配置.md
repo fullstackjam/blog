@@ -1,6 +1,7 @@
 +++
 title = "私家 homelab 篇一: proxmox 安装和基本配置"
 date = 2024-03-04
+description = "Proxmox VE 虚拟化平台的安装和基础配置教程，从 ISO 镜像制作到存储配置"
 
 [extra.comments]
 issue_id = 4

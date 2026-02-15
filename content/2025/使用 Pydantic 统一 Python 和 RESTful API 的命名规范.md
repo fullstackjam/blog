@@ -1,6 +1,7 @@
 +++
 title = "使用 Pydantic 统一 Python 和 RESTful API 的命名规范"
 date = 2025-02-05
+description = "介绍如何使用 Pydantic 自动转换 Python snake_case 和 API camelCase 命名规范，实现前后端命名统一"
 
 [extra.comments]
 issue_id = 6

@@ -1,6 +1,7 @@
 +++
 title = "我的 Homelab 如何践行现代 DevOps 核心理念"
 date = 2025-09-25
+description = "三年 Homelab 实践总结：从雪花服务器到 GitOps，从手动部署到自动化可观测性的完整演进"
 
 [extra.comments]
 issue_id = 10

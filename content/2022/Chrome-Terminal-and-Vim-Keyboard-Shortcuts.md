@@ -1,6 +1,7 @@
 +++
 title = "Chrome, Shell and Vim Keyboard Shortcuts"
 date = 2022-04-24
+description = "Essential keyboard shortcuts for Chrome browser, Shell terminal, and Vim editor to boost your productivity"
 
 [extra.comments]
 issue_id = 2
