@@ -40,6 +40,8 @@ question = "Is it safe to run curl | bash install scripts?"
 answer = "OpenBoot's install script is open source — you can read it before running. The --dry-run flag lets you preview every change before anything is installed. No SSH keys, API tokens, or .env files are ever captured or transmitted."
 +++
 
+> Also available in [中文版](/2026/mac-setup-automation-guide-2026-zh/) — rewritten for Chinese developers, with mirror source configs.
+
 **Quick answer:** Most developers just need Homebrew + a setup tool like [OpenBoot](https://openboot.dev) — about 15 minutes total. Dotfile nerds should look at chezmoi, and the truly committed can go with nix-darwin for full reproducibility. This guide covers all five approaches with real commands you can run today.
 
 ---
