@@ -1,8 +1,9 @@
 +++
 title = "My Dotfiles Project: Automating Modern Dev Environment Setup"
 date = "2025-10-15"
-description = "Building a dotfiles project with GNU Stow and Makefile for automated dev environment setup: modular design, one-command deployment, and symlink management with full code walkthrough."
-tags = ["dotfiles", "automation", "macos", "stow", "makefile", "dev-environment"]
+updated = "2026-06-08"
+description = "A pure config management approach with GNU Stow: modular design, one-command deployment, paired with OpenBoot for full new-machine automation."
+tags = ["dotfiles", "automation", "macos", "stow", "dev-environment", "AI-tools"]
 
 [extra.comments]
 issue_id = 12
@@ -16,21 +17,21 @@ question = "What is GNU Stow and why use it for dotfiles?"
 answer = "GNU Stow is a symlink manager originally designed for managing software installations in /usr/local. For dotfiles, it maps a directory tree in your repo to corresponding locations in your home directory, automatically creating symlinks. No manual ln -s commands, no mapping files — the directory structure IS the configuration."
 
 [[extra.faq]]
-question = "How long does it take to set up a new machine with this project?"
-answer = "About 10-15 minutes from git clone to a fully configured environment. Most of that time is Homebrew installing packages. The symlink deployment itself takes only a few seconds."
+question = "Why not handle software installation in the dotfiles repo?"
+answer = "Config files and software installation are separate concerns. Configs change frequently and need fine-grained management; software installation is one-time and declarative. Splitting them keeps the dotfiles repo pure, while a dedicated tool like OpenBoot handles the installation side."
 
 [[extra.faq]]
-question = "Can I use this alongside chezmoi or yadm?"
-answer = "You can, but there's no real benefit. chezmoi and yadm are also dotfile managers that handle symlinks or templates — they overlap with GNU Stow. Pick one approach and stick with it. If you already have a Stow-based setup, switching to chezmoi won't give you meaningful gains."
+question = "How long does it take to set up a new machine?"
+answer = "With OpenBoot, one command does everything automatically: install Homebrew and packages, clone dotfiles, deploy symlinks, install Oh-My-Zsh and plugins. The whole process takes about 10-15 minutes, mostly spent on Homebrew installing packages."
 
 [[extra.faq]]
-question = "How do I handle sensitive files like SSH private keys in a dotfiles repo?"
-answer = "Never commit private keys in plaintext. Use git-crypt to encrypt sensitive files, or use .gitignore to exclude private keys and only commit SSH config. This project uses git-crypt for files that need encryption."
+question = "What does the --no-folding flag do?"
+answer = "By default, Stow creates directory-level symlinks (folding) — linking an entire directory instead of individual files. With --no-folding, Stow only creates file-level symlinks, keeping target directories as real directories. This prevents issues when other programs need to write to the same directory, like Claude Code creating sessions/ under ~/.claude/."
 +++
 
-The worst part of setting up a new machine isn't installing software — Homebrew handles that in one command. The painful part is all the config files scattered across your system. `.gitconfig` in your home directory, Neovim config in `.config/nvim/`, SSH config in `.ssh/`, Zsh split across multiple files. Manually moving everything takes half a day, and you will forget something.
+The worst part of setting up a new machine isn't installing software — Homebrew handles that in one command. The painful part is all the config files scattered across your system. `.gitconfig` in your home directory, SSH config in `.ssh/`, Zsh config, terminal config, AI coding tool configs... Manually moving everything takes half a day, and you will forget something.
 
-This post walks through how I use GNU Stow + Makefile to manage all my configs, so a new machine gets everything in one command.
+This post walks through how I use GNU Stow to manage all my configs, paired with [OpenBoot](https://openboot.dev) for software installation, so a new machine gets everything in one command.
 
 <!--more-->
 
@@ -38,43 +39,47 @@ This post walks through how I use GNU Stow + Makefile to manage all my configs, 
 
 ## The Core Idea
 
-The whole project boils down to three steps:
+The project does exactly one thing: **manage config file symlinks**. Software installation is handled by OpenBoot.
 
 {% mermaid() %}
 graph LR
-    A["git clone<br/>Pull the repo"] --> B["make setup"]
-    B --> C["install<br/>Install software"]
-    B --> D["deploy<br/>Deploy configs"]
-    C --> C1["Homebrew"]
-    C --> C2["Brewfile packages"]
+    A["curl openboot.dev"] --> B["Install Homebrew<br/>+ packages"]
+    A --> C["clone dotfiles<br/>to ~/.dotfiles"]
+    C --> D["make install"]
     D --> D1["Git config"]
-    D --> D2["Zsh config"]
-    D --> D3["Neovim config"]
-    D --> D4["SSH config"]
-    D --> D5["NVM config"]
+    D --> D2["SSH config"]
+    D --> D3["Zsh config"]
+    D --> D4["Claude Code"]
+    D --> D5["Ghostty"]
+    D --> D6["OpenCode"]
 
     style A fill:#EFF6FF,stroke:#2563EB,color:#1E40AF
-    style B fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
-    style C fill:#ECFDF5,stroke:#059669,color:#065F46
-    style D fill:#ECFDF5,stroke:#059669,color:#065F46
-    style C1 fill:#fff,stroke:#94A3B8,color:#64748B
-    style C2 fill:#fff,stroke:#94A3B8,color:#64748B
+    style B fill:#ECFDF5,stroke:#059669,color:#065F46
+    style C fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style D fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
     style D1 fill:#fff,stroke:#94A3B8,color:#64748B
     style D2 fill:#fff,stroke:#94A3B8,color:#64748B
     style D3 fill:#fff,stroke:#94A3B8,color:#64748B
     style D4 fill:#fff,stroke:#94A3B8,color:#64748B
     style D5 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D6 fill:#fff,stroke:#94A3B8,color:#64748B
 {% end %}
 
-**Clone the repo, install dependencies, symlink configs into place.** That's it.
+Full automated setup in one line:
 
 ```bash
-git clone https://github.com/fullstackjam/dotfiles.git
-cd dotfiles
-make setup
+curl -fsSL openboot.dev/fullstackjam | bash
 ```
 
-About 10-15 minutes later, the new machine's dev environment matches the old one exactly.
+OpenBoot handles everything: install Homebrew and packages, clone dotfiles to `~/.dotfiles`, deploy configs via Stow, install Oh-My-Zsh and plugins.
+
+To deploy configs only:
+
+```bash
+git clone https://github.com/fullstackjam/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+make install
+```
 
 ---
 
@@ -84,25 +89,25 @@ The project is split into independent modules, one directory per config group:
 
 ```
 dotfiles/
-├── Makefile              # Entry point — all install and deploy commands
-├── Brewfile              # Homebrew package manifest
-├── scripts/              # Install scripts (Homebrew, Brewfile, etc.)
-│   ├── 01-homebrew.sh
-│   └── 02-brewfile.sh
-├── git/                  # Git config → symlinked to ~/.gitconfig
-├── zsh/                  # Zsh config → symlinked to ~/.zshrc etc.
-├── nvim/.config/nvim/    # Neovim config → symlinked to ~/.config/nvim/
-├── nvm/                  # NVM config → symlinked to ~/.nvmrc etc.
-├── ssh/.ssh/             # SSH config → symlinked to ~/.ssh/config
-├── .gitignore
-└── README.md
+├── Makefile                              # Entrypoint — install / uninstall
+├── git/.gitconfig                        # Git configuration
+├── ssh/.ssh/config                       # SSH client config
+├── zsh/.zshrc                            # Zsh configuration
+├── claude/.claude/CLAUDE.md              # Claude Code global instructions
+├── claude/.claude/settings.json          # Claude Code settings
+├── claude/.claude/statusline-command.sh  # Claude Code statusline script
+├── ghostty/.config/ghostty/config        # Ghostty terminal configuration
+├── opencode/.config/opencode/opencode.json
+├── opencode/.config/opencode/oh-my-openagent.json
+├── opencode/.config/opencode/tui.json
+└── .gitignore
 ```
 
-The key insight: **each directory's internal structure mirrors its target path in the home directory**. For example, `nvim/.config/nvim/init.vim` gets symlinked to `~/.config/nvim/init.vim`. No mapping rules needed — the directory structure IS the mapping.
+The key insight: **each directory's internal structure mirrors its target path in the home directory**. For example, `ghostty/.config/ghostty/config` gets symlinked to `~/.config/ghostty/config`. The directory structure IS the mapping — no rules to configure.
 
 Why this design works:
 
-- **Modules are independent.** Want to update just your Git config? `make stow-git`. Nothing else is touched.
+- **Modules are independent.** Add or remove configs without affecting anything else.
 - **Failures are contained.** If one module's symlinks break, everything else keeps working.
 - **Debugging is obvious.** Directory names tell you exactly what each config group does.
 
@@ -116,80 +121,47 @@ GNU Stow solves this properly. Its logic is simple: take a directory and "projec
 
 ```bash
 # Symlink everything in git/ to $HOME
-stow --target="$HOME" --restow git
+stow --no-folding --target="$HOME" git
 ```
 
-After running this, `git/.gitconfig` becomes a symlink at `~/.gitconfig`. The `--restow` flag means "remove old symlinks, then recreate" — it's idempotent, so running it multiple times is safe.
+After running this:
 
-To deploy all modules at once:
-
-```bash
-for dir in */; do
-    if [ -d "$dir" ] && [ "$dir" != "scripts/" ]; then
-        stow --target="$HOME" --restow "$dir"
-    fi
-done
+```
+~/.gitconfig                    → ~/.dotfiles/git/.gitconfig
+~/.ssh/config                   → ~/.dotfiles/ssh/.ssh/config
+~/.zshrc                        → ~/.dotfiles/zsh/.zshrc
 ```
 
-We skip `scripts/` because it contains install scripts, not config files — nothing there belongs in the home directory.
+Note the `--no-folding` flag instead of the default behavior. By default, Stow creates directory-level symlinks (folding) — it would symlink the entire `~/.claude` directory to the repo. But Claude Code creates runtime directories like `sessions/` under `~/.claude/`, and that breaks if the whole directory is a symlink. `--no-folding` forces Stow to only create file-level symlinks, keeping target directories as real directories.
 
-Why not just use `ln -s`? Because Stow handles all the tedious parts: automatic target path resolution, conflict detection, and cleanup of stale symlinks. Manual `ln -s` is fine for 5 files. For 30+, it's a nightmare.
+Why not just use `ln -s`? Because Stow handles all the tedious parts: automatic target path resolution and conflict detection. Manual `ln -s` is fine for 5 files. For 30+, it's a nightmare.
 
 ---
 
-## Makefile: Dependency Management
+## Makefile: As Simple As It Gets
 
-A Makefile is a natural fit for orchestrating the setup — it has built-in dependency management. Homebrew must be installed before `brew install` can run. Makefile expresses this cleanly:
+Earlier versions had a complex Makefile with install, deploy, status, clean, and per-module targets. After splitting software installation into OpenBoot, the Makefile became minimal:
 
 ```makefile
-# Full setup: install software, then deploy configs
-setup: install deploy
+HOME     ?= $(shell echo $$HOME)
+STOW     := stow --no-folding -v --target=$(HOME)
+PACKAGES := git ssh zsh claude ghostty opencode
 
-# Install phase: Homebrew first, then packages
-install: homebrew brewfile
+.PHONY: install uninstall
 
-homebrew:
-	@scripts/01-homebrew.sh
+install:
+	mkdir -p $(HOME)/.ssh $(HOME)/.claude $(HOME)/.config/ghostty $(HOME)/.config/opencode
+	$(STOW) $(PACKAGES)
 
-brewfile: homebrew
-	@scripts/02-brewfile.sh
-
-# Deploy phase: symlink all config files to home directory
-deploy: stow-git stow-nvm stow-ssh stow-nvim stow-zsh
-
-stow-git:
-	@stow --target="$(HOME)" --restow git
-
-stow-nvm:
-	@stow --target="$(HOME)" --restow nvm
-
-stow-ssh:
-	@stow --target="$(HOME)" --restow ssh
-
-stow-nvim:
-	@stow --target="$(HOME)" --restow nvim
-
-stow-zsh:
-	@stow --target="$(HOME)" --restow zsh
+uninstall:
+	stow -D --no-folding -v --target=$(HOME) $(PACKAGES)
 ```
 
-`make setup` runs the entire flow. You can also target individual steps:
+Two commands: `make install` to deploy, `make uninstall` to clean up.
 
-```bash
-make setup       # Full setup (software + configs)
-make install     # Install software only
-make deploy      # Deploy config files only
+`install` first creates necessary target directories with `mkdir -p`, then stows all packages in one go. The `-v` (verbose) flag shows each symlink being created.
 
-# Target individual modules
-make homebrew    # Install Homebrew
-make brewfile    # Install packages from Brewfile
-make stow-git    # Deploy Git config only
-make stow-nvim   # Deploy Neovim config only
-
-make help        # List all available commands
-```
-
-Makefile beats a shell script here because dependencies are declared in the rules — Make figures out execution order and skips completed steps automatically. No need to write `if` checks yourself.
+Adding a new module is trivial — just add its name to the `PACKAGES` list.
 
 ---
 
@@ -200,96 +172,94 @@ Makefile beats a shell script here because dependencies are declared in the rule
 ```ini
 [user]
     name = fullstackjam
-    email = openbootdotdev@gmail.com
+    email = fullstackjam@outlook.com
 
 [alias]
     st = status
     co = checkout
     br = branch
     ci = commit
-    lg = log --oneline --graph --decorate
+    lg = log --oneline --decorate --graph --all
+    amend = commit --amend --no-edit
+    undo = reset HEAD~1
+    wip = commit -am "WIP"
 
-[color]
-    ui = auto
+[pull]
+    rebase = true
 
-[merge]
-    tool = vimdiff
+[rerere]
+    enabled = true
+
+[help]
+    autocorrect = 1
+
+[credential]
+    helper = osxkeychain
 ```
 
-Common aliases, color output, merge tool. None of this is critical, but it saves a lot of keystrokes every day.
+Beyond the usual aliases, a few practical settings: `pull.rebase = true` defaults to rebase instead of merge; `rerere` remembers conflict resolutions so identical conflicts resolve automatically next time; `help.autocorrect` fixes mistyped commands.
 
 ### SSH
 
 ```
+Host *
+    ServerAliveInterval 30
+    ControlMaster auto
+    ControlPath ~/.ssh/%r@%h:%p
+    IdentityAgent ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+
 Host github.com
-    HostName github.com
+    HostName ssh.github.com
     User git
-    IdentityFile ~/.ssh/id_ed25519
-    AddKeysToAgent yes
-    UseKeychain yes
+    port 443
 ```
 
-Optimized for GitHub: auto-loads keys and uses the macOS Keychain so you never type your passphrase on every push.
+Two key choices: **1Password SSH Agent** for key management — private keys never live on disk as files; GitHub over **port 443** (`ssh.github.com`) so pushes work even on networks that block port 22.
 
 ### Zsh
 
-Built on Oh-My-Zsh with:
-
-- Git shortcut aliases (`gst`, `gco`, `gp`, etc.)
-- Syntax highlighting and autosuggestions plugins
-- Custom prompt theme
-
-### Neovim
-
-A minimal but functional config: line numbers, sensible indentation (4 spaces), incremental search, cursorline highlight. Not trying to be an IDE — just enough for editing config files and quick changes.
-
-### Brewfile
-
-50+ packages including CLI tools (ripgrep, fd, bat, fzf, lazygit) and GUI apps (VS Code, Warp, etc.). Everything in one `Brewfile`, installed with `brew bundle` in a single pass.
-
----
-
-## Install Script Details
-
-The scripts do two things to improve the experience: **colored status output** and **error handling**.
+Built on Oh-My-Zsh with a focused plugin set:
 
 ```bash
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
-print_status() {
-    echo -e "${GREEN}=== $1 ===${NC}"
-}
-
-print_warning() {
-    echo -e "${YELLOW}Warning: $1${NC}"
-}
-
-print_error() {
-    echo -e "${RED}Error: $1${NC}"
-}
+plugins=(git helm kubectl fast-syntax-highlighting zsh-autocomplete)
 ```
 
-When you're installing 50+ packages, you need to know where you are. Color-coded output makes it obvious at a glance whether things are fine, concerning, or broken.
+Plus modern CLI tool integrations:
 
-There's also a status check command for post-install verification:
+- **fzf**: fuzzy search (`source <(fzf --zsh)`)
+- **zoxide**: smart cd (`eval "$(zoxide init zsh)"`)
+- A convenience alias: `alias c="claude --dangerously-skip-permissions"`
 
-```bash
-make status
-# === Dotfiles Setup Status ===
-# Homebrew: Installed
-# git-crypt: Installed
-# SSH setup: Linked
-# Git config: Linked
-# Zsh config: Linked
-# Neovim config: Linked
+### Claude Code
+
+Added in 2025 — global config for the AI coding assistant. Three files:
+
+- **CLAUDE.md**: global behavioral instructions defining coding style preferences (simplicity first, surgical changes, goal-driven execution, etc.)
+- **settings.json**: model selection, permission mode, enabled plugins (superpowers, codex, etc.)
+- **statusline-command.sh**: terminal statusline script in robbyrussell style showing directory, Git branch, model, and context usage
+
+Managing Claude Code config in dotfiles means your AI assistant's behavior preferences migrate seamlessly to new machines.
+
+### Ghostty
+
+Config for the [Ghostty](https://ghostty.org) terminal emulator:
+
+```ini
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 14
+background-opacity = 0.95
+background-blur = 20
+cursor-style = block
+cursor-style-blink = false
+copy-on-select = clipboard
+macos-option-as-alt = left
 ```
 
-If something shows as missing, redeploy that specific module: `make stow-git`, for example.
+Font, transparency, cursor style, macOS integration. Small details like copy-on-select and left Option as Alt that add up to a smoother terminal experience.
 
-Made a mess? `make clean` removes all symlinks and resets to a clean state.
+### OpenCode
+
+Config for another AI coding tool, including plugin settings (oh-my-openagent, superpowers) and TUI interface configuration.
 
 ---
 
@@ -297,27 +267,22 @@ Made a mess? `make clean` removes all symlinks and resets to a clean state.
 
 If you want to fork this project and customize it, here's what to change:
 
-1. **Git identity**: Edit `git/.gitconfig` — update the name and email
-2. **Packages**: Edit `Brewfile` — remove what you don't need, add what you do
-3. **SSH**: Edit `ssh/.ssh/config` — update key paths
-4. **Zsh**: Edit `zsh/.zshrc` — adjust aliases and plugins
-5. **New modules**: Create a new directory (e.g., `tmux/`), lay out config files matching the Stow structure, then add a `stow-tmux` rule to the Makefile
-
-Stow's design makes adding new modules dead simple — create directory, add files, add rule. Three steps. No global configuration changes needed.
+1. **Git identity**: Edit `git/.gitconfig` — update name and email
+2. **SSH**: Edit `ssh/.ssh/config` — adjust for your key management setup
+3. **Zsh**: Edit `zsh/.zshrc` — tweak plugins and aliases
+4. **AI tools**: Modify configs under `claude/` or `opencode/`, or remove modules you don't use
+5. **New modules**: Create a directory (e.g., `tmux/`), lay out config files matching the Stow structure, add the name to `PACKAGES` in the Makefile, and add the target directory to the `mkdir -p` line if it doesn't exist
 
 ---
 
 ## Wrapping Up
 
-The core value of this project fits in one sentence: **gather config files scattered across your system into a single git repo, and keep them in sync with symlinks.**
+This project evolved through several iterations and converged on a clean separation:
 
-The stack:
+- **Dotfiles repo** handles only config files — GNU Stow for symlinks, Makefile as the entry point
+- **Software installation** is delegated to [OpenBoot](https://openboot.dev) — Homebrew, packages, Oh-My-Zsh in one command
 
-- **GNU Stow** handles symlink creation and management — no manual `ln -s`
-- **Makefile** handles install order and dependencies — one command for the full flow
-- **Modular design** keeps each config group independent and individually operable
-
-When you switch machines: clone, make setup, 10 minutes, done. Everything's in git, so you can always roll back.
+This keeps the dotfiles repo pure — just config files and a minimal Makefile. New machine setup: `curl -fsSL openboot.dev/fullstackjam | bash`, 10 minutes, done.
 
 If you're still manually copying config files between machines, seriously consider building your own dotfiles project. A couple hours of upfront investment saves half a day every time you set up or reinstall.
 
