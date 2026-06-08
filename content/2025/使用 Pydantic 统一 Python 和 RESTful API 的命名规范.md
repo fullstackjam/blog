@@ -28,8 +28,6 @@ question = "Pydantic V1 和 V2 的写法有什么不同？"
 answer = "Pydantic V2 推荐用 model_config = ConfigDict(...) 替代 class Config，alias_generators 模块也从 pydantic.alias_generators 导入。本文的写法兼容 Pydantic V2，如果你还在用 V1，需要把 ConfigDict 改成 class Config 的写法。"
 +++
 
-> 本文也有[英文版](/2025/使用-pydantic-统一-python-和-restful-api-的命名规范/)。
-
 写 Python 后端的人都知道一个别扭的事：你在代码里写 `item_id`，前端拿到的 JSON 也是 `item_id`，但前端同事会过来问你——"能不能改成 `itemId`？我们 JavaScript 都是 camelCase。"
 
 改？每个字段都手动映射一遍，累。不改？前端代码里全是下划线，不伦不类。
