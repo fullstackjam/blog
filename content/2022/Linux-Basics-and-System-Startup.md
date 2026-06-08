@@ -1,139 +1,297 @@
 +++
-title = "Linux Basics and System Startup"
+title = "Linux 基础知识：系统启动过程、文件系统与分区"
 date = 2022-04-17
-description = "Understanding Linux filesystems, partitions, and the complete boot process from BIOS to user interface"
+description = "深入理解 Linux 系统启动全过程：从 BIOS/UEFI 上电自检到 GRUB 引导加载，从内核初始化到 systemd 服务管理，以及文件系统和分区的基本概念。"
+tags = ["Linux", "boot-process", "systemd", "filesystem", "GRUB"]
 
 [extra.comments]
 issue_id = 1
+
+[[extra.faq]]
+question = "Linux 启动过程有哪些阶段？"
+answer = "Linux 启动过程分为六个阶段：上电 → BIOS/UEFI（POST 自检）→ Boot Loader（如 GRUB）→ 内核加载与解压 → initramfs 挂载根文件系统 → init/systemd 启动用户空间服务。"
+
+[[extra.faq]]
+question = "MBR 和 GPT 分区方案有什么区别？"
+answer = "MBR（主引导记录）使用 512 字节的引导扇区，最多支持 4 个主分区和 2TB 磁盘。GPT（GUID 分区表）是 UEFI 标准的一部分，支持最多 128 个分区和 9.4ZB 磁盘，还有 CRC32 校验保护。"
+
+[[extra.faq]]
+question = "initramfs 的作用是什么？"
+answer = "initramfs 是一个临时的内存文件系统，内核启动时会将它解压到内存中。它包含挂载真正根文件系统所需的驱动程序和工具（如存储驱动、文件系统驱动），完成挂载后会通过 pivot_root 切换到真实根文件系统并释放内存。"
+
+[[extra.faq]]
+question = "systemd 相比传统 SysVinit 有什么优势？"
+answer = "systemd 通过并行启动服务大幅缩短了开机时间。它用声明式的 unit 配置文件取代了复杂的 shell 脚本，提供了统一的 systemctl 命令管理服务，并通过 journald 集中管理日志。"
+
+[[extra.faq]]
+question = "Linux 支持哪些常见的文件系统？"
+answer = "Linux 支持多种文件系统：传统磁盘文件系统如 ext4、XFS、Btrfs；闪存文件系统如 UBIFS、JFFS2；特殊文件系统如 procfs（进程信息）、sysfs（设备信息）、tmpfs（内存临时文件系统）等。"
 +++
 
-In this post, you will learn：
-
-- Identify Linux filesystems.
-- Identify the differences between partitions and filesystems.
-- Describe the boot process.
+这篇文章带你走一遍 Linux 系统从按下电源键到出现登录界面的完整过程。我们还会聊聊文件系统和分区这些基础概念。
 
 <!--more-->
 
+## Linux 启动过程
 
-## The Boot Process
+Linux 的启动过程（boot process）是从按下电源按钮到用户界面完全可用的整个初始化流程。这个过程经过多个精心设计的阶段，每个阶段负责不同的任务。
 
-The Linux boot process is the procedure for initializing the system. It consists of everything that happens from when the computer power is first switched on until the user interface is fully operational.
+<img src="/images/linux-boot-process-overview.svg" alt="Linux 启动过程总览：从上电到用户登录的六个阶段" style="width:100%;max-width:900px;" />
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171220003.jpeg"></div>
+简单来说，启动过程可以分为六个阶段：
 
+1. **上电** - 硬件接通电源
+2. **BIOS/UEFI** - 固件初始化和硬件自检
+3. **Boot Loader** - 引导加载程序（如 GRUB）
+4. **内核加载** - 解压并初始化 Linux 内核
+5. **initramfs** - 临时文件系统，挂载真正的根文件系统
+6. **init/systemd** - 启动用户空间服务
 
+下面我们逐一展开。
 
-### BIOS - The First Step
+## BIOS/UEFI：第一步
 
-Starting an x86-based Linux system involves a number of steps. When the computer is powered on, the **B**asic **I**nput/**O**utput **S**ystem (**BIOS**) initializes the hardware, including the screen and keyboard, and tests the main memory. This process is also called **POST** (**P**ower **O**n **S**elf **T**est).
+启动 x86 架构的 Linux 系统，第一步是 **BIOS**（Basic Input/Output System，基本输入输出系统）或更现代的 **UEFI**（Unified Extensible Firmware Interface，统一可扩展固件接口）。
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171222021.jpeg"></div>
+<img src="/images/linux-bios-post.svg" alt="BIOS 初始化和 POST 自检过程" style="width:100%;max-width:900px;" />
 
-The BIOS software is stored on a ROM chip on the motherboard. After this, the remainder of the boot process is controlled by the operating system (OS).
+### POST 自检做了什么
 
-### Master Boot Record (MBR) and Boot Loader
+当你按下电源键，CPU 开始执行固件中的代码。固件首先进行 **POST**（Power-On Self-Test，上电自检），主要完成以下工作：
 
-Once the **POST** is completed, the system control passed from the **BIOS** to the **boot loader**. The boot loader is usually stored on one of the hard disks in the system, either in the boot sector (for traditional BIOS/MBR systems) or the **EFI** partition (for more recent (Unified) **E**xtensible **F**irmware **I**nterface or **EFI/UEFI** systems). Up to this stage, the machine does not access any mass storage media. Thereafter, information on date, time, and the most important peripherals(外部设备) are loaded from the [CMOS](https://zh.wikipedia.org/wiki/互補式金屬氧化物半導體) values (after a technology used for the battery-powered memory store which allows the system to keep track of the date and time even when it is powered off).
+1. **CPU 测试** - 验证处理器寄存器和基本指令是否正常
+2. **内存测试** - 检测 RAM 大小，进行读写完整性校验
+3. **设备枚举** - 检测存储设备、显卡、USB、网卡等硬件
+4. **查找启动设备** - 按照 CMOS 中设置的启动顺序，找到可引导的设备
 
-A number of boot loaders exist for Linux; the most common ones are **GRUB** (for **GR**and **U**nified **B**oot loader), **ISOLINUX** (for booting from removable media), and **DAS U-Boot** (for booting on embedded devices/appliances). Most Linux boot loaders can present a user interface for choosing alternative options for booting Linux, and even other operating systems that might be installed. When booting Linux, the boot loader is responsible for loading the kernel image and the initial RAM disk or filesystem (which contains some critical files and device drivers needed to start the system) into memory.
+BIOS 固件存储在主板上的 ROM/Flash 芯片中。系统时间、日期和启动顺序等配置保存在 **CMOS** 中，由主板上的纽扣电池供电，即使关机也不会丢失。
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171226587.jpeg"></div>
+### BIOS vs UEFI
 
-### Boot Loader in Action
+传统 BIOS 已经用了几十年，但有很多限制（只能寻址 1MB 内存、16 位实模式运行）。现代系统基本都用 **UEFI** 了，它的优势包括：
 
-The boot loader has two distinct stages:
+- 支持 GPT 分区表，突破 2TB 磁盘限制
+- 支持 Secure Boot（安全启动），防止未签名的恶意软件
+- 自带 FAT32 文件系统驱动，可以直接读取 EFI 分区
+- 图形化的设置界面，支持鼠标操作
+- 更快的启动速度
 
-For systems using the BIOS/MBR method, the boot loader resides at the first sector of the hard disk, also known as the **M**aster **B**oot **R**ecord (**MBR**). The size of the MBR is just 512 bytes. In this stage, the boot loader examines the **partition table** and finds a bootable partition. Once it finds a bootable partition, it then searches for the second stage boot loader, for example GRUB, and loads it into RAM (Random Access Memory). For systems using the EFI/UEFI method, UEFI firmware reads its Boot Manager data to determine which UEFI application is to be launched and from where (i.e. from which disk and partition the EFI partition can be found). The firmware then launches the UEFI application, for example GRUB, as defined in the boot entry in the firmware's boot manager. This procedure is more complicated, but more versatile(多用途) than the older MBR methods.
+## 主引导记录（MBR）与引导加载
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171229699.jpeg"></div>
+POST 完成后，控制权从固件转交给 **引导加载程序**（Boot Loader）。根据系统是传统 BIOS 还是 UEFI，引导加载的方式有所不同。
 
-The second stage boot loader resides under **/boot**. A splash screen is displayed, which allows us to choose which operating system (OS) to boot. After choosing the OS, the boot loader loads the kernel of the selected operating system into RAM and passes control to it. Kernels are almost always compressed, so its first job is to uncompress itself. After this, it will check and analyze the system hardware and initialize any hardware device drivers built into the kernel.
+<img src="/images/linux-mbr-bootloader.svg" alt="MBR 与 GPT/EFI 分区方案对比" style="width:100%;max-width:900px;" />
 
-### Initial RAM Disk
+### MBR（传统方式）
 
-The **initramfs** filesystem image contains programs and binary files that perform all actions needed to mount the proper root filesystem, like providing kernel functionality for the needed filesystem and device drivers for mass storage controllers with a facility called **udev** (for **u**ser **dev**ice), which is responsible for figuring out which devices are present, locating the device drivers they need to operate properly, and loading them. After the root filesystem has been found, it is checked for errors and mounted.
+MBR 位于磁盘的第一个扇区（512 字节），结构如下：
 
-The **mount** program instructs the operating system that a filesystem is ready for use, and associates it with a particular point in the overall hierarchy of the filesystem (the **mount point**). If this is successful, the initramfs is cleared from RAM and the init program on the root filesystem (**/sbin/init**) is executed.
+- **引导代码**：446 字节，包含第一阶段的引导程序
+- **分区表**：64 字节，记录最多 4 个主分区信息
+- **引导签名**：2 字节（`0x55AA`），标识这是一个可引导的磁盘
 
-**init** handles the mounting and pivoting over to the final real root filesystem. If special hardware drivers are needed before the mass storage can be accessed, they must be in the initramfs image.
+MBR 的局限性：最大只支持 **2TB** 磁盘，最多 **4** 个主分区（可以通过扩展分区绕过这个限制，但方案比较 hacky）。
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171235264.jpeg"></div>
+### GPT（现代方式）
 
-### Text-Mode Login
+GPT（GUID Partition Table）是 UEFI 标准的一部分：
 
-Near the end of the boot process, **init** starts a number of text-mode login prompts. These enable you to type your username, followed by your password, and to eventually get a command shell. However, if you are running a system with a graphical login interface, you will not see these at first.
+- 支持最大 **9.4 ZB** 的磁盘（基本上没有限制）
+- 最多 **128** 个分区
+- 使用 **CRC32 校验和**，数据更安全
+- 磁盘末尾有备份 GPT 头，防止单点故障
+- 保留了一个 Protective MBR 用于向后兼容
 
-Usually, the default command shell is **bash** (the **GNU** **B**ourne **A**gain **Sh**ell), but there are a number of other advanced command shells available. The shell prints a text prompt, indicating it is ready to accept commands; after the user types the command and presses **Enter**, the command is executed, and another prompt is displayed after the command is done.
+## 引导加载程序的工作过程
 
-## Kernel, init and Services
+Linux 最常用的引导加载程序是 **GRUB**（GRand Unified Bootloader）。它的工作分为两个阶段：
 
-### The Linux Kernel
+<img src="/images/linux-bootloader-action.svg" alt="BIOS 和 UEFI 两种引导路径的对比" style="width:100%;max-width:900px;" />
 
-The boot loader loads both the **kernel** and an initial RAM–based file system (initramfs) into memory, so it can be used directly by the kernel.
+### BIOS/MBR 路径
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171238604.jpeg"></div>
+1. **Stage 1** - MBR 中 446 字节的引导代码被加载到内存，它的唯一任务是找到并加载 Stage 2
+2. **Stage 1.5** - 位于 MBR 和第一个分区之间的空隙中，包含文件系统驱动，让 Stage 1 能读取 `/boot` 分区
+3. **Stage 2** - GRUB 的主体，位于 `/boot/grub/` 目录。显示引导菜单，让你选择要启动的操作系统或内核版本
 
-When the kernel is loaded in RAM, it immediately initializes and configures the computer’s memory and also configures all the hardware attached to the system. This includes all processors, I/O subsystems, storage devices, etc. The kernel also loads some necessary user space applications.
+### UEFI/GPT 路径
 
-### /sbin/init and Services
+1. **UEFI 固件** 直接读取 Boot Manager 配置，知道从哪里找 EFI 应用
+2. **EFI 系统分区**（ESP）上存放着 `.efi` 格式的引导文件，比如 `/EFI/ubuntu/grubx64.efi`
+3. **GRUB EFI 版本** 被加载，显示同样的引导菜单
 
-Once the kernel has set up all its hardware and mounted the root filesystem, the kernel runs **/sbin/init**. This then becomes the initial process, which then starts other processes to get the system running. Most other processes on the system trace their origin ultimately to **init**; exceptions include the so-called kernel processes. These are started by the kernel directly, and their job is to manage internal operating system details.
+不管走哪条路径，最终 GRUB 都会把 **内核镜像**（vmlinuz）和 **initramfs** 加载到内存中。
 
-Besides starting the system, **init** is responsible for keeping the system running and for shutting it down cleanly. One of its responsibilities is to act when necessary as a manager for all non-kernel processes; it cleans up after them upon completion, and restarts user login services as needed when users log in and out, and does the same for other background system services.
+### 其他引导加载程序
 
-<div align=center><img src="https://fullstackjam-1257718633.cos.ap-nanjing.myqcloud.com/imgs/202204171253688.jpeg"></div>
+除了 GRUB，还有一些其他选择：
 
-Traditionally, this process startup was done using conventions that date back to the 1980s and the System V variety of UNIX. This serial process had the system passing through a sequence of **runlevels** containing collections of scripts that start and stop services. Each runlevel supported a different mode of running the system. Within each runlevel, individual services could be set to run, or to be shut down if running.
+- **ISOLINUX** / **SYSLINUX** - 用于光盘和 USB 启动盘
+- **U-Boot** - 嵌入式设备常用（树莓派、路由器等）
+- **systemd-boot** - 一个更简单的 UEFI 引导管理器
+- **rEFInd** - 一个图形化的 UEFI 引导管理器
 
-However, all major distributions have moved away from this sequential runlevel method of system initialization, although they usually emulate many System V utilities for compatibility purposes. Next, we discuss the new methods, of which **systemd** has become dominant.
+## 内核加载与初始化
 
-### Startup Alternatives
+引导加载程序将内核和 initramfs 都加载到内存后，控制权正式移交给 Linux 内核。
 
-**SysVinit** viewed things as a serial process, divided into a series of sequential stages. Each stage required completion before the next could proceed. Thus, startup did not easily take advantage of the ***parallel processing\*** that could be done on multiple processors or cores.
+<img src="/images/linux-kernel-loading.svg" alt="Linux 内核加载和初始化过程" style="width:100%;max-width:900px;" />
 
-### systemd Features
+### 内核启动的几个关键步骤
 
-Systems with **systemd** start up faster than those with earlier **init** methods. This is largely because it replaces a serialized set of steps with aggressive parallelization techniques, which permits multiple services to be initiated simultaneously.
+1. **解压** - `vmlinuz` 是压缩过的内核镜像（z 代表 zlib/gzip，现代内核也支持 zstd），它首先将自己解压到内存中
+2. **内存管理初始化** - 设置页表、MMU（内存管理单元）、虚拟内存系统
+3. **硬件初始化** - 配置 CPU、中断控制器（IRQ）、定时器、PCI 总线、ACPI 电源管理等
+4. **加载内建驱动** - 编译进内核的驱动程序在这个阶段初始化
+5. **启动 PID 1** - 挂载 initramfs，执行 `/sbin/init`
 
-Complicated startup shell scripts are replaced with simpler configuration files, which enumerate what has to be done before a service is started, how to execute service startup, and what conditions the service should indicate have been accomplished when startup is finished. One thing to note is that **/sbin/init** now just points to **lib/systemd/systemd**; i.e. **systemd** takes over the **init** process.
+### 内核的主要子系统
 
-One **systemd** command (**systemctl**) is used for most basic tasks. While we have not yet talked about working at the command line, here is a brief listing of its use:
+Linux 内核不是一个简单的程序，它是一个完整的操作系统核心，包含多个子系统：
 
-  - Starting, stopping, restarting a service (using **httpd**, the Apache web server, as an example) on a currently running system:
-      `$ sudo systemctl start|stop|restart httpd.service`
+- **进程管理** - 调度器、fork()、线程、信号处理
+- **内存管理** - 虚拟内存、页面缓存、交换空间（swap）
+- **VFS 和文件系统** - ext4、XFS、Btrfs 等文件系统的统一接口
+- **网络栈** - TCP/IP 协议栈、Socket 接口、netfilter 防火墙
+- **设备驱动** - 可加载内核模块（`.ko` 文件）
+- **系统调用接口** - 用户空间和内核之间的桥梁
+- **安全模块** - SELinux、AppArmor 等访问控制框架
 
-  - Enabling or disabling a system service from starting up at system boot:
-      `$ sudo systemctl enable|disable httpd.service`
+## initramfs：临时根文件系统
 
-In most cases, the **.service** can be omitted. There are many technical differences with older methods that lie beyond the scope of our discussion.
+这是启动过程中一个巧妙的设计。内核刚加载的时候，它还不知道真正的根文件系统在哪里，也不一定有访问存储设备的驱动。initramfs 就是解决这个鸡生蛋、蛋生鸡问题的。
 
-## Linux Filesystem Basics
+<img src="/images/linux-initramfs.svg" alt="initramfs 加载和挂载过程" style="width:100%;max-width:900px;" />
 
-### Linux Filesystems
+### initramfs 的工作流程
 
-Different types of filesystems supported by Linux:
+1. **解压** - 内核将 initramfs（一个 cpio 归档文件，通常用 gzip 或 zstd 压缩）解压到内存中
+2. **udev 设备检测** - 通过 udev 守护进程扫描硬件，加载必要的驱动模块，创建 `/dev` 下的设备节点
+3. **挂载根文件系统** - 根据内核参数（`root=`）找到根分区，必要时进行 fsck 检查，以只读方式挂载
+4. **pivot_root** - 将挂载点切换为真正的根文件系统，释放 initramfs 占用的内存，执行真正的 `/sbin/init`
 
-  - Conventional disk filesystems: **ext3**, **ext4**, **XFS**, **Btrfs**, **JFS**, **NTFS**, **vfat**, **exfat**, etc.
-  - Flash storage filesystems: **ubifs**, **jffs2**, **yaffs**, etc.
-  - Database filesystems
-  - Special purpose filesystems: **procfs**, **sysfs**, **tmpfs**, **squashfs**, **debugfs**, **fuse**, etc.
+### initramfs 里有什么
 
-### Partitions and Filesystems
+initramfs 实际上是一个微型 Linux 系统：
 
-A **partition** is a physically contiguous section of a disk, or what appears to be so in some advanced setups.
+- `/bin`、`/sbin` - 基本工具（通常是 busybox 的精简版）
+- `/lib/modules` - 存储控制器驱动、文件系统驱动
+- `/etc` - udev 规则、modprobe 配置
+- `/scripts` - 初始化脚本和钩子函数
 
-A **filesystem** is a method of storing/finding files on a hard disk (usually in a partition).
+你可以用 `lsinitramfs`（Debian/Ubuntu）或 `lsinitrd`（RHEL/Fedora）查看你系统的 initramfs 内容。
 
-A comparison between filesystems in Windows and Linux is given in the accompanying table:
+## init 进程与 systemd
 
-|                                  | **Windows** | **Linux**              |
-| -------------------------------- | ----------- | ---------------------- |
-| Partition                        | Disk1       | **/dev/sda1**          |
-| Filesystem Type                  | NTFS/VFAT   | EXT3/EXT4/XFS/BTRFS... |
-| Mounting Parameters              | DriveLetter | MountPoint             |
-| Base Folder (where OS is stored) | C:\         | /                      |
+根文件系统挂载完成后，`/sbin/init` 作为 **PID 1** 进程运行。在现代 Linux 发行版中，`/sbin/init` 实际上是指向 `/lib/systemd/systemd` 的符号链接。
 
-### The Filesystem Hierarchy Standard
+<img src="/images/linux-init-services.svg" alt="systemd 服务管理树" style="width:100%;max-width:900px;" />
 
-Linux uses the `/` character to separate paths (unlike Windows, which uses `\`), and does not have drive letters. Multiple drives and/or partitions are mounted as directories in the single filesystem. Removable media such as USB drives and CDs and DVDs will show up as mounted at **/run/media/yourusername/disklabel** for recent Linux systems, or under **/media** for older distributions. For example, if your username is **student** a USB pen drive labeled FEDORA might end up being found at **/run/media/student/FEDORA**, and a file **README.txt** on that disc would be at **/run/media/student/FEDORA/README.txt**.
+### 从 SysVinit 到 systemd
+
+传统的 **SysVinit** 用运行级别（runlevel）和 shell 脚本来管理服务。它是**串行**执行的，一个服务启动完才能启动下一个，在多核处理器时代显得很浪费。
+
+**systemd** 是目前主流发行版的标准，它的核心改进包括：
+
+- **并行启动** - 服务之间没有依赖关系的可以同时启动
+- **声明式配置** - 用 `.service`、`.timer` 等 unit 文件代替 shell 脚本
+- **按需启动** - 通过 socket activation，服务在第一次被访问时才启动
+- **统一日志** - journald 集中收集所有服务的日志
+
+### systemd 的 target 概念
+
+systemd 用 **target** 替代了传统的 runlevel：
+
+| SysVinit Runlevel | systemd Target | 说明 |
+|---|---|---|
+| 0 | poweroff.target | 关机 |
+| 1 | rescue.target | 单用户/救援模式 |
+| 3 | multi-user.target | 多用户文本界面 |
+| 5 | graphical.target | 图形桌面环境 |
+| 6 | reboot.target | 重启 |
+
+### 常用 systemctl 命令
+
+```bash
+# 服务管理
+sudo systemctl start httpd      # 启动服务
+sudo systemctl stop httpd       # 停止服务
+sudo systemctl restart httpd    # 重启服务
+sudo systemctl status httpd     # 查看状态
+
+# 开机自启
+sudo systemctl enable sshd     # 设置开机自启
+sudo systemctl disable sshd    # 取消开机自启
+
+# 运行级别/Target
+systemctl get-default           # 查看默认 target
+sudo systemctl set-default graphical.target  # 设置默认 target
+
+# 日志
+journalctl -u sshd             # 查看某服务的日志
+journalctl -b                  # 查看本次启动的日志
+journalctl -f                  # 实时跟踪日志
+```
+
+## Linux 文件系统基础
+
+### 文件系统类型
+
+Linux 支持种类繁多的文件系统：
+
+**传统磁盘文件系统：**
+- **ext4** - 最常用的 Linux 文件系统，稳定可靠，支持最大 1EB 文件系统和 16TB 单文件
+- **XFS** - 高性能文件系统，擅长处理大文件，RHEL 的默认选择
+- **Btrfs** - "下一代"文件系统，支持快照、子卷、透明压缩等高级功能
+
+**闪存文件系统：**
+- **UBIFS** / **JFFS2** / **YAFFS** - 专为 NAND Flash 设计，考虑了磨损均衡
+
+**特殊文件系统：**
+- **procfs**（`/proc`）- 内核和进程信息的虚拟文件系统
+- **sysfs**（`/sys`）- 设备和驱动信息
+- **tmpfs**（`/tmp`）- 基于内存的临时文件系统，重启后丢失
+- **devtmpfs**（`/dev`）- 设备节点
+
+### 分区与文件系统的区别
+
+这两个概念经常被混淆，其实很简单：
+
+- **分区**（Partition）是磁盘上物理上连续的一段空间
+- **文件系统**（Filesystem）是在分区上组织和存储文件的方式
+
+打个比方：分区就像一个空房间，文件系统就是房间里的书架和收纳系统。
+
+| | Windows | Linux |
+|---|---|---|
+| 分区表示 | Disk 1 | /dev/sda1 |
+| 文件系统 | NTFS / FAT32 | ext4 / XFS / Btrfs |
+| 挂载方式 | 盘符（C:, D:） | 挂载点（/home, /boot） |
+| 根目录 | C:\ | / |
+
+### 文件系统层级标准（FHS）
+
+Linux 使用 `/` 作为路径分隔符（Windows 用 `\`），没有盘符的概念。所有的磁盘和分区都挂载到单一目录树的某个位置。
+
+几个重要的目录：
+
+| 目录 | 用途 |
+|---|---|
+| `/` | 根目录，一切的起点 |
+| `/boot` | 内核和引导文件 |
+| `/home` | 用户主目录 |
+| `/etc` | 系统配置文件 |
+| `/var` | 可变数据（日志、缓存等） |
+| `/tmp` | 临时文件 |
+| `/usr` | 用户程序和库 |
+| `/dev` | 设备文件 |
+| `/proc` | 内核/进程虚拟文件系统 |
+| `/sys` | 设备/驱动虚拟文件系统 |
+
+可移动设备（U 盘、光盘等）通常会自动挂载到 `/run/media/用户名/卷标` 或 `/media/` 目录下。比如用户名是 `student`，U 盘卷标是 `FEDORA`，那它就会挂载在 `/run/media/student/FEDORA`。
+
+## 总结
+
+Linux 的启动过程是一个精心编排的接力赛：固件负责硬件初始化，引导加载程序负责找到并加载内核，内核负责初始化操作系统核心，initramfs 负责找到并挂载根文件系统，最终 systemd 接管一切并启动用户空间的服务。
+
+理解这个过程不仅帮你排查启动问题（比如 GRUB rescue、内核 panic、服务启动失败），也能让你更深入地理解 Linux 系统的架构设计。

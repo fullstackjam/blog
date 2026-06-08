@@ -1,112 +1,289 @@
 +++
-title = "Chrome, Shell and Vim Keyboard Shortcuts"
+title = "Chrome、终端和 Vim 键盘快捷键实战指南"
 date = 2022-04-24
-description = "Essential keyboard shortcuts for Chrome browser, Shell terminal, and Vim editor to boost your productivity"
+description = "开发者日常最实用的键盘快捷键整理 — 覆盖 Chrome 浏览器、Shell 终端和 Vim 编辑器，按使用场景分类，附带实际工作中的使用技巧。"
+tags = ["效率", "快捷键", "vim", "终端", "chrome", "开发工具"]
 
 [extra.comments]
 issue_id = 2
-+++
-In this post, you will learn：
 
-- Practical Chrome keyboard Shortcuts.
-- Practical Shell Keyboard Shortcuts keys.
-- Parctical Vim Skill.
+[[extra.faq]]
+question = "开发者最值得记住的快捷键有哪些？"
+answer = "Chrome 里最常用的是 Ctrl+T 新建标签、Ctrl+W 关闭标签、Ctrl+Shift+T 恢复关闭的标签。终端里 Ctrl+A/E 跳到行首/行尾、Ctrl+R 反向搜索历史命令。Vim 里 ciw 修改单词、dd 删除行、u 撤销。这些覆盖了 80% 的日常场景。"
+
+[[extra.faq]]
+question = "Vim 的模式切换太反直觉了，怎么入门？"
+answer = "先记住三件事：按 i 进入编辑模式，按 Esc 回到普通模式，输入 :wq 保存退出。在这个基础上慢慢加：用 o 在下方插入新行，用 dd 删除整行，用 u 撤销。不要一次学太多，每周加两三个新命令就行。"
+
+[[extra.faq]]
+question = "Shell 里的剪切粘贴和普通编辑器不一样？"
+answer = "对，Shell 用的是 Emacs 风格的快捷键。Ctrl+K 剪切光标到行尾，Ctrl+U 剪切光标到行首，Ctrl+Y 粘贴。这套操作在 Bash 和 Zsh 里通用，熟练之后编辑长命令的速度比用方向键快得多。"
+
+[[extra.faq]]
+question = "Chrome 有没有办法用键盘代替鼠标操作？"
+answer = "装 Vimium C 扩展，按 F 键会在页面所有可点击元素上显示标签，输入标签字母就能跳转。还能用 / 搜索页面、用 J/K 上下滚动。基本上可以不碰鼠标浏览网页。"
+
+[[extra.faq]]
+question = "这些快捷键在 Mac 上一样吗？"
+answer = "Chrome 和 Shell 的快捷键在 Mac 上把 Ctrl 换成 Cmd 就行（Shell 里的 Ctrl+A/E/K/U 保持不变，因为它们是 readline 快捷键）。Vim 的快捷键跨平台完全一致，不区分操作系统。"
++++
+
+键盘快捷键这东西，学的时候觉得「我记这个干嘛」，用熟了之后觉得「没这个我怎么活」。
+
+这篇整理了我日常开发中真正高频使用的快捷键，覆盖三个工具：Chrome 浏览器、Shell 终端、Vim 编辑器。不是那种把官方文档抄一遍的大全，只收录我实际用得上的。用删除线标注的是理论上有用但我几乎没用过的，供参考。
 
 <!--more-->
 
-## Chrome keyboard shortcuts
+---
 
-### Tab and window shortcuts
+## Chrome 浏览器
 
-| Action                                                       | Shortcut              |
-| ------------------------------------------------------------ | :-------------------- |
-| Open a new window                                            | **Ctrl + n**          |
-| Open a new window in Incognito mode                          | **Ctrl + Shift + n**  |
-| Open a new tab, and jump to it                               | **Ctrl + t**          |
-| Reopen previously closed tabs in the order they were closed  | **Ctrl + Shift + t**  |
-| Jump to the next open tab                                    | **Ctrl + Tab**        |
-| Jump to the rightmost tab                                    | **Ctrl + 9**          |
-| Open the previous page from your browsing history in the current tab | **Alt + Left arrow**  |
-| Open the next page from your browsing history in the current tab | **Alt + Right arrow** |
-| Close the current tab                                        | **Ctrl + w**          |
+Chrome 是开发者待得最久的地方之一。查文档、调 DevTools、看 PR — 全在这里。掌握快捷键能让你在标签页之间飞速切换，不用每次都去够鼠标。
 
-### Google Chrome feature shortcuts
+### 标签和窗口
 
-| **Action**                                     | **Shortcut**           |
-| ---------------------------------------------- | ---------------------- |
-| Show or hide the Bookmarks bar                 | **Ctrl + Shift + b**   |
-| Open the History page in a new tab             | **Ctrl + h**           |
-| Open the Downloads page in a new tab           | **Ctrl + j**           |
-| Open the Find Bar to search the current page   | **Ctrl + f** or **F3** |
-| Jump to the next match to your Find Bar search | **Ctrl + g**           |
+这组是最高频的，尤其是恢复误关标签（Ctrl+Shift+T），救命级别的操作。
 
-### Mouse shortcuts
+| 操作 | 快捷键 |
+| :--- | :--- |
+| 新建窗口 | **Ctrl + N** |
+| 新建隐私窗口 | **Ctrl + Shift + N** |
+| 新建标签页 | **Ctrl + T** |
+| 恢复最近关闭的标签页 | **Ctrl + Shift + T** |
+| 切换到下一个标签页 | **Ctrl + Tab** |
+| 跳到最右边的标签页 | **Ctrl + 9** |
+| 返回上一页 | **Alt + ←** |
+| 前进到下一页 | **Alt + →** |
+| 关闭当前标签页 | **Ctrl + W** |
 
-| **Action**                          | **Shortcut**                           |
-| ----------------------------------- | -------------------------------------- |
-| Open a link in new background tab   | **Ctrl +** Click a link                |
-| Open a link in a new window         | **Shift +** Click a link               |
-| Make everything on the page bigger  | **Ctrl +** Scroll your mousewheel up   |
-| Make everything on the page smaller | **Ctrl +** Scroll your mousewheel down |
+> **实用技巧：** Ctrl+1 到 Ctrl+8 可以直接跳到对应位置的标签页。开了一堆标签时，比 Ctrl+Tab 来回切快得多。
 
-- [gdh1995/vimium-c: A keyboard shortcut browser extension for keyboard-based navigation and tab operations with an advanced omnibar (github.com)](https://github.com/gdh1995/vimium-c)
+### 功能快捷键
 
-## Shell
+| 操作 | 快捷键 |
+| :--- | :--- |
+| 显示/隐藏书签栏 | **Ctrl + Shift + B** |
+| 打开历史记录 | **Ctrl + H** |
+| 打开下载页面 | **Ctrl + J** |
+| 页面内搜索 | **Ctrl + F** |
+| 跳到搜索的下一个匹配 | **Ctrl + G** |
+| 打开开发者工具 | **F12** 或 **Ctrl + Shift + I** |
+| 打开开发者工具的控制台 | **Ctrl + Shift + J** |
 
-### Cursor Movement Commands
+### 鼠标组合
 
-| Key        | Action                                                       |
-| :--------- | :----------------------------------------------------------- |
-| Ctrl-a     | Move cursor to the beginning of the line.                    |
-| Ctrl-e     | Move cursor to the end of the line.                          |
-| ~~Ctrl-f~~ | ~~Move cursor forward one character;same as the right arrow key.~~ |
-| ~~Ctrl-b~~ | ~~Move cursor backward one character;same as the left arrow key.~~ |
-| Alt-f      | Move cursor forward one word.                                |
-| Alt-b      | Move cursor backward one word.                               |
-| Ctrl-l     | Clear the screen and move the cursor to the top left corner. The clear command does the same thing. |
+鼠标也有组合技，特别是中键点击（如果你的鼠标有的话）。
 
-### Text Editing Commands
+| 操作 | 方式 |
+| :--- | :--- |
+| 在后台新标签打开链接 | **Ctrl + 点击** |
+| 在新窗口打开链接 | **Shift + 点击** |
+| 放大页面 | **Ctrl + 滚轮上** |
+| 缩小页面 | **Ctrl + 滚轮下** |
+| 恢复默认缩放 | **Ctrl + 0** |
 
-| Key        | Action                                                       |
-| :--------- | :----------------------------------------------------------- |
-| ~~Ctrl-d~~ | ~~Delete the character at the cursor location~~              |
-| ~~Ctrl-t~~ | ~~Transpose(exchange)the character at the cursor location with the one preceding it.~~ |
-| ~~Alt-t~~  | ~~Transpose the word at the cursor location with the one preceding it.~~ |
-| ~~Alt-l~~  | ~~Convert the characters from the cursor location to the end of the word to lowercase.~~ |
-| ~~Alt-u~~  | ~~Convert the characters from the cursor location to the end of the word to uppercase.~~ |
+### 进阶：Vimium C 扩展
 
-### Cut And Paste Commands
+如果你是 Vim 用户，强烈推荐 [Vimium C](https://github.com/gdh1995/vimium-c) 这个浏览器扩展。它能让你在 Chrome 里用 Vim 风格的快捷键操作：
 
-| Key               | Action                                                       |
-| :---------------- | :----------------------------------------------------------- |
-| Ctrl-k            | Kill text from the cursor location to the end of line.       |
-| Ctrl-u            | Kill text from the cursor location to the beginning of the line. |
-| ~~Alt-d~~         | ~~Kill text from the cursor location to the end of the current word.~~ |
-| ~~Alt-Backspace~~ | ~~Kill text from the cursor location to the beginning of the word. If the cursor is at the beginning of a word, kill the previous word.~~ |
-| Ctrl-y            | Yank text from the kill-ring and insert it at the cursor location. |
+- **F** — 显示页面上所有可点击元素的标签，输入字母即可跳转
+- **/** — 页面内搜索
+- **J / K** — 上下滚动
+- **H / L** — 后退 / 前进
+- **x** — 关闭当前标签页
+- **X** — 恢复关闭的标签页
 
-- [TLCL (billie66.github.io)](http://billie66.github.io/TLCL/book/chap09.html)
+装上之后基本可以不碰鼠标浏览网页。
 
-## Vim
+---
 
+## Shell 终端
+
+终端里编辑命令，大部分人的习惯是用方向键一个字符一个字符地移动。这太慢了。Shell 内置了一套 Emacs 风格的快捷键（readline 快捷键），用起来之后编辑长命令的效率会高很多。
+
+### 光标移动
+
+这是最值得记的一组。Ctrl+A 跳到行首、Ctrl+E 跳到行尾，几乎每天都在用。
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **Ctrl + A** | 跳到行首 |
+| **Ctrl + E** | 跳到行尾 |
+| ~~Ctrl + F~~ | ~~向前移动一个字符（和右箭头一样，没必要记）~~ |
+| ~~Ctrl + B~~ | ~~向后移动一个字符（和左箭头一样，没必要记）~~ |
+| **Alt + F** | 向前跳一个单词 |
+| **Alt + B** | 向后跳一个单词 |
+| **Ctrl + L** | 清屏，光标移到左上角（等同于 `clear` 命令） |
+
+> **实用场景：** 输了一条很长的命令，发现开头写错了？Ctrl+A 跳到行首改一下，比按住左箭头等半天快 10 倍。
+
+### 文本编辑
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| ~~Ctrl + D~~ | ~~删除光标处的字符~~ |
+| ~~Ctrl + T~~ | ~~交换光标处和前一个字符~~ |
+| ~~Alt + T~~ | ~~交换光标处和前一个单词~~ |
+| ~~Alt + L~~ | ~~将光标到词尾的字符转为小写~~ |
+| ~~Alt + U~~ | ~~将光标到词尾的字符转为大写~~ |
+
+这组我标了删除线，因为实际用得很少。不过 Alt+U 偶尔用来把变量名转大写还挺方便。
+
+### 剪切和粘贴
+
+Shell 的剪切粘贴和你想的不一样 — 它有自己的 kill ring（剪切环），用 Ctrl+K/U 剪切，Ctrl+Y 粘贴。
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **Ctrl + K** | 剪切从光标到行尾的内容 |
+| **Ctrl + U** | 剪切从光标到行首的内容 |
+| ~~Alt + D~~ | ~~剪切从光标到当前词尾~~ |
+| ~~Alt + Backspace~~ | ~~剪切从光标到当前词首~~ |
+| **Ctrl + Y** | 粘贴最近剪切的内容 |
+
+> **实用场景：** 输了一条命令但还不想执行，又不想丢掉？Ctrl+U 把整行剪切掉，干别的事情，完了之后 Ctrl+Y 粘贴回来继续。
+
+### 历史命令
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **Ctrl + R** | 反向搜索历史命令（超级好用） |
+| **Ctrl + P** | 上一条命令（等同于上箭头） |
+| **Ctrl + N** | 下一条命令（等同于下箭头） |
+| **!!** | 执行上一条命令 |
+| **sudo !!** | 用 sudo 重新执行上一条命令 |
+
+> **Ctrl+R 是终端里最值得记的快捷键之一。** 按下后输入关键词，Shell 会在历史命令中模糊搜索。比如你之前跑过一条很长的 docker 命令，Ctrl+R 然后输入 `docker` 就能找到它。
+
+---
+
+## Vim 编辑器
+
+Vim 的学习曲线很陡，但一旦过了入门期，编辑效率会有质的飞跃。这里不试图覆盖 Vim 的所有功能，只整理最核心的操作。
+
+### 模式切换
+
+Vim 最反直觉的地方就是模式的概念。记住：**普通模式是默认状态，编辑模式是临时状态**。
+
+| 快捷键 | 操作 | 使用场景 |
+| :--- | :--- | :--- |
+| **i** | 在光标前进入编辑模式 | 最常用的进入编辑方式 |
+| **I** | 在行首进入编辑模式 | 要在行首添加内容时 |
+| **a** | 在光标后进入编辑模式 | 要在光标后面追加内容时 |
+| **A** | 在行尾进入编辑模式 | 要在行尾补充内容时 |
+| **o** | 在下方新建一行并进入编辑模式 | 最常用，添加新行 |
+| **O** | 在上方新建一行并进入编辑模式 | 在当前行上面插入内容 |
+| **s** | 删除当前字符并进入编辑模式 | 替换单个字符 |
+| **S** | 删除整行并进入编辑模式 | 重写整行 |
+| **Esc** | 返回普通模式 | 任何时候都能用 |
+
+### 光标移动
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **h / j / k / l** | 左 / 下 / 上 / 右 |
+| **w** | 跳到下一个单词开头 |
+| **b** | 跳到上一个单词开头 |
+| **e** | 跳到当前单词末尾 |
+| **0** | 跳到行首 |
+| **$** | 跳到行尾 |
+| **gg** | 跳到文件开头 |
+| **G** | 跳到文件末尾 |
+| **Ctrl + D** | 向下翻半页 |
+| **Ctrl + U** | 向上翻半页 |
+| **{** / **}** | 跳到上一个 / 下一个空行（段落间移动） |
+
+> **入门建议：** 刚开始不用强迫自己用 hjkl，用方向键也完全没问题。先把其他操作练熟，hjkl 会自然而然地适应。
+
+### 删除操作
+
+Vim 的删除操作遵循 `动作 + 范围` 的组合逻辑，非常强大。
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **x** | 删除光标处的字符 |
+| **dd** | 删除整行 |
+| **dw** | 删除从光标到下一个单词开头 |
+| **daw** | 删除整个单词（包括周围空格） |
+| **diw** | 删除整个单词（不包括周围空格） |
+| **D** | 删除从光标到行尾（等同于 d$） |
+| **dG** | 删除从当前行到文件末尾 |
+| **dgg** | 删除从当前行到文件开头 |
+
+### 修改操作（change）
+
+`c` 系列命令是 `d` 的升级版 — 删除之后自动进入编辑模式，省了一步。
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **cw** | 删除到词尾并进入编辑模式 |
+| **ciw** | 删除整个单词并进入编辑模式 |
+| **ci"** | 删除引号内的内容并进入编辑模式 |
+| **ci(** | 删除括号内的内容并进入编辑模式 |
+| **cc** | 删除整行并进入编辑模式 |
+| **C** | 删除到行尾并进入编辑模式 |
+
+> **ciw 是我在 Vim 里用得最多的命令。** 光标在单词任意位置，ciw 直接替换整个单词，不用先移到词首。改变量名、改参数，极其方便。
+
+### 复制和粘贴
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **yy** | 复制整行 |
+| **yw** | 复制到词尾 |
+| **p** | 在光标后粘贴 |
+| **P** | 在光标前粘贴 |
+
+### 撤销和重做
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **u** | 撤销 |
+| **Ctrl + R** | 重做 |
+
+### 搜索和替换
+
+| 快捷键 | 操作 |
+| :--- | :--- |
+| **/关键词** | 向下搜索 |
+| **?关键词** | 向上搜索 |
+| **n** | 跳到下一个匹配 |
+| **N** | 跳到上一个匹配 |
+| **\*** | 搜索光标下的单词 |
+
+替换用 `:s` 命令，语法是 `:%s/旧/新/标志`：
+
+```vim
+:%s/foo/bar       " 每行替换第一个 foo 为 bar
+:%s/foo/bar/g     " 全局替换所有 foo 为 bar
+:%s/foo/bar/gc    " 全局替换，每个都确认
+:%s/foo/bar/gi    " 全局替换，忽略大小写
 ```
-cw
-x w b e
-i I a A o O s S
-0 $
-gg G
-d dd dw daw D dG dgg 
-p yy 
-u ctrl + r
+
+### 实用命令行模式
+
+```vim
+:w                " 保存
+:q                " 退出
+:wq               " 保存并退出
+:q!               " 不保存强制退出
+:w !sudo tee %    " 忘了 sudo 打开文件？这条命令救你
+:set nu           " 显示行号
+:set nonu         " 隐藏行号
 ```
 
-```
-:w !sudo tee %
-:set nu
-:%s/zempty/handsome/i
-:%s/zempty/handsome
-:%s/zempty/handsome/g
-:%s/zempty/handsome/gc
-```
+### 我的 Vim 使用建议
 
-- [Vim实用技巧.pdf (aliyuncs.com)](https://library-cdq.oss-cn-beijing.aliyuncs.com/technology/Vim实用技巧.pdf)
+1. **不要试图一次学完所有快捷键。** 每周加两三个新命令，用熟了再学下一批。
+2. **先搞定退出 Vim。** `:q!` 强制退出，`:wq` 保存退出。这两个背住，其他慢慢来。
+3. **ciw、dd、o 这三个命令覆盖了大量日常操作。** 优先练这几个。
+4. **如果你主要写代码，考虑在 VS Code 里装 Vim 插件。** 能享受 Vim 的编辑效率，同时保留 VS Code 的生态。
+
+---
+
+## 推荐资源
+
+- [Vimium C](https://github.com/gdh1995/vimium-c) — 让 Chrome 支持 Vim 快捷键的浏览器扩展
+- [The Linux Command Line](http://billie66.github.io/TLCL/book/chap09.html) — Shell 快捷键的详细参考
+- [Vim 实用技巧](https://pragprog.com/titles/dnvim2/practical-vim-second-edition/) — 学 Vim 最好的书，没有之一
+- `vimtutor` — Vim 自带的交互式教程，终端输入 `vimtutor` 即可启动
