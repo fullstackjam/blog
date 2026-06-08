@@ -1,5 +1,5 @@
 +++
-title = "List of Posts"
+title = "文章列表"
 sort_by = "date"
 template = "list.html"
 page_template = "page.html"

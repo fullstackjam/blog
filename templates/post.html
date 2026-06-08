@@ -26,7 +26,7 @@
 
 {% block content %}
 <a id="title" href="{{ page.permalink | safe }}">{{ page.title | safe }}</a>
-<div id="date">{{ page.date | safe }}{% if page.translations %}{% for trans in page.translations %} · <a href="{{ trans.permalink | safe }}" class="lang-switch">{% if trans.lang == "en" %}EN{% else %}中文{% endif %}</a>{% endfor %}{% endif %}</div>
+<div id="date">{{ page.date | safe }}{% if page.translations %}{% for trans in page.translations %}{% if trans.lang != lang %} · <a href="{{ trans.permalink | safe }}" class="lang-switch">{% if trans.lang == "en" %}EN{% else %}中文{% endif %}</a>{% endif %}{% endfor %}{% endif %}</div>
 <div id="content">
 {{ page.content | safe }}
 </div>

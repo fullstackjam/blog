@@ -1,14 +1,14 @@
 +++
-title = "About"
+title = "关于"
 path = "/about"
 weight = 0
 +++
 
-I am Jam, a developer with a primary focus on open source software. Embracing the digital nomad lifestyle, I strive for perfection yet often find it elusive. Adapting to my surroundings poses a challenge, rendering me a solitary wanderer in my journey.
+我是 Jam，一名热爱开源软件的开发者。追求数字游民式的生活方式，力求完美却常感不及。适应环境是我的课题，让我成了旅途中的独行者。
 
-You can find me by:
+联系方式：
 
-- Visiting my Github: [fullstackjam](https://github.com/fullstackjam)
-- Sending me email: [fullstackjam@outlook.com](mailto:fullstackjam@outlook.com)
+- GitHub: [fullstackjam](https://github.com/fullstackjam)
+- 邮箱: [fullstackjam@outlook.com](mailto:fullstackjam@outlook.com)
 
-All content on this site is published under the CC BY-NC-SA 4.0 license.
+本站所有内容基于 CC BY-NC-SA 4.0 协议发布。

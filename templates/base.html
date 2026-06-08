@@ -101,7 +101,7 @@
 {# Additional SEO blocks for specific pages #}
 {% block seo %}{% endblock %}
 
-<style>#title,body{line-height:1.6em}body{background-color:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre)>code{padding:.2em;background-color:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){ #container{width:88%}#header>a{margin:auto .3em}}</style>
+<style>#title,body{line-height:1.6em}body{background-color:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre)>code{padding:.2em;background-color:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){ #container{width:88%}#header>a{margin:auto .3em}}</style>
 {% if config.extra.mermaid %}
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 <script>
@@ -115,11 +115,19 @@ mermaid.initialize({
 </head>
 <body>
 <div id="header">
-<a href="{{ config.base_url | safe }}">{{ config.title | safe }}</a>
-{% set pages = get_section(path="pages/_index.md") %}
-{% for page in pages.pages %}
-<a href="{{ page.permalink | safe }}">{{ page.title | safe }}</a>
-{% endfor %}
+{% if lang == "en" %}
+<a href="{{ config.base_url | safe }}/en/">Jam's Blog</a>
+<a href="{{ config.base_url | safe }}/en/about/">About</a>
+<a href="{{ config.base_url | safe }}/en/friends/">Friends</a>
+<a href="{{ config.base_url | safe }}/en/projects/">Projects</a>
+<a href="{{ config.base_url | safe }}/" class="lang-switch">[中文]</a>
+{% else %}
+<a href="{{ config.base_url | safe }}">Jam 的博客</a>
+<a href="{{ config.base_url | safe }}/about/">关于</a>
+<a href="{{ config.base_url | safe }}/friends/">友链</a>
+<a href="{{ config.base_url | safe }}/projects/">项目</a>
+<a href="{{ config.base_url | safe }}/en/" class="lang-switch">[EN]</a>
+{% endif %}
 </div>
 <div id="container">
 {% block content %}{% endblock %}

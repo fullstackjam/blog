@@ -1,9 +1,9 @@
 +++
-title = "项目"
-path = "/projects"
+title = "Projects"
+path = "/en/projects"
 weight = 1
 +++
 
-我引以为豪的项目列表。
+List of projects that I am proud of.
 
 - [Jam's Homelab](https://github.com/fullstackjam/homelab)

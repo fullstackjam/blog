@@ -1,5 +1,5 @@
 +++
-title = "Posts in 2023"
+title = "2023 年文章"
 sort_by = "date"
 template = "list.html"
 page_template = "post.html"
