@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,7 @@
 
 {# Open Graph Meta Tags #}
 <meta property="og:site_name" content="{{ config.title | safe }}" />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content="{% if lang == 'en' %}en_US{% else %}zh_CN{% endif %}" />
 {% if page %}
 <meta property="og:type" content="article" />
 <meta property="og:title" content="{{ page.title | safe }}" />

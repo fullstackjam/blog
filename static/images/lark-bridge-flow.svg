@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 460" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#64748B"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,1 L7,4 L0,7 Z" fill="#10B981"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="780" height="460" rx="12" fill="#0d1117"/>
+
+  <!-- 四个参与者头部 -->
+  <!-- 飞书 App -->
+  <rect x="50" y="24" width="120" height="44" rx="10" fill="#1E40AF" filter="url(#shadow)"/>
+  <text x="110" y="51" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">飞书 App</text>
+  <line x1="110" y1="68" x2="110" y2="380" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- 飞书服务器 -->
+  <rect x="230" y="24" width="120" height="44" rx="10" fill="#475569" filter="url(#shadow)"/>
+  <text x="290" y="51" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">飞书服务器</text>
+  <line x1="290" y1="68" x2="290" y2="380" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Bridge 守护进程 -->
+  <rect x="420" y="24" width="140" height="44" rx="10" fill="#059669" filter="url(#shadow)"/>
+  <text x="490" y="46" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Bridge 守护进程</text>
+  <text x="490" y="62" font-size="11" fill="#A7F3D0" text-anchor="middle">本地</text>
+  <line x1="490" y1="68" x2="490" y2="380" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- OpenCode -->
+  <rect x="630" y="24" width="110" height="44" rx="10" fill="#059669" filter="url(#shadow)"/>
+  <text x="685" y="46" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">OpenCode</text>
+  <text x="685" y="62" font-size="11" fill="#A7F3D0" text-anchor="middle">本地</text>
+  <line x1="685" y1="68" x2="685" y2="380" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Step 1: 发送消息 -->
+  <line x1="115" y1="100" x2="283" y2="100" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <rect x="136" y="82" width="130" height="22" rx="4" fill="#1a2332"/>
+  <text x="201" y="97" font-size="12" fill="#94A3B8" text-anchor="middle">发送消息 / 图片</text>
+
+  <!-- Step 1 number -->
+  <circle cx="34" cy="100" r="12" fill="#1E40AF"/>
+  <text x="34" y="105" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">1</text>
+
+  <!-- Step 2: WebSocket 推送 -->
+  <line x1="295" y1="150" x2="483" y2="150" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <rect x="326" y="132" width="130" height="22" rx="4" fill="#1a2332"/>
+  <text x="391" y="147" font-size="12" fill="#94A3B8" text-anchor="middle">WebSocket 推送</text>
+
+  <!-- Step 2 number -->
+  <circle cx="34" cy="150" r="12" fill="#475569"/>
+  <text x="34" y="155" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">2</text>
+
+  <!-- Step 3: 转发为 prompt -->
+  <line x1="495" y1="200" x2="678" y2="200" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <rect x="530" y="182" width="110" height="22" rx="4" fill="#1a2332"/>
+  <text x="585" y="197" font-size="12" fill="#94A3B8" text-anchor="middle">转发为 prompt</text>
+
+  <!-- Step 3 number -->
+  <circle cx="34" cy="200" r="12" fill="#059669"/>
+  <text x="34" y="205" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">3</text>
+
+  <!-- Step 4: 流式返回 -->
+  <line x1="680" y1="250" x2="497" y2="250" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowGreen)"/>
+  <rect x="530" y="232" width="120" height="22" rx="4" fill="#0a2e1f"/>
+  <text x="590" y="247" font-size="12" fill="#10B981" text-anchor="middle">流式返回结果</text>
+
+  <!-- Step 4 number -->
+  <circle cx="34" cy="250" r="12" fill="#059669"/>
+  <text x="34" y="255" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">4</text>
+
+  <!-- Step 5: 更新飞书卡片 -->
+  <line x1="485" y1="300" x2="297" y2="300" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowGreen)"/>
+  <rect x="326" y="282" width="130" height="22" rx="4" fill="#0a2e1f"/>
+  <text x="391" y="297" font-size="12" fill="#10B981" text-anchor="middle">更新飞书卡片</text>
+
+  <!-- Step 5 number -->
+  <circle cx="34" cy="300" r="12" fill="#475569"/>
+  <text x="34" y="305" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">5</text>
+
+  <!-- Step 6: 看到流式结果 -->
+  <line x1="285" y1="350" x2="117" y2="350" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowGreen)"/>
+  <rect x="136" y="332" width="130" height="22" rx="4" fill="#0a2e1f"/>
+  <text x="201" y="347" font-size="12" fill="#10B981" text-anchor="middle">看到流式结果</text>
+
+  <!-- Step 6 number -->
+  <circle cx="34" cy="350" r="12" fill="#1E40AF"/>
+  <text x="34" y="355" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">6</text>
+
+  <!-- 底部注释 -->
+  <rect x="380" y="400" width="380" height="40" rx="8" fill="#0a2e1f" stroke="#134e3a" stroke-width="1"/>
+  <text x="570" y="418" font-size="12" fill="#10B981" text-anchor="middle">代码和模型执行始终在本地</text>
+  <text x="570" y="434" font-size="11" fill="#6EE7B7" text-anchor="middle">飞书只负责消息传递和卡片渲染</text>
+
+  <!-- 本地区域标注 -->
+  <rect x="410" y="86" width="300" height="310" rx="8" fill="none" stroke="#134e3a" stroke-width="1" stroke-dasharray="8,4"/>
+  <text x="416" y="392" font-size="10" fill="#134e3a">LOCAL</text>
+</svg>
