@@ -120,13 +120,13 @@ mermaid.initialize({
 <a href="{{ config.base_url | safe }}/en/about/">About</a>
 <a href="{{ config.base_url | safe }}/en/friends/">Friends</a>
 <a href="{{ config.base_url | safe }}/en/projects/">Projects</a>
-<a href="{{ config.base_url | safe }}/" class="lang-switch">[中文]</a>
+{% if page and page.translations %}{% for trans in page.translations %}{% if trans.lang == "zh" %}<a href="{{ trans.permalink | safe }}" class="lang-switch">[中文]</a>{% endif %}{% endfor %}{% else %}<a href="{{ config.base_url | safe }}/" class="lang-switch">[中文]</a>{% endif %}
 {% else %}
 <a href="{{ config.base_url | safe }}">Jam 的博客</a>
 <a href="{{ config.base_url | safe }}/about/">关于</a>
 <a href="{{ config.base_url | safe }}/friends/">友链</a>
 <a href="{{ config.base_url | safe }}/projects/">项目</a>
-<a href="{{ config.base_url | safe }}/en/" class="lang-switch">[EN]</a>
+{% if page and page.translations %}{% for trans in page.translations %}{% if trans.lang == "en" %}<a href="{{ trans.permalink | safe }}" class="lang-switch">[EN]</a>{% endif %}{% endfor %}{% else %}<a href="{{ config.base_url | safe }}/en/" class="lang-switch">[EN]</a>{% endif %}
 {% endif %}
 </div>
 <div id="container">
