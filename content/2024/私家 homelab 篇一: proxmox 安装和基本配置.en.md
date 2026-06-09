@@ -77,7 +77,7 @@ A few things to note:
 
 After logging in, you'll see the PVE management dashboard:
 
-<img src="/images/proxmox-dashboard-overview.svg" alt="Proxmox VE Dashboard overview: tree navigation on the left, resource gauges and system info on the right" style="width:100%;max-width:900px;" />
+<img src="/images/proxmox-dashboard-overview.en.svg" alt="Proxmox VE Dashboard overview: tree navigation on the left, resource gauges and system info on the right" style="width:100%;max-width:900px;" />
 
 The left panel shows a tree of your datacenter, nodes, VMs, containers, and storage. The right panel shows details for whatever you have selected -- CPU, memory, storage usage, and system information.
 

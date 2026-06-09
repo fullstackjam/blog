@@ -36,7 +36,7 @@ This post walks you through the complete Linux boot process -- from the moment y
 
 The Linux boot process is everything that happens between pressing the power button and having a fully operational system. It's a carefully orchestrated sequence where each stage hands off control to the next.
 
-<img src="/images/linux-boot-process-overview.svg" alt="Linux boot process overview: six stages from power on to user login" style="width:100%;max-width:900px;" />
+<img src="/images/linux-boot-process-overview.en.svg" alt="Linux boot process overview: six stages from power on to user login" style="width:100%;max-width:900px;" />
 
 Here's the high-level picture:
 
@@ -53,7 +53,7 @@ Let's dig into each stage.
 
 On x86 systems, the very first software to run is the **BIOS** (Basic Input/Output System) or its modern replacement, **UEFI** (Unified Extensible Firmware Interface).
 
-<img src="/images/linux-bios-post.svg" alt="BIOS initialization and POST self-test process" style="width:100%;max-width:900px;" />
+<img src="/images/linux-bios-post.en.svg" alt="BIOS initialization and POST self-test process" style="width:100%;max-width:900px;" />
 
 ### What POST Actually Does
 
@@ -80,7 +80,7 @@ Traditional BIOS has been around for decades but comes with serious limitations 
 
 Once POST completes, control passes from the firmware to the **boot loader**. How this happens depends on whether the system uses legacy BIOS or UEFI.
 
-<img src="/images/linux-mbr-bootloader.svg" alt="MBR vs GPT/EFI partition scheme comparison" style="width:100%;max-width:900px;" />
+<img src="/images/linux-mbr-bootloader.en.svg" alt="MBR vs GPT/EFI partition scheme comparison" style="width:100%;max-width:900px;" />
 
 ### MBR (Legacy)
 
@@ -106,7 +106,7 @@ GPT (GUID Partition Table) is part of the UEFI specification:
 
 The most common Linux boot loader is **GRUB** (GRand Unified Bootloader). Its job happens in two stages:
 
-<img src="/images/linux-bootloader-action.svg" alt="BIOS and UEFI boot paths compared" style="width:100%;max-width:900px;" />
+<img src="/images/linux-bootloader-action.en.svg" alt="BIOS and UEFI boot paths compared" style="width:100%;max-width:900px;" />
 
 ### BIOS/MBR Path
 
@@ -135,7 +135,7 @@ GRUB isn't the only option:
 
 Once the boot loader has placed the kernel and initramfs into memory, it hands control to the Linux kernel.
 
-<img src="/images/linux-kernel-loading.svg" alt="Linux kernel loading and initialization steps" style="width:100%;max-width:900px;" />
+<img src="/images/linux-kernel-loading.en.svg" alt="Linux kernel loading and initialization steps" style="width:100%;max-width:900px;" />
 
 ### Key Steps in Kernel Startup
 
@@ -161,7 +161,7 @@ The Linux kernel isn't a single program -- it's a complete operating system core
 
 This is one of the more clever parts of the boot process. When the kernel first loads, it doesn't know where the real root filesystem is, and it may not even have drivers for the storage hardware. initramfs solves this chicken-and-egg problem.
 
-<img src="/images/linux-initramfs.svg" alt="initramfs loading and root mounting process" style="width:100%;max-width:900px;" />
+<img src="/images/linux-initramfs.en.svg" alt="initramfs loading and root mounting process" style="width:100%;max-width:900px;" />
 
 ### How initramfs Works
 
@@ -185,7 +185,7 @@ You can inspect your system's initramfs with `lsinitramfs` (Debian/Ubuntu) or `l
 
 Once the root filesystem is mounted, `/sbin/init` runs as **PID 1** -- the ancestor of all userspace processes. On modern Linux distributions, `/sbin/init` is actually a symlink to `/lib/systemd/systemd`.
 
-<img src="/images/linux-init-services.svg" alt="systemd service management tree" style="width:100%;max-width:900px;" />
+<img src="/images/linux-init-services.en.svg" alt="systemd service management tree" style="width:100%;max-width:900px;" />
 
 ### From SysVinit to systemd
 

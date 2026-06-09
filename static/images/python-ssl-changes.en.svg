@@ -25,7 +25,7 @@
   <rect width="900" height="520" rx="16" fill="url(#bgGrad)"/>
 
   <!-- Title -->
-  <text x="450" y="42" text-anchor="middle" font-size="20" font-weight="700" fill="#1E40AF">Python SSL 默认配置变化：3.8 → 3.10+</text>
+  <text x="450" y="42" text-anchor="middle" font-size="20" font-weight="700" fill="#1E40AF">Python SSL Default Changes: 3.8 → 3.10+</text>
 
   <!-- Python 3.8 Card -->
   <rect x="40" y="70" width="390" height="200" rx="14" fill="#fff" stroke="#E5E7EB" filter="url(#shadow)"/>
@@ -35,12 +35,12 @@
 
   <text x="65" y="142" font-size="13" fill="#64748B">ssl.create_default_context()</text>
   <text x="65" y="170" font-size="13" fill="#64748B">• check_hostname =</text>
-  <text x="245" y="170" font-size="13" font-weight="700" fill="#D97706">不确定</text>
+  <text x="245" y="170" font-size="13" font-weight="700" fill="#D97706">varies</text>
   <text x="65" y="196" font-size="13" fill="#64748B">• verify_mode =</text>
   <text x="210" y="196" font-size="13" font-weight="700" fill="#D97706">CERT_NONE (CLIENT_AUTH)</text>
   <text x="65" y="222" font-size="13" fill="#64748B">• Protocol =</text>
   <text x="167" y="222" font-size="13" font-weight="700" fill="#D97706">PROTOCOL_TLS</text>
-  <text x="65" y="250" font-size="13" fill="#059669">✓ 不完整的证书链通常也能工作</text>
+  <text x="65" y="250" font-size="13" fill="#059669">✓ Incomplete cert chains often work</text>
 
   <!-- Python 3.10+ Card -->
   <rect x="470" y="70" width="390" height="200" rx="14" fill="#fff" stroke="#E5E7EB" filter="url(#shadow)"/>
@@ -50,12 +50,12 @@
 
   <text x="495" y="142" font-size="13" fill="#64748B">ssl.create_default_context()</text>
   <text x="495" y="170" font-size="13" fill="#64748B">• check_hostname =</text>
-  <text x="675" y="170" font-size="13" font-weight="700" fill="#DC2626">True（强制）</text>
+  <text x="675" y="170" font-size="13" font-weight="700" fill="#DC2626">True (enforced)</text>
   <text x="495" y="196" font-size="13" fill="#64748B">• verify_mode =</text>
   <text x="640" y="196" font-size="13" font-weight="700" fill="#DC2626">CERT_REQUIRED</text>
   <text x="495" y="222" font-size="13" fill="#64748B">• Protocol =</text>
   <text x="597" y="222" font-size="13" font-weight="700" fill="#DC2626">PROTOCOL_TLS_CLIENT</text>
-  <text x="495" y="250" font-size="13" fill="#DC2626">✗ 严格验证 — 断裂的证书链会失败</text>
+  <text x="495" y="250" font-size="13" fill="#DC2626">✗ Strict validation — broken chains fail</text>
 
   <!-- Arrow -->
   <path d="M435 170 L465 170" stroke="#2563EB" stroke-width="2.5" fill="none" marker-end="url(#arrowhead)"/>
@@ -69,30 +69,30 @@
   <rect x="40" y="295" width="820" height="200" rx="14" fill="#fff" stroke="#E5E7EB" filter="url(#shadow)"/>
   <rect x="40" y="295" width="820" height="44" rx="14" fill="url(#greenGrad)"/>
   <rect x="40" y="325" width="820" height="14" fill="url(#greenGrad)"/>
-  <text x="450" y="323" text-anchor="middle" font-size="16" font-weight="700" fill="#065F46">解决方案</text>
+  <text x="450" y="323" text-anchor="middle" font-size="16" font-weight="700" fill="#065F46">Solutions</text>
 
   <!-- Option 1 -->
   <rect x="65" y="355" width="240" height="120" rx="10" fill="#F0FDF4" stroke="#BBF7D0"/>
-  <text x="185" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#065F46">1. 修复证书</text>
-  <text x="185" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#065F46">✔ 推荐</text>
+  <text x="185" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#065F46">1. Fix Certificates</text>
+  <text x="185" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#065F46">&#x2714; Recommended</text>
   <line x1="85" y1="390" x2="285" y2="390" stroke="#BBF7D0" stroke-width="1"/>
-  <text x="85" y="410" font-size="11.5" fill="#64748B">补全证书链</text>
-  <text x="85" y="430" font-size="11.5" fill="#64748B">确保主机名匹配 CN/SAN</text>
-  <text x="85" y="450" font-size="11.5" fill="#64748B">安装 CA 证书包 (certifi)</text>
+  <text x="85" y="410" font-size="11.5" fill="#64748B">Complete the certificate chain</text>
+  <text x="85" y="430" font-size="11.5" fill="#64748B">Ensure hostname matches CN/SAN</text>
+  <text x="85" y="450" font-size="11.5" fill="#64748B">Install CA bundle (certifi)</text>
 
   <!-- Option 2 -->
   <rect x="330" y="355" width="240" height="120" rx="10" fill="#FFFBEB" stroke="#FDE68A"/>
-  <text x="450" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">2. 显式 SSLContext</text>
+  <text x="450" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">2. Explicit SSLContext</text>
   <line x1="350" y1="390" x2="550" y2="390" stroke="#FDE68A" stroke-width="1"/>
   <text x="350" y="410" font-size="11.5" fill="#64748B">SSLContext(PROTOCOL_TLS_CLIENT)</text>
-  <text x="350" y="430" font-size="11.5" fill="#64748B">手动加载 CA 证书</text>
-  <text x="350" y="450" font-size="11.5" fill="#64748B">精细化控制</text>
+  <text x="350" y="430" font-size="11.5" fill="#64748B">Load CA certs manually</text>
+  <text x="350" y="450" font-size="11.5" fill="#64748B">Fine-grained control</text>
 
   <!-- Option 3 -->
   <rect x="595" y="355" width="240" height="120" rx="10" fill="#FEF2F2" stroke="#FECACA"/>
-  <text x="715" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#991B1B">3. 禁用验证</text>
+  <text x="715" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#991B1B">3. Disable Verification</text>
   <line x1="615" y1="390" x2="815" y2="390" stroke="#FECACA" stroke-width="1"/>
   <text x="615" y="410" font-size="11.5" fill="#64748B">check_hostname = False</text>
   <text x="615" y="430" font-size="11.5" fill="#64748B">verify_mode = CERT_NONE</text>
-  <text x="615" y="450" font-size="11.5" fill="#DC2626">⚠ 仅限开发/调试 — 有中间人风险</text>
+  <text x="615" y="450" font-size="11.5" fill="#DC2626">⚠ Dev/debug only — MITM risk</text>
 </svg>

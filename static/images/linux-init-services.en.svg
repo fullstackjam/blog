@@ -12,7 +12,7 @@
     </marker>
   </defs>
   <rect width="900" height="520" rx="16" fill="url(#bg7)"/>
-  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E3A5F">systemd：服务管理 (PID 1)</text>
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E3A5F">systemd: Service Management (PID 1)</text>
 
   <!-- PID 1 at top -->
   <g filter="url(#shadow7)">
@@ -32,19 +32,19 @@
   <g filter="url(#shadow7)">
     <rect x="130" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
     <text x="250" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">basic.target</text>
-    <text x="250" y="180" text-anchor="middle" font-size="10" fill="#64748B">套接字、定时器、路径</text>
+    <text x="250" y="180" text-anchor="middle" font-size="10" fill="#64748B">Sockets, timers, paths</text>
   </g>
 
   <g filter="url(#shadow7)">
     <rect x="330" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
     <text x="450" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">multi-user.target</text>
-    <text x="450" y="180" text-anchor="middle" font-size="10" fill="#64748B">非图形化多用户模式</text>
+    <text x="450" y="180" text-anchor="middle" font-size="10" fill="#64748B">Non-graphical multi-user</text>
   </g>
 
   <g filter="url(#shadow7)">
     <rect x="540" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
     <text x="660" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">graphical.target</text>
-    <text x="660" y="180" text-anchor="middle" font-size="10" fill="#64748B">桌面 / 显示管理器</text>
+    <text x="660" y="180" text-anchor="middle" font-size="10" fill="#64748B">Desktop / display manager</text>
   </g>
 
   <!-- Services under basic.target -->
@@ -76,7 +76,7 @@
   </g>
   <g filter="url(#shadow7)">
     <rect x="415" y="215" width="70" height="38" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
-    <text x="450" y="239" text-anchor="middle" font-size="9" fill="#5B21B6">网络管理</text>
+    <text x="450" y="239" text-anchor="middle" font-size="9" fill="#5B21B6">NetworkMgr</text>
   </g>
   <g filter="url(#shadow7)">
     <rect x="475" y="215" width="70" height="38" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
@@ -104,27 +104,27 @@
   <!-- systemctl commands reference -->
   <g filter="url(#shadow7)">
     <rect x="40" y="285" width="820" height="200" rx="14" fill="#fff" stroke="#FCD34D" stroke-width="1.5"/>
-    <text x="450" y="312" text-anchor="middle" font-size="14" font-weight="600" fill="#1E3A5F">systemctl 常用命令</text>
+    <text x="450" y="312" text-anchor="middle" font-size="14" font-weight="600" fill="#1E3A5F">systemctl Commands</text>
 
     <rect x="65" y="328" width="245" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
-    <text x="187" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">服务控制</text>
+    <text x="187" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Service Control</text>
     <text x="187" y="368" text-anchor="middle" font-size="10" fill="#64748B">start | stop | restart | status</text>
     <text x="187" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl restart httpd</text>
 
     <rect x="325" y="328" width="245" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
-    <text x="447" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">开机配置</text>
+    <text x="447" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Boot Config</text>
     <text x="447" y="368" text-anchor="middle" font-size="10" fill="#64748B">enable | disable | is-enabled</text>
     <text x="447" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl enable sshd</text>
 
     <rect x="585" y="328" width="250" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
-    <text x="710" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">目标 / 运行级别</text>
+    <text x="710" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Target / Runlevel</text>
     <text x="710" y="368" text-anchor="middle" font-size="10" fill="#64748B">get-default | set-default | isolate</text>
     <text x="710" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl set-default graphical.target</text>
 
     <rect x="65" y="400" width="750" height="38" rx="8" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
-    <text x="440" y="424" text-anchor="middle" font-size="11" fill="#1E40AF">日志：journalctl -u 服务名 | journalctl -b（当前启动）| journalctl -f（实时跟踪）</text>
+    <text x="440" y="424" text-anchor="middle" font-size="11" fill="#1E40AF">Logs: journalctl -u service-name | journalctl -b (current boot) | journalctl -f (follow)</text>
 
-    <text x="450" y="470" text-anchor="middle" font-size="10" fill="#94A3B8">单元类型：.service | .socket | .timer | .mount | .target | .path | .slice</text>
+    <text x="450" y="470" text-anchor="middle" font-size="10" fill="#94A3B8">Unit types: .service | .socket | .timer | .mount | .target | .path | .slice</text>
   </g>
 
   <text x="450" y="510" text-anchor="middle" font-size="10" fill="#94A3B8">blog.fullstackjam.com</text>

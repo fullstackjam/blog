@@ -12,72 +12,72 @@
     </marker>
   </defs>
   <rect width="900" height="480" rx="16" fill="url(#bg4)"/>
-  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E40AF">引导加载程序：两阶段过程</text>
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E40AF">Boot Loader: Two-Stage Process</text>
 
   <!-- BIOS Path -->
   <g filter="url(#shadow4)">
     <rect x="40" y="60" width="380" height="370" rx="14" fill="#fff" stroke="#BFDBFE" stroke-width="1.5"/>
-    <text x="230" y="88" text-anchor="middle" font-size="15" font-weight="600" fill="#1E40AF">BIOS / MBR 路径</text>
+    <text x="230" y="88" text-anchor="middle" font-size="15" font-weight="600" fill="#1E40AF">BIOS / MBR Path</text>
 
     <!-- Stage 1 -->
     <rect x="70" y="105" width="320" height="65" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
-    <text x="100" y="128" font-size="12" font-weight="700" fill="#1E40AF">阶段 1</text>
-    <text x="100" y="145" font-size="11" fill="#64748B">MBR 引导代码 (446 字节)</text>
-    <text x="100" y="160" font-size="10" fill="#94A3B8">找到活动分区，加载阶段 2</text>
+    <text x="100" y="128" font-size="12" font-weight="700" fill="#1E40AF">Stage 1</text>
+    <text x="100" y="145" font-size="11" fill="#64748B">MBR boot code (446 bytes)</text>
+    <text x="100" y="160" font-size="10" fill="#94A3B8">Finds active partition, loads Stage 2</text>
 
     <line x1="230" y1="170" x2="230" y2="192" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- Stage 1.5 -->
     <rect x="70" y="192" width="320" height="55" rx="10" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
-    <text x="100" y="215" font-size="12" font-weight="700" fill="#5B21B6">阶段 1.5</text>
-    <text x="100" y="232" font-size="11" fill="#64748B">文件系统驱动（MBR 后的间隙中）</text>
+    <text x="100" y="215" font-size="12" font-weight="700" fill="#5B21B6">Stage 1.5</text>
+    <text x="100" y="232" font-size="11" fill="#64748B">Filesystem drivers (in gap after MBR)</text>
 
     <line x1="230" y1="247" x2="230" y2="269" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- Stage 2 -->
     <rect x="70" y="269" width="320" height="70" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
-    <text x="100" y="292" font-size="12" font-weight="700" fill="#059669">阶段 2 (/boot)</text>
-    <text x="100" y="309" font-size="11" fill="#64748B">GRUB 菜单，内核选择</text>
+    <text x="100" y="292" font-size="12" font-weight="700" fill="#059669">Stage 2 (/boot)</text>
+    <text x="100" y="309" font-size="11" fill="#64748B">GRUB menu, kernel selection</text>
     <text x="100" y="324" font-size="10" fill="#94A3B8">grub.cfg, vmlinuz, initramfs</text>
 
     <line x1="230" y1="339" x2="230" y2="361" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- Kernel -->
     <rect x="70" y="361" width="320" height="48" rx="10" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
-    <text x="230" y="390" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">将内核 + initramfs 加载到 RAM</text>
+    <text x="230" y="390" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Load Kernel + initramfs into RAM</text>
   </g>
 
   <!-- UEFI Path -->
   <g filter="url(#shadow4)">
     <rect x="470" y="60" width="390" height="370" rx="14" fill="#fff" stroke="#BFDBFE" stroke-width="1.5"/>
-    <text x="665" y="88" text-anchor="middle" font-size="15" font-weight="600" fill="#1E40AF">UEFI / GPT 路径</text>
+    <text x="665" y="88" text-anchor="middle" font-size="15" font-weight="600" fill="#1E40AF">UEFI / GPT Path</text>
 
     <!-- UEFI Firmware -->
     <rect x="500" y="105" width="330" height="65" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
-    <text x="530" y="128" font-size="12" font-weight="700" fill="#1E40AF">UEFI 固件</text>
-    <text x="530" y="145" font-size="11" fill="#64748B">读取引导管理器配置</text>
-    <text x="530" y="160" font-size="10" fill="#94A3B8">识别 FAT32，可读取 EFI 分区</text>
+    <text x="530" y="128" font-size="12" font-weight="700" fill="#1E40AF">UEFI Firmware</text>
+    <text x="530" y="145" font-size="11" fill="#64748B">Reads Boot Manager config</text>
+    <text x="530" y="160" font-size="10" fill="#94A3B8">Knows FAT32, can read EFI partition</text>
 
     <line x1="665" y1="170" x2="665" y2="192" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- EFI Partition -->
     <rect x="500" y="192" width="330" height="55" rx="10" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
-    <text x="530" y="215" font-size="12" font-weight="700" fill="#5B21B6">EFI 系统分区</text>
+    <text x="530" y="215" font-size="12" font-weight="700" fill="#5B21B6">EFI System Partition</text>
     <text x="530" y="232" font-size="11" fill="#64748B">/EFI/ubuntu/grubx64.efi</text>
 
     <line x1="665" y1="247" x2="665" y2="269" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- GRUB EFI -->
     <rect x="500" y="269" width="330" height="70" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
-    <text x="530" y="292" font-size="12" font-weight="700" fill="#059669">GRUB（EFI 应用程序）</text>
-    <text x="530" y="309" font-size="11" fill="#64748B">相同的菜单，相同的内核选择</text>
-    <text x="530" y="324" font-size="10" fill="#94A3B8">支持安全启动 (Secure Boot) 验证</text>
+    <text x="530" y="292" font-size="12" font-weight="700" fill="#059669">GRUB (EFI Application)</text>
+    <text x="530" y="309" font-size="11" fill="#64748B">Same menu, same kernel selection</text>
+    <text x="530" y="324" font-size="10" fill="#94A3B8">Secure Boot verification supported</text>
 
     <line x1="665" y1="339" x2="665" y2="361" stroke="#2563EB" stroke-width="2" marker-end="url(#arr4)"/>
 
     <!-- Kernel -->
     <rect x="500" y="361" width="330" height="48" rx="10" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
-    <text x="665" y="390" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">将内核 + initramfs 加载到 RAM</text>
+    <text x="665" y="390" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Load Kernel + initramfs into RAM</text>
   </g>
 
   <text x="450" y="465" text-anchor="middle" font-size="10" fill="#94A3B8">blog.fullstackjam.com</text>

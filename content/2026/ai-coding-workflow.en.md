@@ -38,7 +38,7 @@ Once I thought through these three things, my tool combination naturally took sh
 
 ## My Three-Tool Setup
 
-<img src="/images/ai-workflow-overview.svg" alt="AI coding toolkit: Claude Code 70% main development + OpenCode 30% miscellaneous tasks" style="width:100%;max-width:900px;" />
+<img src="/images/ai-workflow-overview.en.svg" alt="AI coding toolkit: Claude Code 70% main development + OpenCode 30% miscellaneous tasks" style="width:100%;max-width:900px;" />
 
 Three tools, three roles, each handling their own lane.
 
@@ -119,7 +119,7 @@ This is a tool built on top of the open-source [lark-coding-agent-bridge](https:
 
 The principle is straightforward:
 
-<img src="/images/lark-bridge-flow.svg" alt="Lark Coding Agent Bridge message flow: Feishu → WebSocket → Bridge daemon → OpenCode" style="width:100%;max-width:780px;" />
+<img src="/images/lark-bridge-flow.en.svg" alt="Lark Coding Agent Bridge message flow: Feishu → WebSocket → Bridge daemon → OpenCode" style="width:100%;max-width:780px;" />
 
 Send a message to the Bot on Feishu, Feishu's server pushes the event via WebSocket to the local Bridge daemon, Bridge forwards it to OpenCode for execution. The process streams back to Feishu as real-time card updates.
 

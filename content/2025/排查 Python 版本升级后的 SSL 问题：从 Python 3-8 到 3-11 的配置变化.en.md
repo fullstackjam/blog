@@ -62,7 +62,7 @@ My first thought was an expired certificate. Nope — same files, same server, n
 
 After reading through the Python changelog and ssl module docs, I found the answer. The key changes happened in **Python 3.10** (PEP 644), and 3.11 inherited them.
 
-<img src="/images/python-ssl-changes.svg" alt="Python SSL default configuration changes: 3.8 vs 3.10+" style="width:100%;max-width:900px;" />
+<img src="/images/python-ssl-changes.en.svg" alt="Python SSL default configuration changes: 3.8 vs 3.10+" style="width:100%;max-width:900px;" />
 
 ### Change 1: Stricter Default Protocol
 

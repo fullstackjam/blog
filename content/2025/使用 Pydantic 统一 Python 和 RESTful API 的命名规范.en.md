@@ -49,7 +49,7 @@ Two naming conventions, both perfectly reasonable:
 
 Both are standard in their ecosystems. Forcing either side to adopt the other's convention creates friction. The right approach: **keep snake_case in your Python code, expose camelCase in your API, and let Pydantic handle the conversion automatically.**
 
-<img src="/images/pydantic-naming-flow.svg" alt="Conversion flow from Python snake_case to API camelCase via Pydantic" style="width:100%;max-width:900px;" />
+<img src="/images/pydantic-naming-flow.en.svg" alt="Conversion flow from Python snake_case to API camelCase via Pydantic" style="width:100%;max-width:900px;" />
 
 ---
 
