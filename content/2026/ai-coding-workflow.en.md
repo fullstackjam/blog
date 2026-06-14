@@ -16,25 +16,15 @@ But after a while, I found three problems that one tool can't solve.
 
 <!--more-->
 
----
-
 ## Three Problems You Can't Avoid
 
-**First, cost.**
+One is cost. Claude Code's non-interactive mode (`-p` flag) moves to a separate credit pool after June 15, billed at API rates — essentially extra charges. Fine for occasional use, but for scheduled tasks and automated chores, costs become unpredictable.
 
-Claude Code's non-interactive mode (`-p` flag) moves to a separate credit pool after June 15, billed at API rates — essentially extra charges. Fine for occasional use, but for scheduled tasks and automated chores, costs become unpredictable.
+One is model blind spots. When the same model reviews its own code, it'll most likely say "looks good," even rationalize why it's correct. Every LLM does this. Same-model self-review has blind spots.
 
-**Second, model blind spots.**
-
-When the same model reviews its own code, it'll most likely say "looks good" — even rationalize why it's correct. Every LLM does this. Same-model self-review has blind spots.
-
-**Third, model matching.**
-
-Formatting files or running routine checks with Opus is overkill. Opus isn't fast either — some tasks just need something cheap and quick.
+The last is model matching. Formatting files or running routine checks with Opus is overkill. Opus isn't fast either, and some tasks just need something cheap and quick.
 
 Once I thought through these three things, my tool combination naturally took shape.
-
----
 
 ## My Three-Tool Setup
 
@@ -42,13 +32,9 @@ Once I thought through these three things, my tool combination naturally took sh
 
 Three tools, three roles, each handling their own lane.
 
----
-
 ## Main: Claude Code
 
-Lots of people use Claude Code for daily dev. I'll just share my personal preferences.
-
-**Opus 4.8 for heavy lifting, Sonnet 4.6 for daily work.**
+Lots of people use Claude Code for daily dev. I'll just share my personal preferences: Opus 4.8 for heavy lifting, Sonnet 4.6 for daily work.
 
 Many assume Claude Code requires Opus full-time. It doesn't. I use Sonnet 4.6 for the bulk of my tasks — batch renames, boilerplate, writing tests, simple bug fixes. Fast, stable, enough. Claude Code lets you switch models anytime via `/model`, and Sonnet is my default.
 
@@ -56,15 +42,13 @@ Opus 4.8 is reserved for tasks that need deep reasoning: complex architecture de
 
 One more thing: `CLAUDE.md` — it defines project conventions and persistent instructions, auto-loaded every session. I put coding style and commit conventions in there, so both Opus 4.8 and Sonnet 4.6 produce consistent output. OpenCode can also read this file — more on that later.
 
-Claude Code handles the heavy work, but its output still needs an independent pair of eyes — that's where the second tool comes in.
-
----
+Claude Code handles the heavy work, but its output still needs an independent pair of eyes. That's where the second tool comes in.
 
 ## Sidekick: Codex Cross-Review
 
-Same-model review has blind spots. The fix is simple: **have another model at the same level review it.**
+Same-model review has blind spots. The fix is simple: have another model at the same level review it.
 
-The key is "same level." Opus 4.8 and GPT 5.5 are both SOTA — a weaker model won't catch Opus's mistakes.
+The key is "same level." Opus 4.8 and GPT 5.5 are both SOTA, and a weaker model won't catch Opus's mistakes.
 
 I use [Codex in Claude](https://github.com/openai/codex-plugin-cc), an official OpenAI plugin that calls Codex directly from Claude Code for review. Setup:
 
@@ -77,9 +61,7 @@ I use [Codex in Claude](https://github.com/openai/codex-plugin-cc), an official 
 
 Two main commands: `/codex:review` for standard review, `/codex:adversarial-review` for adversarial review — the latter actively challenges your design decisions, sharper than regular review. For complex tasks you want to offload, there's `/codex:rescue`.
 
-Different architectures and training data mean different focus areas. Where Claude sees no issue, GPT might raise a flag — same principle as human code review: the author's self-check is never as good as a fresh pair of eyes.
-
----
+Different architectures and training data mean different focus areas. Where Claude sees no issue, GPT might raise a flag. Same principle as human code review: the author's self-check is never as good as a fresh pair of eyes.
 
 ## Grunt Work: OpenCode
 
@@ -134,16 +116,12 @@ What kind of work gets dispatched via Feishu? Small things not worth opening a t
 
 Each one is trivial alone, but the cumulative context-switching adds up. Feishu dispatch lets me handle them on the go — walking, in meetings, whenever.
 
----
-
 ## How It Feels After a Month
 
-After a month with this setup, the biggest takeaway: **division of labor between tools matters more than any single tool's strength.**
+After a month with this setup, the biggest takeaway: division of labor between tools matters more than any single tool's strength.
 
 A real example. Claude wrote some concurrent logic once — I reviewed it and thought it was fine, Claude's self-review agreed. I threw it to Codex for adversarial review, which flagged a race condition: two goroutines writing to the same map without lock protection. Claude looked again and confirmed the bug. Without cross-review, this would likely have shipped to production.
 
-After dividing the work: higher efficiency, lower cost. Claude Code writes code, Codex catches mistakes, OpenCode handles chores.
+Once the work is split up, Claude Code writes code, Codex catches mistakes, and OpenCode handles chores. Higher efficiency, lower cost.
 
-This is my workflow. If you only do interactive development, one tool is enough. But once you add scheduled tasks, cross-model review, and mobile dispatch, a single tool hits its limits fast. Consider a similar combination.
-
-Spending time finding the right tool mix pays off more than forcing everything through one tool.
+This is my workflow. If you only do interactive development, one tool is enough. But once you add scheduled tasks, cross-model review, and mobile dispatch, a single tool hits its limits fast. Spending time finding the right tool mix pays off more than forcing everything through one tool.

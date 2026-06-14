@@ -42,9 +42,9 @@ That is how this project was born: [canary-deployment](https://github.com/fullst
 
 ---
 
-## The Problem with All-at-Once Releases
+## The problem with all-at-once releases
 
-Let me explain why "big bang" deployments are nerve-wracking.
+Why "big bang" deployments are nerve-wracking.
 
 A standard Kubernetes Deployment rolling update is not instantaneous, but new Pods start receiving traffic the moment they pass readiness checks. The whole rollout takes maybe 30 seconds. If the new version has a problem, by the time you notice, a significant chunk of requests has already hit the broken Pods.
 
@@ -79,7 +79,7 @@ Push code, and the system automatically handles the full loop of probe, observe,
 
 ---
 
-## Tech Stack: Three Pillars
+## The tech stack
 
 To build this flow, I needed three components, each with a clear job:
 
@@ -95,7 +95,7 @@ The division of labor is clean: Rollouts makes decisions, Gateway API executes t
 
 ## Implementation
 
-### Rollout: Redefining "Deploy"
+### Rollout: redefining "deploy"
 
 With Argo Rollouts, you swap out `Deployment` for `Rollout`. It looks almost identical, except for the crucial `strategy` field:
 
@@ -145,7 +145,7 @@ This defines a three-phase release strategy:
 
 Notice the two Services: `demo-app-stable` points to the old Pods, `demo-app-canary` points to the new ones. Argo Rollouts controls traffic distribution by modifying the weight values in the HTTPRoute.
 
-### AnalysisTemplate: Data-Driven Decisions
+### AnalysisTemplate: data-driven decisions
 
 Traffic splitting is only half the story. The real question is: **who decides whether to continue or roll back?**
 
@@ -196,7 +196,7 @@ steps:
 
 After traffic shifts to 20%, the analysis runs automatically. It only advances if the analysis passes. If it fails, traffic reverts to the stable version. No pager duty required.
 
-### Gateway API: Standardized Traffic Splitting
+### Gateway API: standardized traffic splitting
 
 In the Ingress days, canary deployments with Nginx meant writing `nginx.ingress.kubernetes.io/canary-weight` annotations. Traefik had its own syntax. Switch controllers and you would have to rewrite everything.
 
@@ -230,7 +230,7 @@ The initial state is stable at 100%, canary at 0%. During a release, Argo Rollou
 
 ---
 
-## Demo: Watching the System Work
+## Demo: watching the system work
 
 To prove this setup can actually catch problems and self-heal, I added a fault injection feature to the Demo App. Setting `errorRate: 50` in Helm Values makes the new version return HTTP 500 errors 50% of the time.
 
@@ -248,17 +248,17 @@ Compare that to a full rollout: 100% of users affected, lasting until you manual
 
 ---
 
-## Lessons Learned
+## Lessons learned
 
 Setting this up was not exactly smooth sailing. Here are the issues that cost me the most time:
 
-### Gateway API CRD Version Mismatch
+### Gateway API CRD version mismatch
 
 Traefik's Gateway API support is evolving rapidly. Different Traefik versions support different Gateway API CRD versions. I initially installed the latest CRDs, but Traefik did not recognize them and threw cryptic errors.
 
 The fix: check Traefik's release notes for the Gateway API version it supports, and install the matching CRDs. Do not just grab the latest.
 
-### The PromQL Empty Result Trap
+### The PromQL empty result trap
 
 This one is subtle. When the canary has just started and has not received any traffic yet, the PromQL query returns empty (not zero -- literally no data). Argo Rollouts interprets empty results as a failure and triggers a rollback.
 
@@ -275,13 +275,13 @@ or vector(1)
 
 The `or vector(1)` means: if the preceding query returns empty, substitute 1 (i.e., 100% success rate).
 
-### Local Resource Consumption
+### Local resource consumption
 
 Running Traefik + ArgoCD + Argo Rollouts + Prometheus + a Demo App in a local Kind cluster eats 4-5 GB of memory just at idle. Give Docker Desktop at least 8 GB, or you will spend hours debugging OOMKilled Pods thinking it is a configuration issue.
 
 ---
 
-## Wrapping Up
+## Wrapping up
 
 With this project, my Homelab release process went from "push and pray" to "push and relax."
 

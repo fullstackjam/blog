@@ -9,151 +9,95 @@ issue_id = 9
 
 [[extra.faq]]
 question = "Is Cursor worth $200 per month?"
-answer = "It depends on how you use it. If you treat it as a glorified autocomplete, probably not. But if you involve it in architecture discussions, requirements analysis, and code review, the productivity gain is substantial. The real question is whether the time you save creates enough value to justify the cost."
+answer = "Depends how you use it. As a fancier autocomplete, probably not. But if you bring it into architecture discussions, requirements analysis, and code review, the time it saves is real. The real question is whether that saved time creates enough value to cover the cost."
 
 [[extra.faq]]
 question = "Will AI coding tools replace programmers?"
-answer = "The 'translate requirements into code' kind of work is genuinely at risk. But understanding what users actually need, making architecture decisions, and exercising judgment about tradeoffs — AI can't do those yet. The role is changing, but it's not disappearing."
+answer = "The 'translate requirements into code' kind of work is genuinely at risk. But understanding what users actually need, making architecture decisions, and judging tradeoffs — AI can't do those yet. The role is changing, not disappearing."
 
 [[extra.faq]]
 question = "Do I still need to learn fundamentals if AI writes my code?"
-answer = "Absolutely. You need to read AI-generated code, spot mistakes, and know when it's wrong. Without solid fundamentals, you can't even tell when AI is confidently giving you nonsense. Fundamentals are the prerequisite for steering AI effectively."
+answer = "Yes. You have to read AI-generated code, spot mistakes, and know when it's wrong. Without solid fundamentals you can't even tell when AI is confidently handing you nonsense. Fundamentals are what let you steer it."
 
 [[extra.faq]]
 question = "Is switching from VSCode to Cursor difficult?"
-answer = "Nearly seamless. Cursor is a VSCode fork, so keybindings, extensions, and settings all carry over. The real learning curve is building the habit of conversing with AI, not the tool itself."
+answer = "Barely. Cursor is a VSCode fork, so keybindings, extensions, and settings all carry over. The real learning curve is building the habit of talking to the AI, not the editor itself."
 
 [[extra.faq]]
 question = "How should programmers adapt to the AI coding era?"
-answer = "Shift from 'person who writes code' to 'product engineer.' Rebalance your skills: 30% coding ability, 25% product thinking, 25% architecture, 10% prompt craft, 10% design sense. The core shift is from 'how to build it' to 'what to build and why.'"
+answer = "Shift from 'person who writes code' to 'product engineer.' Lean harder on product thinking and architecture, keep your coding fundamentals sharp enough to catch AI's mistakes, and pick up prompting along the way. The core shift is from 'how to build it' to 'what to build and why.'"
 +++
 
 I got another Cursor Pro bill yesterday. Twenty bucks.
 
-I did the math — I've spent close to $200 on Cursor this month alone. It stings a little, but I don't regret it. It doesn't feel like paying for software. It feels like buying power-ups in a game you can't stop playing.
+I did the math — close to $200 on Cursor this month alone. It stings a little, but I don't regret it. It doesn't feel like paying for software. It feels like buying power-ups in a game you can't stop playing.
 
-After a few months with Cursor, my feelings are complicated. On one hand, it's genuinely transformative. On the other, there's this nagging sense that the ground is shifting under my feet. I think every programmer of our generation is going to have to reckon with this.
+A few months in, my feelings are mixed. It's genuinely changed how I work. It's also left me with this nagging sense that the ground is moving under me. I think every programmer my age is going to have to deal with this one way or another.
 
 <!--more-->
 
----
-
-## A Brief History of Programmer Arguments
+## A brief history of programmer arguments
 
 Programmers love to argue. This is not news.
 
-Ten years ago, it was Vim vs. Emacs. Then Sublime vs. Atom. Then VSCode won and everyone finally settled down. We could actually focus on writing code.
+Ten years ago it was Vim vs. Emacs. Then Sublime vs. Atom. Then VSCode won and everyone settled down and we could get back to actually writing code.
 
-But starting in 2024, a new war began — the **model wars**.
+Then 2024 kicked off a new one: the model wars.
 
-The question is no longer "what editor do you use?" It's "what model do you use?" GPT-4 or Claude? Cursor or Copilot? The old editor wars were about identity — you might lose face, but not your livelihood. The model wars are directly tied to your productivity. The stakes are orders of magnitude higher.
+The question stopped being "what editor do you use?" and became "what model do you use?" GPT-4 or Claude? Cursor or Copilot? The old editor wars were about identity — you might lose face, but never your livelihood. The model wars are tied straight to your output. The stakes are a lot higher.
 
----
+## The good part: it really does change things
 
-## The Good: AI Coding Is Genuinely Transformative
+When I first heard about Cursor I was skeptical. I'd been on VSCode for years. Every shortcut, every extension, every config was muscle memory. Who migrates editors for a fancy autocomplete?
 
-When I first heard about Cursor, I was skeptical. I'd been on VSCode for years. Every shortcut, every extension, every config was muscle memory. Who wants to migrate for a fancy autocomplete?
+Then I actually used it for a while, and I couldn't go back.
 
-But after actually using it for a while, I couldn't go back.
+The most immediate change was that coding stopped being a solo thing. Before, when I hit an unfamiliar library or some gnarly logic, I'd burn time on Google, grind through docs, or scroll Stack Overflow hoping a 2019 answer still applied. Now I just ask Cursor. Most of the time it gives me something solid. When it doesn't, I push back and it usually corrects itself. It's a completely different experience from digging through docs.
 
-### You're Not Alone Anymore
+The speed is something you feel. Last month I built a small tool for a friend — idea to working thing in two evenings. A year ago, just the scaffolding and boilerplate would've eaten several days.
 
-The most immediate change: **coding stopped being a solo activity**. Before, if I hit an unfamiliar library or a tricky piece of logic, I'd either spend ages on Google, or grit my teeth through documentation, or scroll through Stack Overflow hoping to find an answer from 2019 that was still relevant.
+And it's not only about typing faster. Projects I used to write off as "too complex" or "too steep to bother" are suddenly within reach. Machine learning, blockchain contracts, mobile dev — stuff I wouldn't have attempted, I can at least prototype now. The cost of trying something new dropped a lot.
 
-Now I just ask Cursor. Most of the time, it gives me a solid answer. When it doesn't, I push back, and it usually corrects itself. It's a completely different experience from digging through docs.
+The other thing is it doesn't get tired. Cursor is like a technical partner who's around at any hour. Sure, it occasionally invents an API that doesn't exist, with total confidence. But most of the time it's actually useful, and it's just as game at 3 AM as at 3 PM. For a solo developer, that "always there" feeling is worth a lot.
 
-### Speed You Can Feel
+## The anxiety: the rules changed
 
-Last month I built a small tool for a friend. Idea to working product — two evenings. A year ago, just setting up the scaffolding and writing boilerplate would've taken several days.
+Let me be honest about the other side, because it's real too.
 
-It's not just about writing faster. Projects I used to dismiss as "too complex" or "too steep a learning curve" are suddenly approachable. Machine learning, blockchain contracts, mobile development — things I wouldn't have even attempted before, I can now at least prototype. AI flattened the learning curve dramatically.
+The blunt version: writing code is losing market value. I used to think my edge was typing fast, shipping clean code, and killing bugs efficiently. Those felt like core skills. AI does all of that faster now, and it never gets tired. Worse, it's not just a code generator anymore — it reads requirements, reasons about architecture, debugs. The "translate requirements into code" job is genuinely exposed.
 
-### A Tireless Partner
+People around me feel it. A friend does frontend at a small shop and he's worried. His boss has been building simple pages with AI tools and the results are decent — still needs a human to polish, but the direction is obvious. That's not fearmongering. Simple CRUD, static pages, form validation, the entry-level stuff — it's getting chipped away. Not gone tomorrow, but the trend is clear.
 
-Cursor is like having a technical partner who's available 24/7. Sure, it occasionally hallucinates an API that doesn't exist — with absolute confidence, no less. But most of the time, it's genuinely helpful. It doesn't get tired, doesn't get annoyed, and it's just as enthusiastic at 3 AM as at 3 PM.
+And what users want changed too. People used to care about a pretty interface and smooth interactions. Now they mostly care whether the thing is useful, whether it actually solves their problem. Look at how people pick AI tools — nobody cares how nice your UI is if the model behind it is weak. GPT-4 works well? I'll use ChatGPT. Claude's better? I switch. Cursor delivers? I'm on Cursor. Zero brand loyalty. So the moat of "clean engineering execution" and "polished UI" is getting shallower, and the real moat moves to "do you have a good idea" and "can you solve a real problem."
 
-For solo developers, that "always available" feeling is priceless.
+## Where I'd put my effort now
 
----
+If the rules changed, where you spend your energy should change too.
 
-## The Anxiety: The Rules Changed
+Coding ability still matters, but the job shifts toward reading what the AI wrote, catching what's wrong, and fixing it. You need the fundamentals — if you can't tell when AI is wrong, you're in trouble. On top of that I'd lean much harder into product thinking: knowing what users actually need and which features matter, which still takes real domain knowledge. Architecture stays human too — AI can fill in the details, but how to split the system, how data flows, where to make tradeoffs is on you. Prompting counts for more than people admit; the same request, prompted well, gets you dramatically better code, and the skill is still evolving. And someone has to care about how things feel, because AI-generated interfaces tend to be ugly and tone-deaf to users.
 
-But let's be honest — the anxiety is real too.
+## From "coder" to "product engineer"
 
-### "Writing Code" Is Depreciating
+The pure "coder" role is in danger. The "product engineer" role is more valuable than ever.
 
-Here's the blunt truth: **the skill of writing code is losing market value**. I used to think my edge was typing fast, shipping clean code, and squashing bugs efficiently. Those felt like core competencies. Now AI does all of that faster and without getting tired.
+A product engineer understands both the tech and the product — can spot a real user need, design a sane technical solution, and validate it fast. AI made that role more valuable because the distance from idea to product collapsed. What took weeks of prototyping now takes days, sometimes hours. Whoever validates faster and iterates sooner wins.
 
-What's scarier is that AI isn't just a code generator anymore. It understands requirements, analyzes architecture, and debugs. The work of "translating requirements into code" — that's genuinely at risk.
+It's also why I think this is a great moment for indie developers. One person plus AI can cover what used to need a small team. The catch is you have to be a generalist who can handle a bit of everything, not a specialist who only knows one language.
 
-### People Around Me Feel It
+## What I've actually learned
 
-A friend of mine does frontend at a small company. He's worried. His boss has been experimenting with AI tools to build simple pages, and the results are decent. They still need a human to polish things, but the trend is clear — that kind of work is worth less than it used to be.
+I'm still figuring this out, but a few things have stuck.
 
-This isn't fearmongering. Simple CRUD apps, static pages, form validation — this "entry-level" work is being chipped away. Not gone tomorrow, but the direction is unmistakable.
+Don't drop the fundamentals. AI is an amplifier, and to amplify something you need something worth amplifying. CS basics, algorithms, system design — they're what let you catch AI's mistakes and guide it toward better code.
 
-### Users Don't Care About Your Stack
+Treat yourself as AI's manager. Coding with AI is like managing a brilliant but occasionally confused junior engineer: assign the task, check the work, pull it back when it drifts.
 
-There's another shift that's hard to ignore: **what users expect from products has changed**.
+Stay a student. Today Cursor's on top; tomorrow it might be something else. Don't bet on a specific tool, bet on your ability to learn.
 
-People used to care about beautiful interfaces and smooth interactions. Now? They care about whether the thing is useful. Whether it actually solves their problem.
+And build more, worry less. Instead of debating whether AI will replace you, go build something with it — you'll learn what it can and can't do by doing, not theorizing. Anxiety doesn't ship anything.
 
-Look at how people choose AI tools — nobody cares how pretty your UI is if the model behind it is weak. GPT-4 works well? I'll use ChatGPT. Claude is better? I'll switch to Claude. Cursor delivers? I'm on Cursor. Zero brand loyalty.
+## Final thoughts
 
-What does this mean? The moat of "engineering execution" and "polished UI" is getting shallower. The real moat is now "can you come up with a good idea?" and "can you solve a real problem?"
+AI changed the rules. Creativity and judgment are still ours, at least for now. The point isn't to race AI at writing code — that's a race you lose. It's to find where you fit in the new setup and use AI as a tool rather than getting replaced by it.
 
----
-
-## Respeccing Your Skill Tree
-
-If the rules changed, your skill allocation needs to change too.
-
-Here's how I think the breakdown should look now:
-
-**30% Coding ability** — Mostly about reading AI-generated code, spotting issues, and knowing how to fix them. You still need solid fundamentals. If you can't tell when AI is wrong, you're in trouble.
-
-**25% Product thinking** — Knowing what users actually need and which features matter. AI can't replace this yet — it requires deep domain knowledge and genuine empathy for users.
-
-**25% Architecture** — The big-picture technical decisions still need a human. AI can implement details, but how to split the system, how data flows, where to make tradeoffs — that's still on you.
-
-**10% Prompting skill** — This matters more than most people think. For the same requirement, someone who prompts well gets dramatically better code from AI. It's a brand new skill, and it's evolving fast.
-
-**10% Design sense and UX** — AI-generated interfaces are usually ugly and lack user empathy. Someone still needs to care about how things feel.
-
----
-
-## From "Coder" to "Product Engineer"
-
-The pure "coder" role is in danger. But the "product engineer" role is more valuable than ever.
-
-What's a product engineer? Someone who understands both the technology and the product. Who can identify real user needs, design sensible technical solutions, and rapidly validate ideas.
-
-AI made this role more valuable because the distance from idea to product just collapsed. What used to take weeks of prototyping now takes days or even hours. Whoever validates faster and iterates sooner wins.
-
-This is also why I think we're in the golden age for indie developers. One person plus AI can do what a small team used to do. The catch: you need to be a generalist who can handle a bit of everything, not a specialist who only knows one language.
-
----
-
-## Practical Advice
-
-I'm still figuring this out myself, but here's what I've learned so far:
-
-**Don't abandon the fundamentals.** AI is powerful, but computer science basics, algorithms, and system design still matter. Without them, you can't spot AI's mistakes, let alone guide it toward better code. AI is an amplifier — to amplify something, you need something worth amplifying.
-
-**Learn to be AI's product manager.** Using AI to code is like managing a brilliant but occasionally confused junior engineer. You need to know how to assign tasks, check the work, and pull it back on track when it drifts.
-
-**Stay a student.** This industry moves fast. Today Cursor is on top; tomorrow there might be something better. The only constant is change itself. Don't bet on a specific tool — bet on your ability to learn.
-
-**Build more, worry less.** Instead of anxiously debating whether AI will replace you, go build something interesting with AI. You'll learn what it can and can't do through practice, not theory. Anxiety doesn't create value. Shipping does.
-
----
-
-## Final Thoughts
-
-AI did change the rules of the game. But **creativity and judgment** — those are still human territory. At least for now.
-
-The goal isn't to race AI at writing code — that's a game you'll lose. It's to find your place in this new landscape. Make AI your tool, not your replacement.
-
-For programmers, this is both the best of times and the worst of times. It all depends on how you choose to adapt.
-
-My strategy is simple: keep paying for the tools, keep learning, keep building. That $200 a month? Consider it tuition.
+My strategy is simple: keep paying for the tools, keep learning, keep building. That $200 a month? I'm calling it tuition.

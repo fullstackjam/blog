@@ -9,23 +9,23 @@ issue_id = 13
 
 [[extra.faq]]
 question = "金丝雀发布和蓝绿部署有什么区别？"
-answer = "蓝绿部署是维护两套完整环境，一次性切换全部流量。金丝雀发布是渐进式的，先给新版本分配少量流量（比如 5%-20%），观察指标正常后再逐步增加，风险更可控。Argo Rollouts 两种策略都支持。"
+answer = "蓝绿是维护两套完整环境，一次性把流量全切过去。金丝雀是渐进的，先给新版本分一点流量（比如 5%-20%），看指标没问题再慢慢加，风险更可控。Argo Rollouts 两种都支持。"
 
 [[extra.faq]]
 question = "为什么选 Gateway API 而不是 Ingress？"
-answer = "Ingress 的流量切分依赖各家控制器的私有注解，写法不统一，换个控制器就得改配置。Gateway API 是 Kubernetes 官方推进的新标准，HTTPRoute 原生支持 weight 字段做流量切分，跨控制器通用。"
+answer = "Ingress 的流量切分靠各家控制器的私有注解，写法不统一，换个控制器就得改一圈配置。Gateway API 是 Kubernetes 官方推的新标准，HTTPRoute 原生有 weight 字段做切分，跨控制器通用。"
 
 [[extra.faq]]
 question = "Argo Rollouts 和 ArgoCD 是什么关系？"
-answer = "ArgoCD 负责 GitOps 同步，确保集群状态和 Git 仓库一致。Argo Rollouts 负责发布策略，控制新版本怎么上线。两者独立但互补：ArgoCD 管'部署什么'，Rollouts 管'怎么发布'。"
+answer = "ArgoCD 管 GitOps 同步，保证集群状态和 Git 仓库一致；Argo Rollouts 管发布策略，控制新版本怎么上线。一个管「部署什么」，一个管「怎么发布」，独立但互补。"
 
 [[extra.faq]]
 question = "本地开发怎么测试金丝雀发布？"
-answer = "可以用 Kind 或 k3d 创建本地集群，安装 Traefik + Argo Rollouts + Prometheus。不过要注意给 Docker 分配足够内存（建议 8GB+），因为组件比较多。项目仓库里有完整的本地部署指南。"
+answer = "用 Kind 或 k3d 起个本地集群，装上 Traefik + Argo Rollouts + Prometheus 就行。组件不少，记得给 Docker 多分点内存（建议 8GB 以上）。仓库里有完整的本地部署指南。"
 
 [[extra.faq]]
 question = "PromQL 查询返回空值怎么办？"
-answer = "这是常见坑。当没有流量时 PromQL 返回空值，Argo Rollouts 会判定为失败并触发回滚。解决方法是在查询中加 or vector(1) 兜底，让无流量时默认返回成功。"
+answer = "这是个常见坑。没流量的时候 PromQL 返回空值，Argo Rollouts 会当成失败直接回滚。在查询后面加 or vector(1) 兜底，让无流量时默认算成功。"
 +++
 
 还记得我之前写的 [k8s-gitops](https://github.com/fullstackjam/k8s-gitops) 项目吗？那个项目帮我把 Homelab 的基础设施代码化了，ArgoCD 一跑，集群状态就和 Git 仓库保持一致。"怎么部署"这个问题算是解决了。
@@ -40,15 +40,13 @@ answer = "这是常见坑。当没有流量时 PromQL 返回空值，Argo Rollou
 
 于是就有了这个项目：[canary-deployment](https://github.com/fullstackjam/canary-deployment)。
 
----
-
 ## 全量发布的问题
 
 先说说"大爆炸"发布为什么让人不踏实。
 
 传统的 Kubernetes Deployment 滚动更新，虽然不是瞬间切换，但新 Pod 一 Ready 就开始接流量，整个过程只有几十秒。如果新版本有问题，你发现的时候，可能已经有大量请求打到了有问题的 Pod 上。
 
-更要命的是，Deployment 的回滚依赖的是你自己去执行 `kubectl rollout undo`，或者 ArgoCD 手动 Sync 到上一个版本。在凌晨两点被告警叫醒的时候，你确定自己能操作准确？
+更要命的是回滚得靠你自己去敲 `kubectl rollout undo`，或者 ArgoCD 手动 Sync 回上一个版本。真出事手忙脚乱的时候，谁能保证不敲错？
 
 我想要的是这样一个流程：
 
@@ -75,29 +73,25 @@ graph LR
     style I fill:#FEE2E2,stroke:#DC2626,color:#991B1B
 {% end %}
 
-代码推上去之后，系统自动完成"试探 -> 观察 -> 推进/止损"的完整闭环，不需要人工介入。这才是 GitOps 该有的样子。
+代码推上去，系统自己走完试探、观察、推进或止损这一圈，不用人盯着。这才是 GitOps 该有的样子。
 
----
+## 技术选型
 
-## 技术选型：三驾马车
+要实现上面的流程，得有三个核心组件配合：
 
-要实现上面的流程，需要三个核心组件各司其职：
+**Argo Rollouts**，渐进式交付控制器。它扩展了 Kubernetes 原生的 Deployment，提供了 `Rollout` 资源，让你可以定义金丝雀或蓝绿发布策略。说白了，它就是那个指挥"先切多少流量、什么时候推进、什么时候回滚"的大脑。
 
-**Argo Rollouts** -- 渐进式交付控制器。它扩展了 Kubernetes 原生的 Deployment，提供了 `Rollout` 资源，让你可以定义金丝雀或蓝绿发布策略。说白了，它就是那个指挥"先切多少流量、什么时候推进、什么时候回滚"的大脑。
+**Gateway API + Traefik**，流量切分的执行者。Gateway API 是 Kubernetes 网络层的新标准（你可以理解为 Ingress 的继任者），它的 `HTTPRoute` 资源原生支持 `weight` 字段来做流量分配。Traefik 作为 Gateway Controller 负责实际执行。和以前 Ingress 时代各家靠私有注解实现流量切分不同，Gateway API 是标准化的，换控制器也不用改配置。
 
-**Gateway API + Traefik** -- 流量切分的执行者。Gateway API 是 Kubernetes 网络层的新标准（你可以理解为 Ingress 的继任者），它的 `HTTPRoute` 资源原生支持 `weight` 字段来做流量分配。Traefik 作为 Gateway Controller 负责实际执行。和以前 Ingress 时代各家靠私有注解实现流量切分不同，Gateway API 是标准化的，换控制器也不用改配置。
+**Prometheus**，指标采集和查询。它要回答的就一个问题："新版本到底行不行？" Argo Rollouts 会定期查 Prometheus，根据数据决定继续推进还是回滚。
 
-**Prometheus** -- 指标采集和查询。它负责回答一个关键问题："新版本到底行不行？"。Argo Rollouts 会定期向 Prometheus 发起查询，根据返回的指标数据决定继续推进还是回滚。
-
-三者分工明确：Rollouts 做决策，Gateway API 做执行，Prometheus 做监控。
-
----
+说白了，Rollouts 拿主意，Gateway API 干活，Prometheus 提供判断依据。
 
 ## 核心实现
 
 ### Rollout：重新定义"发布"
 
-在 Argo Rollouts 的世界里，我们不再使用 `Deployment`，而是使用 `Rollout` 资源。它长得和 Deployment 几乎一样，关键区别在于多了个 `strategy` 字段：
+在 Argo Rollouts 里，不再用 `Deployment`，改用 `Rollout` 资源。它长得和 Deployment 几乎一样，关键区别是多了个 `strategy` 字段：
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -149,7 +143,7 @@ spec:
 
 光有流量切分只是第一步。真正的关键是：**谁来决定"继续"还是"回滚"？**
 
-靠人盯着 Grafana 看仪表盘？凌晨三点你盯得住吗？
+靠人一直盯着 Grafana？不现实，人总要睡觉，也总有看走眼的时候。
 
 `AnalysisTemplate` 就是 Argo Rollouts 的自动裁判。我定义了一个基于成功率的检查：
 
@@ -228,25 +222,21 @@ spec:
 
 初始状态 stable 100%、canary 0%。发布时 Argo Rollouts 自动修改 weight 值，Traefik 实时生效。这是标准 API，不是注解黑魔法。
 
----
-
 ## 演示：看系统自己干活
 
 为了验证这套系统真的能自动止损，我在 Demo App 里加了个故障注入功能。Helm Values 里设置 `errorRate: 50`，模拟新版本有 50% 概率返回 500 错误。
 
 发布过程是这样的：
 
-1. **Git Push** -- 修改镜像 tag，推送到仓库
-2. **ArgoCD Sync** -- ArgoCD 检测到 Git 变化，同步新的 Rollout 配置到集群
-3. **金丝雀启动** -- Argo Rollouts 创建新版本 Pod，修改 HTTPRoute 将 20% 流量导向新 Pod
-4. **分析运行** -- AnalysisTemplate 开始查询 Prometheus，发现成功率只有 50% 左右
-5. **自动回滚** -- 分析判定失败，Argo Rollouts 立即将 HTTPRoute weight 切回 stable 100%，新版本标记为 `Degraded`
+1. **Git Push**：修改镜像 tag，推送到仓库
+2. **ArgoCD Sync**：ArgoCD 检测到 Git 变化，同步新的 Rollout 配置到集群
+3. **金丝雀启动**：Argo Rollouts 创建新版本 Pod，修改 HTTPRoute 将 20% 流量导向新 Pod
+4. **分析运行**：AnalysisTemplate 开始查询 Prometheus，发现成功率只有 50% 左右
+5. **自动回滚**：分析判定失败，Argo Rollouts 立即将 HTTPRoute weight 切回 stable 100%，新版本标记为 `Degraded`
 
 整个过程大概两三分钟，不需要任何人工操作。影响范围也被控制在了 20% 的流量内，而且持续时间很短。
 
 对比一下全量发布：100% 的用户受影响，持续到你手动回滚为止。差距一目了然。
-
----
 
 ## 踩过的坑
 
@@ -279,13 +269,11 @@ or vector(1)
 
 在本地 Kind 集群里跑 Traefik + ArgoCD + Argo Rollouts + Prometheus + Demo App，光 idle 状态就要吃掉 4-5GB 内存。建议给 Docker Desktop 分配至少 8GB 内存，否则 Pod 会因为 OOMKill 不停重启，你还以为是配置问题。
 
----
+## 最后
 
-## 总结
+搭完这套，我的 Homelab 发布流程从"推代码然后祈祷"变成了"推代码然后喝茶"。
 
-通过这个项目，我的 Homelab 发布流程从"推代码然后祈祷"变成了"推代码然后喝茶"。
-
-GitOps 解决了**一致性**（集群状态 = Git 仓库状态），Argo Rollouts 解决了**安全性**（渐进式发布 + 自动回滚），Prometheus 解决了**可观测性**（用数据代替直觉）。三者组合，才是我心目中完整的 GitOps 发布体系。
+ArgoCD 让集群状态跟着 Git 走，Argo Rollouts 把全量发布换成了渐进式加自动回滚，Prometheus 则让"行不行"这件事由数据来定，而不是靠我拍脑袋。三个凑一起，才是我想要的那套发布方式。
 
 如果你也受够了全量发布的提心吊胆，可以来我的仓库看看：
 

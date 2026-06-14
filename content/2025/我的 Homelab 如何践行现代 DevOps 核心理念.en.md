@@ -50,7 +50,7 @@ Early on, I couldn't even explain the difference between a Pod and a Service. I 
 
 ## The three-year evolution
 
-Here's a bird's-eye view of how my homelab evolved across three distinct phases:
+My homelab evolved across three phases:
 
 {% mermaid() %}
 graph LR

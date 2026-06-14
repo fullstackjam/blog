@@ -277,7 +277,7 @@ For find-and-replace, use the `:s` command with the syntax `:%s/old/new/flags`:
 1. **Don't try to learn everything at once.** Add 2-3 new commands per week. Use them until they're muscle memory, then learn more.
 2. **Master quitting Vim first.** `:q!` to force quit, `:wq` to save and quit. Get those down, then build from there.
 3. **ciw, dd, and o cover a huge portion of daily editing.** Prioritize these three.
-4. **If you mostly write code, consider the Vim extension in VS Code.** You get Vim's editing efficiency with VS Code's ecosystem — best of both worlds.
+4. **If you mostly write code, consider the Vim extension in VS Code.** You get Vim's editing efficiency while keeping VS Code's ecosystem.
 
 ---
 

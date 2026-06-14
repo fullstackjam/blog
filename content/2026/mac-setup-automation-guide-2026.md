@@ -36,13 +36,9 @@ answer = "用 OpenBoot 可以把环境配置导出为一个链接，新人一条
 
 下面是我踩过的所有坑。
 
----
-
 ## 先说一个事实：你的环境没你以为的那么简单
 
-我数过，我的开发环境有 83 个东西：包管理器、CLI 工具（30+）、GUI 应用（15+）、编程语言和运行时、Shell 配置、dotfiles、Git 身份、macOS 偏好设置。加起来轻松 **60-100 项**。手动配大半天，而且接下来一个月你都在补漏。
-
----
+我数过，我的开发环境有 83 个东西：包管理器、CLI 工具（30+）、GUI 应用（15+）、编程语言和运行时、Shell 配置、dotfiles、Git 身份、macOS 偏好设置。加起来轻松 60-100 项。手动配大半天，而且接下来一个月你都在补漏。
 
 ## 方案一：Brewfile
 
@@ -71,23 +67,17 @@ cask "raycast"
 
 优点是简单直接，一个文件扔 GitHub 就行。
 
-问题是它只管装包。Shell 配置、macOS 偏好、Git 身份，一个都不管，大概只搞定了三成。而且 80 行的 Brewfile 维护起来很痛苦 — 三个月后你根本不记得某个包是干嘛装的。
-
----
+问题是它只管装包。Shell 配置、macOS 偏好、Git 身份，一个都不管，大概只搞定了三成。而且 80 行的 Brewfile 维护起来很痛苦——三个月后你根本不记得某个包是干嘛装的。
 
 ## 方案二：Shell 脚本
 
 Brewfile 不够用，你就开始写 bash — 把 Homebrew 安装、`brew install`、Oh-My-Zsh、`defaults write`、`git config` 全塞一个脚本里。管的事情多了，但脚本不幂等（跑两遍就报错），网络一抖就全挂（国内家常便饭），而且 200 行的 bash 维护起来想死。
-
----
 
 ## 方案三：Dotfile 管理器
 
 **chezmoi** 能模板化 dotfiles，一个仓库管多台机器。但学习成本不低，我花在学它目录结构上的时间比花在配 dotfiles 上还多。**dotbot** 轻量只管 symlink。**mackup** 专门备份 VS Code、iTerm2 之类的应用设置到 iCloud。
 
 共同的问题：只管配置，不管安装。我一度同时维护 Brewfile + dotbot + macOS 偏好脚本。三个系统管一台电脑，累了。
-
----
 
 ## 方案四：上硬核手段
 
@@ -110,8 +100,6 @@ Brewfile 不够用，你就开始写 bash — 把 Homebrew 安装、`brew instal
 如果你在 Linux 上已经用 Nix，上手会快很多。没用过的话，准备投入一到两周。
 
 **Ansible** — Jeff Geerling 的 [mac-dev-playbook](https://github.com/geerlingguy/mac-dev-playbook) 是最火的例子。幂等性好，重复跑不炸。但用企业级 YAML 给自己电脑装 VS Code，杀鸡用牛刀了。
-
----
 
 ## 方案五：全自动化
 
@@ -144,9 +132,7 @@ openboot snapshot
 openboot install yourname/my-setup
 ```
 
-说实话，它不是万能的 — 没有回滚、不支持 Linux、dotfile 管理比 chezmoi 弱。但覆盖了大部分人 85% 的需求，不用学任何新语言。
-
----
+说实话，它不是万能的——没有回滚、不支持 Linux、dotfile 管理比 chezmoi 弱。但覆盖了大部分人 85% 的需求，不用学任何新语言。
 
 ## 五种方案放一起看
 
@@ -163,9 +149,7 @@ openboot install yourname/my-setup
 | **学习成本** | 5 分钟 | 10 分钟 | 1 小时 | 1-2 周 | 5 分钟 |
 | **覆盖率** | ~30% | ~70% | ~20% | ~90% | ~85% |
 
-怎么选看你愿意花多少时间。Brewfile 五分钟上手但只管装包；chezmoi 管 dotfiles 很强但不管安装；nix-darwin 最全但学习成本最高。我做 OpenBoot 就是想在"全"和"简单"之间找个平衡，不过它也有短板 — 没回滚，不支持 Linux。
-
----
+怎么选看你愿意花多少时间。Brewfile 五分钟上手但只管装包；chezmoi 管 dotfiles 很强但不管安装；nix-darwin 最全但学习成本最高。我做 OpenBoot 就是想在"全"和"简单"之间找个平衡，不过它也有短板——没回滚，不支持 Linux。
 
 ## 国内开发者必做的一步：换镜像源
 
@@ -186,8 +170,6 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 不换源的话，一个 `brew install` 能卡你半天。建议把这几行加到 `.zshrc` 里，省得每次都敲。
-
----
 
 ## 2026 年必装工具
 
@@ -234,8 +216,6 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 - **Bun** — 写脚本替代 Node，启动速度差距大到尴尬。
 - **Ollama** — 本地跑大模型，不用把代码发给 API。
 
----
-
 ## 团队怎么用
 
 每个公司都有那么一份飞书文档，叫"开发环境配置指南"，47 步，上次更新是 2023 年。第 12 步让你装 Node 18，但项目需要 Node 22。第 23 步说"找张三要 .env 模板"，但张三早离职了。
@@ -252,8 +232,6 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 新人跑完去倒杯咖啡，回来就能提代码了。
 
----
-
 ## 常见问题
 
 **最快的配环境方法？** Homebrew + OpenBoot，十五到二十分钟。
@@ -266,13 +244,11 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 **团队能用吗？** `openboot snapshot` 导出配置，新人一条命令复制。比飞书文档靠谱。
 
----
+## 写在最后
 
 不管你选哪个，别再手动配了。周末应该拿来写代码，不是一个一个敲 `brew install`。
 
 英文版写得更详细，所有预设和命令都列全了，在[这里](/2026/mac-setup-automation-guide-2026/)。
-
----
 
 **相关资源：**
 

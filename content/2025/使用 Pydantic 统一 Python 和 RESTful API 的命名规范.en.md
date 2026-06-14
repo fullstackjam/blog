@@ -210,7 +210,7 @@ class UserProfile(CamelModel):
     is_active: bool = True
 ```
 
-Every model inheriting `CamelModel` gets camelCase aliases for free. Clean and DRY.
+Every model inheriting `CamelModel` gets camelCase aliases for free.
 
 ---
 
@@ -239,4 +239,4 @@ The practical setup:
 - Add `populate_by_name = True` so both naming styles are accepted as input
 - Extract a `CamelModel` base class and reuse it across the project
 
-Both sides get to write idiomatic code. No one compromises. Pydantic handles the translation invisibly.
+Both sides write idiomatic code, and Pydantic handles the translation in between.

@@ -35,8 +35,6 @@ answer = "默认情况下 Stow 会用目录级别的符号链接（folding）—
 
 <!--more-->
 
----
-
 ## 核心思路
 
 项目只做一件事：**管理配置文件的符号链接**。软件安装交给 OpenBoot。
@@ -73,15 +71,13 @@ curl -fsSL openboot.dev/fullstackjam | bash
 
 OpenBoot 会自动完成：安装 Homebrew 和软件包、clone dotfiles 到 `~/.dotfiles`、用 Stow 部署配置、安装 Oh-My-Zsh 和插件。
 
-如果只想单独部署配置文件：
+如果只想单独部署配置文件，三条命令：
 
 ```bash
 git clone https://github.com/fullstackjam/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 make install
 ```
-
----
 
 ## 项目结构
 
@@ -105,13 +101,7 @@ dotfiles/
 
 这个结构的关键在于：**每个目录的内部结构和它在 home 目录下的目标路径完全对应**。比如 `ghostty/.config/ghostty/config`，Stow 会把它链接到 `~/.config/ghostty/config`。目录结构本身就是映射规则。
 
-这么设计有几个好处：
-
-- **模块独立**。加配置、删配置，不影响其他任何东西。
-- **出错可控**。某个模块的链接炸了，其他配置照常工作。
-- **调试直观**。看目录名就知道这组配置是干嘛的。
-
----
+这么拆分有几个实际好处：加配置、删配置互不影响；某个模块的链接炸了，其他照常工作；看目录名就知道这组配置是干嘛的，调试很直观。
 
 ## GNU Stow：符号链接的正确打开方式
 
@@ -135,8 +125,6 @@ stow --no-folding --target="$HOME" git
 这里用了 `--no-folding` 而不是默认行为。默认情况下 Stow 会创建目录级别的符号链接——比如把整个 `~/.claude` 链接到仓库里。但问题是 Claude Code 会在 `~/.claude/` 下创建 `sessions/` 等运行时目录，如果整个目录是符号链接就会出问题。`--no-folding` 强制 Stow 只创建文件级别的链接，目标目录保持为真实目录。
 
 为什么不直接用 `ln -s`？因为 Stow 帮你处理了所有麻烦事：目标路径自动推导、冲突检测。手写 `ln -s` 管五六个文件还行，管几十个就是噩梦。
-
----
 
 ## Makefile：简单到极致
 
@@ -273,16 +261,11 @@ macos-option-as-alt = left
 4. **AI 工具**：根据你用的工具，修改 `claude/` 或 `opencode/` 下的配置，或者删掉不需要的模块
 5. **新增模块**：建一个新目录（比如 `tmux/`），按 Stow 的结构放好配置文件，在 Makefile 的 `PACKAGES` 里加上名字，如果目标目录不存在还需要在 `mkdir -p` 那行加上
 
----
+## 小结
 
-## 总结
+这个项目演进了几个版本，最后收敛成一个很清晰的分工：dotfiles 仓库只管配置文件，用 GNU Stow 创建符号链接，Makefile 做入口；软件安装交给 [OpenBoot](https://openboot.dev)，Homebrew、软件包、Oh-My-Zsh 一条命令搞定。
 
-这个项目演进了几个版本，最终收敛到一个很清晰的分工：
-
-- **Dotfiles 仓库**只管配置文件——用 GNU Stow 创建符号链接，Makefile 做入口
-- **软件安装**交给 [OpenBoot](https://openboot.dev)——Homebrew、软件包、Oh-My-Zsh 一条命令搞定
-
-这样 dotfiles 仓库保持纯净，只有配置文件和一个极简的 Makefile。新机器上 `curl -fsSL openboot.dev/fullstackjam | bash`，10 分钟搞定。
+早期版本里软件安装也塞在 dotfiles 仓库，配置和安装脚本搅在一起。把安装剥给 OpenBoot 之后清爽多了，仓库里就剩配置文件和一个极简的 Makefile。新机器上 `curl -fsSL openboot.dev/fullstackjam | bash`，10 分钟搞定。
 
 如果你还在手动搬配置文件，认真考虑搞一个自己的 dotfiles 项目。前期投入两三个小时，之后每次换机器都能省半天。
 

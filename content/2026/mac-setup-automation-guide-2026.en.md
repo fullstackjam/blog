@@ -40,23 +40,19 @@ question = "Is it safe to run curl | bash install scripts?"
 answer = "OpenBoot's install script is open source — you can read it before running. The --dry-run flag lets you preview every change before anything is installed. No SSH keys, API tokens, or .env files are ever captured or transmitted."
 +++
 
-**Quick answer:** Most developers just need Homebrew + a setup tool like [OpenBoot](https://openboot.dev) — about 15 minutes total. Dotfile nerds should look at chezmoi, and the truly committed can go with nix-darwin for full reproducibility. This guide covers all five approaches with real commands you can run today.
+TL;DR: most people just need Homebrew plus a setup tool like [OpenBoot](https://openboot.dev), about 15 minutes total. If you fuss over your dotfiles, look at chezmoi. If you want full reproducibility and don't mind the learning curve, nix-darwin. This guide covers all five approaches with commands you can run today.
 
----
+I've set up more Macs than I care to admit — personal machines, work laptops, loaners, and that one time I rage-wiped my drive at 2am because I'd broken my Python environment beyond repair.
 
-I've been a developer for years and I've set up more Macs than I care to admit — personal machines, work laptops, loaners, that one time I rage-wiped my drive at 2am because I broke my Python environment beyond repair. 
+You know the feeling. You unbox a new Mac, you're excited for about twelve minutes, then you open Terminal.
 
-You know the feeling. You unbox a new Mac, it smells like premium aluminum and potential, and you're excited for exactly twelve minutes. Then you open Terminal. 
+It's a desert. No Git, no Node, no Docker, no VS Code. Your shell is a bare `zsh` prompt that doesn't even know your name. Finder hides file extensions like they're state secrets, and the Dock has that slow animation that makes you want to throw the machine out the window. Clipboard history, gone. Aliases, vanished.
 
-It's a desert. No Git. No Node. No Docker. No VS Code. Your shell is a bare `zsh` prompt that doesn't even know your name. Finder is hiding file extensions like they're state secrets. The Dock has that 45-second animation that makes you want to throw the machine out the window. Your clipboard history? Gone. Your aliases? Vanished.
+So you start installing by hand. Homebrew homepage, copy-paste the install command, start typing. Two hours later you've installed maybe half of what you actually use. A week later you're mid bug-fix and realize you forgot `jq`. Two weeks later you notice you never set your git email, and every commit at the new job says "unknown."
 
-So you start the ritual. You open the Homebrew homepage. You copy-paste the install command. Then you start typing. Two hours later, you've installed maybe half of what you actually use. A week from now, you'll be in the middle of a high-priority bug fix and realize you forgot `jq`. Two weeks from now, you'll realize you never set up your git email and every commit you've made for the new job says "unknown."
+I've tried every level of automation to fix this — the "I'll remember it" approach (I didn't), big shell scripts that broke halfway through, whole weekends lost in Nix.
 
-I've tried every level of automation to fix this. I've used the "I'll remember it" method (spoiler: I didn't), I've used massive shell scripts that broke halfway through, and I've spent weekends lost in the rabbit hole of Nix. 
-
----
-
-## First: the problem is bigger than you think
+## First, the problem is bigger than you think
 
 Before I show you the tools, I want to talk about scope. Most developers undercount their setup. I counted once. My dev environment has 83 individual things across 8 categories. If you think your setup is "just Homebrew and VS Code," you're lying to yourself.
 
@@ -148,9 +144,8 @@ defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
 When you add it all up, a "standard" setup is easily **60-100 items**. Doing that manually takes a full afternoon, and you'll still be finding missing pieces for the next month.
 
----
 
-## Level 1: The Brewfile
+## Level 1: the Brewfile
 
 I used a Brewfile for about a year. It's the simplest automation because Homebrew has it built in. 
 
@@ -187,7 +182,6 @@ I liked the Brewfile because it has zero dependencies and it's easy to read. You
 
 The problem is that it only handles packages. It doesn't touch your shell config, your macOS preferences, or your git identity. You're only automating about 30% of the job. Also, maintaining it is a bit of a chore — you have to manually edit the file every time you want to add something new, and if you have 80 lines, it's a mess. There's no way to categorize things or remember why you installed that random utility three months ago.
 
----
 
 ## Level 2: The shell script
 
@@ -226,7 +220,6 @@ Shell scripts are also fragile because they aren't idempotent. If you run a scri
 
 When I shared a version of this on Reddit, someone replied with their 200-line shell script that did something similar. Which proved my point — if you need 200 lines of bash to set up a Mac, maybe bash isn't the right tool for the job.
 
----
 
 ## Level 3: Dotfile managers
 
@@ -272,7 +265,6 @@ It's the only tool that reliably handles settings for things like VS Code and iT
 
 Dotfile managers handle configuration files. They don't handle installation. You still need a Brewfile or a script to actually get the tools on your machine. At one point I had a Brewfile, a dotbot config, AND a shell script for macOS preferences. Three systems to maintain for one laptop. That's when I started thinking about whether someone had solved this already.
 
----
 
 ## Level 4: Infrastructure-as-code
 
@@ -314,9 +306,8 @@ The idempotency is genuinely nice — you can re-run it without breaking things.
 
 These tools are rigorous, but they're a sledgehammer for a nail. You'll spend hours configuring things before you even get to your first `npm install`. If you're managing 500 laptops for a corporate IT department, use Ansible. If you're one person, it's probably too much.
 
----
 
-## Level 5: Full automation
+## Level 5: full automation
 
 I spent years bouncing between these levels. I wanted something that handled all 8 categories — packages, apps, shell, dotfiles, macOS preferences, git, language runtimes — but without the configuration nightmare of Nix or Ansible.
 
@@ -395,9 +386,8 @@ Every config gets a URL like `openboot.dev/fullstackjam/my-setup`. Now, if someo
 openboot install yourname/my-setup
 ```
 
-Automation is better when it's social. You can browse what other developers are using at [openboot.dev/explore](https://openboot.dev/explore).
+You can browse what other developers are running at [openboot.dev/explore](https://openboot.dev/explore).
 
----
 
 ## For teams: replacing the onboarding doc
 
@@ -415,7 +405,6 @@ Preview first: `openboot install acme/frontend --dry-run`
 
 The new hire runs that, goes to grab coffee, and twenty minutes later they have the exact same environment as the rest of the team. They can actually push code before lunch on their first day.
 
----
 
 ## How they compare
 
@@ -439,7 +428,6 @@ Honestly, the right tool depends on how much you care. Brewfile if packages are 
 
 I built OpenBoot because I wanted the coverage of Nix without spending a week learning a new language. It doesn't do everything — no rollback, no Linux, dotfile support is basic compared to chezmoi — but it handles the part that matters for most setups without asking you to write YAML or learn Nix expressions.
 
----
 
 ## The tools most developers install in 2026
 
@@ -497,7 +485,6 @@ A few newer tools that have earned a permanent spot:
 - **uv** — Python finally has a package manager that doesn't make me want to quit programming.
 - **Bun** — Replaced Node for all my throwaway scripts. The startup time difference is embarrassing.
 
----
 
 ## Quick-start recipes
 
@@ -556,7 +543,6 @@ If you're nervous about what a tool might do to your system:
 openboot --preset developer --dry-run
 ```
 
----
 
 ## After setup: maintenance
 
@@ -584,13 +570,11 @@ openboot clean --dry-run    # see what you can safely remove
 openboot doctor
 ```
 
----
 
-Whatever you pick — don't do it manually again. Life's too short to type `brew install ripgrep` from memory for the 21st time. 
+Whatever you pick, don't do it by hand again. Your weekend is better spent writing code than typing `brew install` one package at a time.
 
-If you want to check out what I've been working on, head over to [OpenBoot](https://openboot.dev). It's open source, it's fast, and it might just save you a weekend.
+If you want to see what I've been building, it's [OpenBoot](https://openboot.dev) — open source, MIT licensed.
 
----
 
 ## Quick answers to things people ask me
 
@@ -606,9 +590,7 @@ If you want to check out what I've been working on, head over to [OpenBoot](http
 
 **Is `curl | bash` safe?** Read the script first — it's [on GitHub](https://github.com/openbootdotdev/openboot). Or just use `--dry-run` to see what it would do. No SSH keys, tokens, or .env files are ever touched.
 
----
-
-**Resources:**
+## Resources
 
 - [OpenBoot](https://openboot.dev) — Full setup automation with TUI and sharing
 - [OpenBoot on GitHub](https://github.com/openbootdotdev/openboot) — Open source, MIT licensed

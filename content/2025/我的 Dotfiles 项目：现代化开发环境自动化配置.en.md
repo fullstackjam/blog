@@ -238,7 +238,7 @@ Added in 2025 — global config for the AI coding assistant. Three files:
 - **settings.json**: model selection, permission mode, enabled plugins (superpowers, codex, etc.)
 - **statusline-command.sh**: terminal statusline script in robbyrussell style showing directory, Git branch, model, and context usage
 
-Managing Claude Code config in dotfiles means your AI assistant's behavior preferences migrate seamlessly to new machines.
+Managing Claude Code config in dotfiles means your AI assistant's behavior preferences come along to new machines automatically.
 
 ### Ghostty
 

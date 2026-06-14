@@ -28,7 +28,7 @@ question = "Can I run Proxmox VE on old or low-end hardware?"
 answer = "Yes, PVE itself is lightweight. An old desktop with an Intel Core i5, 16GB RAM, and a 256GB SSD makes a perfectly capable starter homelab. The key requirement is that the CPU supports hardware virtualization (VT-x/VT-d), which most CPUs from the last decade do."
 +++
 
-I have been running a homelab for a while now, and this post documents the full process of getting Proxmox VE up and running as the virtualization foundation. This is Part 1 of my "Homelab" series -- let's get the hypervisor sorted first.
+I have been running a homelab for a while now, and this post documents the full process of getting Proxmox VE up and running as the virtualization foundation. This is Part 1 of my "Homelab" series. Let's get the hypervisor sorted first.
 
 <!--more-->
 
@@ -36,7 +36,7 @@ I have been running a homelab for a while now, and this post documents the full 
 
 Before committing to a platform, I evaluated ESXi, Unraid, and TrueNAS Scale. Proxmox VE (PVE) won for a few straightforward reasons:
 
-- **Free and open-source**: Built on Debian. No feature gating -- the paid subscription only adds tech support.
+- **Free and open-source**: Built on Debian. No feature gating; the paid subscription only adds tech support.
 - **KVM + LXC**: Run full virtual machines (KVM) for heavy workloads and lightweight containers (LXC) for services that don't need a full OS. Best of both worlds.
 - **Solid Web UI**: Manage everything from a browser. No thick client needed.
 - **Active community**: The forums and wiki are genuinely helpful. Most problems have already been solved by someone.
@@ -58,7 +58,7 @@ Plug in the USB drive, boot from it, and follow the installer. The key steps:
 1. **Select target disk**: Pick the drive you want PVE on. SSD or NVMe recommended.
 2. **Country and timezone**: Set to your region.
 3. **Root password and email**: Remember the root password. The email can be anything.
-4. **Network configuration**: This is the important one -- plug in an Ethernet cable and let it auto-detect an IP address. Write it down (mine was `192.168.2.217`). You'll need this to access the Web UI.
+4. **Network configuration**: This is the important one. Plug in an Ethernet cable and let it auto-detect an IP address. Write it down (mine was `192.168.2.217`). You'll need this to access the Web UI.
 
 Once the installation finishes, you can disconnect the monitor. Everything from here on is done through the Web UI or SSH.
 
@@ -72,14 +72,14 @@ https://192.168.2.217:8006/
 
 A few things to note:
 - It's **https**, not http
-- Your browser will warn about an invalid HTTPS certificate -- this is expected, just proceed
+- Your browser will warn about an invalid HTTPS certificate. This is expected, just proceed
 - Username is `root`, password is what you set during install
 
 After logging in, you'll see the PVE management dashboard:
 
 <img src="/images/proxmox-dashboard-overview.en.svg" alt="Proxmox VE Dashboard overview: tree navigation on the left, resource gauges and system info on the right" style="width:100%;max-width:900px;" />
 
-The left panel shows a tree of your datacenter, nodes, VMs, containers, and storage. The right panel shows details for whatever you have selected -- CPU, memory, storage usage, and system information.
+The left panel shows a tree of your datacenter, nodes, VMs, containers, and storage. The right panel shows details for whatever you have selected: CPU, memory, storage usage, and system information.
 
 ## Basic Configuration
 
@@ -181,7 +181,7 @@ There are also community scripts that add CPU temperature and frequency readouts
 
 ## Creating a Cloud-Init Template
 
-Installing from an ISO every time you need a new VM is tedious. PVE supports Cloud-Init -- the same mechanism used by AWS, GCP, and other cloud providers -- to auto-configure VMs on first boot.
+Installing from an ISO every time you need a new VM is tedious. PVE supports Cloud-Init, the same mechanism used by AWS, GCP, and other cloud providers, to auto-configure VMs on first boot.
 
 ### What Cloud-Init Does
 
@@ -226,7 +226,7 @@ After running the commands above, finish the setup in the Web UI:
 2. **Configure Cloud-Init**: In the Cloud-Init panel, set:
    - **User**: Your username
    - **Password**: A login password
-   - **SSH public key**: Your public key (Cloud Images disable password-based SSH by default -- this is mandatory)
+   - **SSH public key**: Your public key (Cloud Images disable password-based SSH by default, so this is mandatory)
    - **IP Config**: DHCP or a static IP
 3. **Click "Regenerate Image"** to apply the configuration.
 4. **Boot the VM and test**: SSH in and verify everything works.
@@ -255,7 +255,7 @@ With the template ready, creating a new VM is trivial:
 1. Right-click the template -> Clone
 2. Choose Full Clone
 3. Adjust Cloud-Init parameters (IP, hostname, etc.)
-4. Start it up -- you'll have a fully configured VM in minutes
+4. Start it up. You'll have a fully configured VM in minutes
 
 ## References
 

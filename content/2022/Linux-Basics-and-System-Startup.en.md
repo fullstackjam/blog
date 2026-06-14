@@ -1,7 +1,7 @@
 +++
 title = "Linux Basics: System Startup, Filesystems, and Partitions"
 date = 2022-04-17
-description = "A deep dive into the Linux boot process from BIOS/UEFI power-on self-test through GRUB bootloader, kernel initialization, initramfs, and systemd service management, plus filesystem and partition fundamentals."
+description = "What happens between pressing the power button and seeing a login prompt: BIOS/UEFI self-test, GRUB, kernel init, systemd taking over, plus filesystem and partition basics."
 tags = ["Linux", "boot-process", "systemd", "filesystem", "GRUB"]
 
 [extra.comments]
@@ -28,13 +28,13 @@ question = "What common filesystems does Linux support?"
 answer = "Linux supports many filesystems: traditional disk filesystems like ext4, XFS, and Btrfs; flash storage filesystems like UBIFS and JFFS2; and special-purpose virtual filesystems like procfs (process info), sysfs (device info), and tmpfs (in-memory temporary storage)."
 +++
 
-This post walks you through the complete Linux boot process -- from the moment you press the power button to when you see a login prompt. We'll also cover filesystem and partition fundamentals along the way.
+What does Linux actually do in those few seconds between pressing the power button and seeing a login prompt? I'd always treated it as a black box, so I sat down and traced the whole thing, and cleaned up my understanding of filesystems and partitions while I was at it. These are my own notes.
 
 <!--more-->
 
 ## The Linux Boot Process
 
-The Linux boot process is everything that happens between pressing the power button and having a fully operational system. It's a carefully orchestrated sequence where each stage hands off control to the next.
+The Linux boot process is everything that happens between pressing the power button and having a usable system. It runs in several stages, each handing off to the next, each doing one job.
 
 <img src="/images/linux-boot-process-overview.en.svg" alt="Linux boot process overview: six stages from power on to user login" style="width:100%;max-width:900px;" />
 
@@ -47,7 +47,7 @@ Here's the high-level picture:
 5. **initramfs** -- Temporary filesystem that mounts the real root
 6. **init/systemd** -- Starts userspace services
 
-Let's dig into each stage.
+Let's go through them one by one.
 
 ## BIOS/UEFI: The First Step
 
@@ -292,6 +292,6 @@ Removable media (USB drives, optical discs) are typically auto-mounted at `/run/
 
 ## Wrapping Up
 
-The Linux boot process is a carefully choreographed relay race: firmware handles hardware initialization, the boot loader finds and loads the kernel, the kernel initializes the OS core, initramfs finds and mounts the root filesystem, and finally systemd takes over to start userspace services.
+The whole thing is really just a relay race: firmware brings the hardware up, GRUB finds the kernel and loads it into memory, the kernel initializes the OS core, initramfs mounts the real root filesystem, and finally systemd takes over to start services.
 
-Understanding this process isn't just academic -- it's practical knowledge that helps you troubleshoot boot failures (GRUB rescue, kernel panics, service startup issues) and gives you a deeper appreciation for how Linux systems are architected.
+Once you've traced this chain, problems like GRUB rescue, kernel panics, or a service that won't start are a lot less mysterious — at least you know which leg of the race it stalled on.

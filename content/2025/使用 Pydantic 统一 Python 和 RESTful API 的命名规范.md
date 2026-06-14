@@ -36,8 +36,6 @@ Pydantic 可以一行配置解决这个问题。
 
 <!--more-->
 
----
-
 ## 问题在哪
 
 两套命名规范各有各的道理：
@@ -50,8 +48,6 @@ Pydantic 可以一行配置解决这个问题。
 正确的做法是：**后端代码里继续写 snake_case，API 对外暴露 camelCase，中间让 Pydantic 自动转换。**
 
 <img src="/images/pydantic-naming-flow.svg" alt="Python snake_case 到 API camelCase 的转换流程" style="width:100%;max-width:900px;" />
-
----
 
 ## GET 请求：用 Query 的 alias 参数
 
@@ -88,8 +84,6 @@ GET /items/?itemId=42&searchQuery=example
 ```
 
 这里有个细节——**响应的 JSON 字段名还是 snake_case**。如果你想让响应也变成 camelCase，需要用 `response_model` 配合 Pydantic 模型，下一节就会讲到。
-
----
 
 ## POST 请求：用 alias_generator 批量转换
 
@@ -148,8 +142,6 @@ Content-Type: application/json
 }
 ```
 
----
-
 ## 让 GET 的响应也变成 camelCase
 
 前面说了，GET 请求直接 `return {"item_id": ...}` 的话，响应是 snake_case。要统一的话，加一个 `response_model`：
@@ -181,8 +173,6 @@ async def get_item(
 }
 ```
 
----
-
 ## 抽个基类，别重复写
 
 如果项目里很多模型都需要 camelCase 转换，每个都写一遍 `model_config` 太啰嗦。抽一个基类：
@@ -212,8 +202,6 @@ class UserProfile(CamelModel):
 
 所有继承 `CamelModel` 的模型自动就有 camelCase 的 alias。干净。
 
----
-
 ## 注意事项
 
 几个容易踩的坑：
@@ -226,17 +214,15 @@ class UserProfile(CamelModel):
 
 4. **OpenAPI 文档**：配了 `alias_generator` 之后，FastAPI 自动生成的 Swagger 文档里会显示 camelCase 的字段名，前端看文档直接就是他们需要的字段名。
 
----
+## 小结
 
-## 总结
+思路就一句：Python 代码里写 snake_case，API 对外暴露 camelCase，中间让 Pydantic 桥接。
 
-一句话：**Python 代码里写 snake_case，API 对外暴露 camelCase，中间让 Pydantic 自动桥接。**
-
-具体做法：
+具体怎么落地：
 
 - GET 请求参数少，用 `Query(alias="camelCase")` 逐个映射
 - POST 请求体字段多，用 `alias_generator = to_camel` 批量转换
 - 加 `populate_by_name = True` 让两种命名都能传值
 - 抽一个 `CamelModel` 基类，全项目复用
 
-这样前后端各写各的风格，谁都不用迁就谁，Pydantic 在中间无感转换。
+这样前后端各写各的风格，谁都不用迁就谁。
