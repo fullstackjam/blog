@@ -5,8 +5,7 @@ description = "A developer's honest guide to Mac setup automation — from Brewf
 tags = ["mac", "setup", "automation", "developer-tools", "productivity"]
 
 [extra.comments]
-issue_id = 13
-
+issue_id = 16
 [[extra.faq]]
 question = "What's the fastest way to set up a new Mac for development?"
 answer = "Use Homebrew for package management plus a setup tool like OpenBoot for everything else. A typical developer setup takes 15-30 minutes with automation vs. 2-4 hours manually. OpenBoot's developer preset installs 29 CLI tools, 14 GUI apps, and 5 npm packages in one command."

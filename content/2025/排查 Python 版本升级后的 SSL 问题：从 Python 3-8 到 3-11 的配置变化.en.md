@@ -5,8 +5,7 @@ description = "After upgrading from Python 3.8 to 3.11, your SSL connections mig
 tags = ["python", "ssl", "debugging", "upgrade", "security"]
 
 [extra.comments]
-issue_id = 8
-
+issue_id = 6
 [[extra.faq]]
 question = "Why do SSL connections break after upgrading from Python 3.8 to 3.11?"
 answer = "Starting in Python 3.10, the ssl module enforces stricter defaults: check_hostname is True and verify_mode is CERT_REQUIRED by default. Code that worked under 3.8's relaxed settings will fail if the certificate chain is incomplete or the hostname doesn't match."

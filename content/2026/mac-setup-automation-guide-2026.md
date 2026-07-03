@@ -5,8 +5,7 @@ description = "一个开发者的 Mac 环境自动化实战总结 — 从 Brewfi
 tags = ["mac", "开发环境", "自动化", "效率工具", "homebrew"]
 
 [extra.comments]
-issue_id = 14
-
+issue_id = 16
 [[extra.faq]]
 question = "新 Mac 配开发环境最快的方法是什么？"
 answer = "用 Homebrew 装包 + OpenBoot 之类的自动化工具处理剩余配置，整个过程 15-30 分钟。手动配的话至少半天，而且接下来一个月都在补漏。"

@@ -5,8 +5,7 @@ description = "Building a Hub-and-Spoke WireGuard VPN to connect multiple home n
 tags = ["wireguard", "vpn", "networking", "homelab", "openwrt"]
 
 [extra.comments]
-issue_id = 11
-
+issue_id = 13
 [[extra.faq]]
 question = "What are the pros and cons of a Hub-and-Spoke WireGuard architecture?"
 answer = "The main advantage is simplicity -- all nodes only need a tunnel to the central server, making configuration and management straightforward. The downside is the central node becomes a single point of failure, and all traffic routes through it, adding latency. For home use, the simplicity usually outweighs the drawbacks."

@@ -5,8 +5,7 @@ description = "Three years of homelab evolution: from snowflake servers to GitOp
 tags = ["homelab", "devops", "kubernetes", "gitops", "automation"]
 
 [extra.comments]
-issue_id = 10
-
+issue_id = 12
 [[extra.faq]]
 question = "What hardware do I need to start a homelab?"
 answer = "You don't need expensive gear. A few old laptops, mini PCs like Intel NUCs, or second-hand servers will do. My cluster started with a handful of cheap machines. The key is to get something running first — you can upgrade hardware later."

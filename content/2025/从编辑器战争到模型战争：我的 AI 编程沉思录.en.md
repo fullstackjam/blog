@@ -5,8 +5,7 @@ description = "Honest thoughts after months of using Cursor at $200/month: the p
 tags = ["AI", "programming tools", "Cursor", "career", "productivity"]
 
 [extra.comments]
-issue_id = 9
-
+issue_id = 11
 [[extra.faq]]
 question = "Is Cursor worth $200 per month?"
 answer = "Depends how you use it. As a fancier autocomplete, probably not. But if you bring it into architecture discussions, requirements analysis, and code review, the time it saves is real. The real question is whether that saved time creates enough value to cover the cost."

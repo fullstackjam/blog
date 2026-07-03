@@ -5,8 +5,7 @@ description = "使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭
 tags = ["wireguard", "vpn", "networking", "homelab", "openwrt"]
 
 [extra.comments]
-issue_id = 11
-
+issue_id = 13
 [[extra.faq]]
 question = "WireGuard 的 Hub-and-Spoke 架构有什么优缺点？"
 answer = "优点是配置简单、管理集中，所有节点只需要和中心服务器建立隧道。缺点是中心节点成为单点故障，且所有流量都要经过中心节点转发，增加了延迟。对于家庭使用场景，这个架构的简洁性通常足够。"

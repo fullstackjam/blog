@@ -5,8 +5,7 @@ description = "Building a canary deployment pipeline from scratch with Argo Roll
 tags = ["gitops", "canary", "kubernetes", "argo-rollouts", "gateway-api", "traefik", "prometheus"]
 
 [extra.comments]
-issue_id = 13
-
+issue_id = 15
 [[extra.faq]]
 question = "What is the difference between canary deployment and blue-green deployment?"
 answer = "Blue-green maintains two full environments and switches all traffic at once. Canary is gradual -- you route a small percentage of traffic (say 5-20%) to the new version first, monitor metrics, and only increase traffic if things look healthy. Argo Rollouts supports both strategies."
