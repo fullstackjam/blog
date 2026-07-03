@@ -7,6 +7,7 @@ tags = ["dotfiles", "automation", "macos", "stow", "dev-environment", "AI-tools"
 
 [extra.comments]
 issue_id = 14
+
 [[extra.faq]]
 question = "What's the difference between a dotfiles project and just copying config files?"
 answer = "Copying scatters configs across your home directory, making it hard to sync changes back to a repo. A dotfiles project uses GNU Stow to create symlinks — your config files live in a git repo, and any edit is automatically version-controlled. You can roll back, diff, and sync to other machines instantly."

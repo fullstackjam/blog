@@ -6,6 +6,7 @@ tags = ["AI", "编程工具", "Cursor", "职业发展", "效率"]
 
 [extra.comments]
 issue_id = 11
+
 [[extra.faq]]
 question = "Cursor 每月 200 美元的开销值得吗？"
 answer = "看你怎么用。当个自动补全，不值。但你让它参与架构讨论、需求分析、code review，效率提升是很明显的。关键是这省下来的时间，你能不能拿去做更值钱的事。"

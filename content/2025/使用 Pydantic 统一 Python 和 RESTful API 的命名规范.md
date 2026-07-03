@@ -6,6 +6,7 @@ tags = ["Python", "Pydantic", "FastAPI", "RESTful API", "命名规范"]
 
 [extra.comments]
 issue_id = 5
+
 [[extra.faq]]
 question = "为什么前后端的命名规范会不一样？"
 answer = "JavaScript 社区用 camelCase（比如 itemId），Python 的 PEP 8 规范用 snake_case（比如 item_id）。两边都是各自语言的标准写法，硬改哪边都不合适，所以需要一个中间层来自动转换。"

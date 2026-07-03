@@ -6,6 +6,7 @@ tags = ["homelab", "proxmox", "virtualization", "linux", "self-hosted"]
 
 [extra.comments]
 issue_id = 10
+
 [[extra.faq]]
 question = "Why choose Proxmox VE over ESXi for a homelab?"
 answer = "PVE is free and open-source, based on Debian, and supports both KVM virtual machines and LXC containers. ESXi's free tier has been increasingly restricted, especially after Broadcom's acquisition of VMware. PVE has a thriving community and no feature gating behind paid licenses."

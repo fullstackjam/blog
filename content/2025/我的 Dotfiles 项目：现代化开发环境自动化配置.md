@@ -7,6 +7,7 @@ tags = ["dotfiles", "automation", "macos", "stow", "开发环境", "AI工具"]
 
 [extra.comments]
 issue_id = 14
+
 [[extra.faq]]
 question = "Dotfiles 项目和直接 copy 配置文件有什么区别？"
 answer = "直接 copy 的问题是配置散落在 home 目录各处，修改后很难同步回仓库。Dotfiles 项目用 GNU Stow 创建符号链接，配置文件实际存在 git 仓库里，修改即版本控制，随时可以回滚和同步到其他机器。"

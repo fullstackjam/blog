@@ -6,6 +6,7 @@ tags = ["Python", "Pydantic", "FastAPI", "RESTful API", "naming conventions"]
 
 [extra.comments]
 issue_id = 5
+
 [[extra.faq]]
 question = "Why do Python and JavaScript use different naming conventions?"
 answer = "Python's PEP 8 style guide recommends snake_case (e.g., item_id), while JavaScript convention uses camelCase (e.g., itemId). Both are well-established standards in their respective ecosystems, so the practical solution is automatic conversion at the API boundary rather than forcing one side to adopt the other's style."

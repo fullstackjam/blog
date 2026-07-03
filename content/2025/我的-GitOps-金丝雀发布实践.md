@@ -6,6 +6,7 @@ tags = ["gitops", "canary", "kubernetes", "argo-rollouts", "gateway-api", "traef
 
 [extra.comments]
 issue_id = 15
+
 [[extra.faq]]
 question = "金丝雀发布和蓝绿部署有什么区别？"
 answer = "蓝绿是维护两套完整环境，一次性把流量全切过去。金丝雀是渐进的，先给新版本分一点流量（比如 5%-20%），看指标没问题再慢慢加，风险更可控。Argo Rollouts 两种都支持。"

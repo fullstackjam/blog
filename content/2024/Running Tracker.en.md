@@ -6,6 +6,7 @@ tags = ["running", "habits", "Notion", "self-improvement", "health"]
 
 [extra.comments]
 issue_id = 4
+
 [[extra.faq]]
 question = "Why should developers start running?"
 answer = "Sitting at a desk 10+ hours a day wrecks your back, posture, and energy levels. Running is the lowest-barrier cardio — no equipment, no gym membership, no scheduling. After a few weeks, you'll notice better focus and more sustained energy throughout the day."

@@ -6,6 +6,7 @@ tags = ["homelab", "proxmox", "虚拟化", "linux", "self-hosted"]
 
 [extra.comments]
 issue_id = 10
+
 [[extra.faq]]
 question = "Proxmox VE 和 ESXi 比，家用选哪个？"
 answer = "PVE 免费开源、基于 Debian、支持 KVM 和 LXC 容器，社区活跃。ESXi 免费版功能阉割严重，而且 Broadcom 收购 VMware 后政策更不友好。家用 Homelab 场景下 PVE 是目前最佳选择。"

@@ -6,6 +6,7 @@ tags = ["python", "ssl", "调试", "版本升级", "安全"]
 
 [extra.comments]
 issue_id = 6
+
 [[extra.faq]]
 question = "Python 3.8 升级到 3.11 后为什么 SSL 连接会报错？"
 answer = "Python 3.10 开始，ssl 模块默认启用了更严格的证书验证：check_hostname 默认为 True，verify_mode 默认为 CERT_REQUIRED。之前在 3.8 中用 CLIENT_AUTH 目的创建的上下文不会强制验证，升级后同样的代码会因为证书链不完整或主机名不匹配而失败。"

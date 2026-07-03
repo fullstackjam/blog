@@ -6,6 +6,7 @@ tags = ["homelab", "devops", "kubernetes", "gitops", "自动化"]
 
 [extra.comments]
 issue_id = 12
+
 [[extra.faq]]
 question = "搭建 Homelab 需要什么硬件？"
 answer = "不用很贵的设备。几台旧笔记本、迷你主机（比如 Intel NUC）或者二手服务器都行。我自己就是从几台破服务器起步的，先跑起来，硬件慢慢换。"
