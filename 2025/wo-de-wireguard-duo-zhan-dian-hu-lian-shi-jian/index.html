@@ -1,0 +1,225 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭网络和移动设备的安全互联。详细记录从网络规划、密钥管理到路由配置的完整过程，包含 OpenWrt 网关配置和常见排错方法。" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content="我的 WireGuard 多站点互联实践" property=og:title><meta content="使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭网络和移动设备的安全互联。详细记录从网络规划、密钥管理到路由配置的完整过程，包含 OpenWrt 网关配置和常见排错方法。" property=og:description><meta content=https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ property=og:url><meta content=2025-10-13T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="我的 WireGuard 多站点互联实践" name=twitter:title><meta content="使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭网络和移动设备的安全互联。详细记录从网络规划、密钥管理到路由配置的完整过程，包含 OpenWrt 网关配置和常见排错方法。" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "我的 WireGuard 多站点互联实践",
+  "description": "使用 WireGuard 构建 Hub-and-Spoke 架构，实现多个家庭网络和移动设备的安全互联。详细记录从网络规划、密钥管理到路由配置的完整过程，包含 OpenWrt 网关配置和常见排错方法。",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-10-13",
+  
+  "dateModified": "2025-10-13",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "WireGuard 的 Hub-and-Spoke 架构有什么优缺点？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "优点是配置简单、管理集中，所有节点只需要和中心服务器建立隧道。缺点是中心节点成为单点故障，且所有流量都要经过中心节点转发，增加了延迟。对于家庭使用场景，这个架构的简洁性通常足够。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "WireGuard 的 AllowedIPs 参数有什么作用？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AllowedIPs 有两个作用：一是作为路由表，决定哪些目标 IP 的流量走 VPN 隧道；二是作为访问控制，限制对端只能使用列表中的源 IP 发送数据。配置时需要同时包含对端的 VPN IP 和它代表的内网网段。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "OpenWrt 路由器做 WireGuard 网关有什么好处？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在路由器层面配置 WireGuard，整个局域网内的设备都可以透明地访问远端网络，不需要每台设备单独安装 WireGuard 客户端。这对于 NAS、打印机、IoT 设备等无法安装 VPN 客户端的设备特别有用。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "WireGuard 隧道断线后能自动重连吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WireGuard 本身是无状态协议，不存在传统意义上的'断线'。配置 PersistentKeepalive = 25 后，客户端每 25 秒发送一次保活包维持 NAT 映射。网络恢复后隧道会自动恢复，通常无需手动干预。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "为什么不用 Tailscale 或 ZeroTier 这类现成方案？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tailscale 和 ZeroTier 确实更方便开箱即用，但它们依赖第三方服务器做协调。自建 WireGuard 的优势是完全自主可控、没有设备数量限制、延迟更低（直连云服务器而非绕行第三方节点），并且能更灵活地配置路由策略。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>我的 WireGuard 多站点互联实践 - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ id=title>我的 WireGuard 多站点互联实践</a><div id=date>2025-10-13</div><div id=content><p>家里有两个地方都有网络设备，加上经常需要在外面访问家里的 NAS 和虚拟机，一直想搭个 VPN 把这些网络连起来。试过 OpenVPN、IPSec 之后，最终选了 WireGuard：配置文件短、性能好、内核态运行，整体体验比其他方案好不少。<p>这篇文章记录了我从规划到部署的完整过程，包括踩过的坑和一些实际经验。<h2 id=xu-qiu-fen-xi-he-fang-an-xuan-ze>需求分析和方案选择</h2><p>先说说我的具体需求：<ul><li><strong>远程访问</strong>：在外面时能访问家里的 NAS、虚拟机和 K8s 集群<li><strong>网络互通</strong>：两个家庭网络能互通，局域网内的设备不需要单独装 WireGuard 客户端<li><strong>移动接入</strong>：手机和笔记本随时能连回家，用公共 WiFi 时也有安全保障<li><strong>自主可控</strong>：不想依赖 Tailscale、ZeroTier 这类第三方服务，数据走自己的链路</ul><p>方案对比的时候考虑过几种：<table><thead><tr><th>方案<th>优点<th>缺点<tbody><tr><td>OpenVPN<td>成熟稳定，穿透性好<td>性能差，配置复杂，用户态运行<tr><td>IPSec/IKEv2<td>标准协议，系统原生支持<td>配置非常复杂，排错困难<tr><td>Tailscale<td>开箱即用，NAT 穿透<td>依赖第三方，免费版有设备限制<tr><td><strong>WireGuard</strong><td><strong>内核态，性能好，配置简洁</strong><td><strong>需要一台有公网 IP 的服务器</strong></table><p>最终选了 WireGuard + Hub-and-Spoke 架构。用一台阿里云 ECS（有公网 IP）做中转节点，所有设备都连到这台服务器，由它负责转发流量。架构简单，也方便管理。<h2 id=wang-luo-tuo-bu>网络拓扑</h2><p>下面这张图就是我现在的网络结构：<pre class=mermaid>
+flowchart TD
+    Internet[Public Internet]
+
+    subgraph Cloud[Alibaba Cloud ECS Relay Server]
+        ECS[&LTstrong>ECS Relay Server&LT/strong>&LTbr>Public IP: 203.0.113.1&LTbr>VPN IP: 192.168.151.1/24&LTbr>Port: 24356/UDP]
+    end
+
+    subgraph HomeA[Home Network A]
+        OP1[&LTstrong>OpenWrt Gateway A&LT/strong>&LTbr>LAN: 192.168.2.1/24&LTbr>VPN: 192.168.151.2/24]
+        OtherA[Other Devices&LTbr>192.168.2.0/24]
+    end
+
+    subgraph HomeB[Home Network B]
+        OP2[&LTstrong>OpenWrt Gateway B&LT/strong>&LTbr>LAN: 192.168.4.1/24&LTbr>VPN: 192.168.151.3/24]
+        OtherB[Other Devices&LTbr>192.168.4.0/24]
+    end
+
+    subgraph Mobile[Mobile Devices]
+        MAC[&LTstrong>MacBook&LT/strong>&LTbr>VPN IP: 192.168.151.4/24]
+        IPH[&LTstrong>iPhone&LT/strong>&LTbr>VPN IP: 192.168.151.5/24]
+    end
+
+    Internet -- Internet Connection --> ECS
+
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP1
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP2
+    MAC -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+    IPH -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+
+    OP1 -- LAN Network --> OtherA
+    OP2 -- LAN Network --> OtherB
+</pre><p>关键点：<ul><li><strong>VPN 网段</strong>：<code>192.168.151.0/24</code>，专门给 WireGuard 隧道用<li><strong>两个家庭网段</strong>：分别是 <code>192.168.2.0/24</code> 和 <code>192.168.4.0/24</code>，规划时注意不要冲突<li><strong>OpenWrt 网关</strong>：路由器上跑 WireGuard，这样整个局域网的设备都能透明访问远端，不需要每台设备单独安装客户端<li><strong>移动设备</strong>：直连 ECS 中转节点，可以访问所有网段</ul><h2 id=wireguard-ji-ben-yuan-li>WireGuard 基本原理</h2><p>WireGuard 的核心是公钥加密体系，每个节点持有一对密钥（私钥 + 公钥）。双方交换公钥后即可建立加密隧道，不需要像 OpenVPN 那样搞证书颁发机构（CA）。<p>下面是连接建立的过程：<pre class=mermaid>
+sequenceDiagram
+    participant S as 服务器&LTbr/>(私钥S_priv, 公钥S_pub)
+    participant C as 客户端&LTbr/>(私钥C_priv, 公钥C_pub)
+
+    Note over S,C: 配置阶段：交换公钥
+    S->>S: 配置文件中添加C_pub
+    C->>C: 配置文件中添加S_pub
+
+    Note over S,C: 握手建立过程
+    C->>S: 1. 发送握手初始化包&LTbr/>(用S_pub加密，用C_priv签名)
+    S->>S: 2. 用S_priv解密，用C_pub验证签名
+    S->>C: 3. 发送握手响应包&LTbr/>(用C_pub加密，用S_priv签名)
+    C->>C: 4. 用C_priv解密，用S_pub验证签名
+
+    Note over S,C: 双方协商会话密钥
+    Note over S,C: 5. 握手完成，生成共享密钥
+
+    Note over S,C: 数据传输
+    S->>C: 发送加密数据
+    C->>S: 发送加密数据
+</pre><p>几个值得注意的技术细节：<ul><li><strong>Noise 协议框架</strong>：WireGuard 用的是 Noise_IKpsk2 握手模式，基于 Curve25519、ChaCha20、Poly1305、BLAKE2s 这些现代密码学原语<li><strong>1-RTT 握手</strong>：只需要一次往返就能建立连接，比 OpenVPN 的 TLS 握手快得多<li><strong>无状态设计</strong>：没有"连接"的概念，只有密码学路由。网络切换后自动恢复，不需要重新握手<li><strong>密钥轮换</strong>：每 2 分钟自动轮换会话密钥，无需手动干预</ul><h2 id=shi-ji-da-jian-guo-cheng>实际搭建过程</h2><h3 id=1-an-zhuang-wireguard>1. 安装 WireGuard</h3><p>各平台的安装都很直观：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Ubuntu / Debian
+sudo apt update && sudo apt install wireguard
+
+# OpenWrt（通过 opkg）
+opkg update && opkg install wireguard-tools kmod-wireguard luci-proto-wireguard
+</code></pre><p>手机和电脑直接在应用商店搜 WireGuard 官方 App 即可。<h3 id=2-sheng-cheng-mi-yao-dui>2. 生成密钥对</h3><p>为每个节点生成独立的密钥对：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 设置安全的文件权限
+umask 077
+
+# 生成密钥对并输出（一次性命令，不留文件）
+wg genkey | tee /dev/stderr | wg pubkey
+# 第一行输出是私钥，第二行是公钥
+</code></pre><p>也可以分步操作，更清晰一些：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 生成私钥
+wg genkey > server_private.key
+
+# 从私钥推导公钥
+wg pubkey < server_private.key > server_public.key
+
+# 查看密钥（注意保管私钥！）
+cat server_private.key
+cat server_public.key
+</code></pre><p>需要为 ECS 服务器、两台 OpenWrt 路由器、MacBook、iPhone 各生成一对。然后交叉配置公钥：每个节点的配置里要包含所有它要通信的对端的公钥。<h3 id=3-li-jie-allowedips>3. 理解 AllowedIPs</h3><p>这是 WireGuard 配置中最容易出错的地方，值得单独说一下。<code>AllowedIPs</code> 同时充当两个角色：<ul><li><strong>出站路由</strong>：目标 IP 匹配这个列表的流量会被发送到这个 Peer<li><strong>入站过滤</strong>：从这个 Peer 收到的数据包，源 IP 必须在这个列表内，否则丢弃</ul><p>举个例子，在 ECS 服务器上给家庭网络 A 的路由器配置 <code>AllowedIPs = 192.168.151.2/32, 192.168.2.0/24</code>，意思是：<ol><li>发往 <code>192.168.151.2</code> 和 <code>192.168.2.0/24</code> 的流量走这条隧道<li>从这条隧道进来的数据包，源 IP 必须是 <code>192.168.151.2</code> 或 <code>192.168.2.0/24</code> 网段</ol><h3 id=4-zhong-xin-jie-dian-pei-zhi-ecs-fu-wu-qi>4. 中心节点配置（ECS 服务器）</h3><p>这是整个架构的核心，所有流量都经过这里转发。<p>创建 <code>/etc/wireguard/wg0.conf</code>：<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+Address = 192.168.151.1/24
+ListenPort = 24356
+PrivateKey = <服务器私钥>
+
+# 启用 IP 转发（让 Linux 转发不同网段的流量）
+PostUp = sysctl -w net.ipv4.ip_forward=1
+
+# 配置 iptables：允许 WireGuard 接口的转发，并做 NAT
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer] # 家庭网络 A - OpenWrt 路由器
+PublicKey = <路由器A的公钥>
+AllowedIPs = 192.168.151.2/32, 192.168.2.0/24
+
+[Peer] # 家庭网络 B - OpenWrt 路由器
+PublicKey = <路由器B的公钥>
+AllowedIPs = 192.168.151.3/32, 192.168.4.0/24
+
+[Peer] # MacBook
+PublicKey = <笔记本的公钥>
+AllowedIPs = 192.168.151.4/32
+
+[Peer] # iPhone
+PublicKey = &LTiPhone的公钥>
+AllowedIPs = 192.168.151.5/32
+</code></pre><p>启动服务并配置防火墙：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 启用 WireGuard 并设置开机自启
+sudo systemctl enable --now wg-quick@wg0
+
+# 开放 UDP 端口
+sudo ufw allow 24356/udp
+
+# 验证隧道状态
+sudo wg show
+</code></pre><p><code>wg show</code> 的输出会显示每个 Peer 的最近握手时间和传输流量。如果某个 Peer 的 <code>latest handshake</code> 是空的，说明连接还没建立成功，需要排查。<h3 id=5-openwrt-lu-you-qi-pei-zhi>5. OpenWrt 路由器配置</h3><p>路由器是这个方案的关键，它作为网关，让整个局域网的设备无感知地访问远端网络。<p>WireGuard 配置文件（也可以在 LuCI Web 界面中配置）：<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = <路由器私钥>
+Address = 192.168.151.2/24
+
+[Peer]
+PublicKey = <服务器公钥>
+Endpoint = 203.0.113.1:24356
+AllowedIPs = 192.168.151.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p>几个关键配置点：<ul><li><strong>AllowedIPs</strong> 包含 VPN 网段和对方的家庭网段，但不包含自己的家庭网段（否则会形成路由环路）<li><strong>PersistentKeepalive = 25</strong>：路由器通常在 NAT 后面，需要定期发送保活包维持映射。25 秒是个比较合适的间隔<li><strong>Endpoint</strong>：只有服务器需要固定的 Endpoint（公网 IP），路由器这边不需要配，WireGuard 会自动记住对端地址</ul><p>在 OpenWrt 的防火墙设置中，还需要：<ol><li>将 WireGuard 接口加入一个防火墙区域（比如新建一个 <code>vpn</code> 区域）<li>允许 <code>lan</code> 到 <code>vpn</code> 的转发<li>允许 <code>vpn</code> 到 <code>lan</code> 的转发（如果需要远端访问本地设备）</ol><h3 id=6-yi-dong-she-bei-pei-zhi>6. 移动设备配置</h3><p>手机和笔记本的配置相对简单：<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = <设备私钥>
+Address = 192.168.151.4/24
+DNS = 192.168.151.1
+
+[Peer]
+PublicKey = <服务器公钥>
+Endpoint = 203.0.113.1:24356
+AllowedIPs = 192.168.151.0/24, 192.168.2.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p>这里 <code>AllowedIPs</code> 包含了所有需要访问的网段。注意不要设成 <code>0.0.0.0/0</code>（除非你想让所有流量都走 VPN），那样会把所有流量都转发到服务器，增加延迟也浪费带宽。<p><code>DNS = 192.168.151.1</code> 是可选的，如果你在 ECS 上跑了 DNS 服务（比如 Pi-hole）可以用这个配置，否则删掉就行。<h3 id=7-yan-zheng-lian-tong-xing>7. 验证连通性</h3><p>所有节点配好之后，逐一测试：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 在 ECS 上查看所有 Peer 状态
+sudo wg show
+
+# 从移动设备 ping 各节点
+ping 192.168.151.1   # ECS 服务器
+ping 192.168.151.2   # 路由器 A 的 VPN IP
+ping 192.168.2.1     # 路由器 A 的 LAN IP
+ping 192.168.4.1     # 路由器 B 的 LAN IP
+
+# 跨网段测试（从家庭网络 A 的设备访问家庭网络 B）
+ping 192.168.4.100   # 家庭网络 B 中的某台设备
+
+# 查看路由表，确认 VPN 路由正确
+ip route | grep wg0
+</code></pre><h2 id=zhu-yi-shi-xiang-he-pai-cuo>注意事项和排错</h2><h3 id=an-quan-jia-gu>安全加固</h3><ul><li><strong>改用非标准端口</strong>：默认的 51820 太容易被扫描，我用的 24356<li><strong>密钥文件权限</strong>：私钥文件设为 600，只有 root 可读<li><strong>精确的 AllowedIPs</strong>：不要用 <code>0.0.0.0/0</code>，按需配置具体网段<li><strong>防火墙</strong>：ECS 安全组只放行 WireGuard 的 UDP 端口，不要多开</ul><h3 id=chang-jian-wen-ti-pai-cha>常见问题排查</h3><p><strong>隧道建不起来：</strong><ol><li>确认双方公钥配置正确（最常见的错误就是公钥私钥搞反了）<li>确认 ECS 安全组和系统防火墙都放行了 UDP 端口<li>用 <code>tcpdump -i eth0 udp port 24356</code> 在服务器上抓包，看看有没有数据到达</ol><p><strong>能 ping 通 VPN IP 但访问不了对端内网：</strong><ol><li>检查 ECS 上的 IP 转发是否开启：<code>cat /proc/sys/net/ipv4/ip_forward</code>，应该是 <code>1</code><li>检查 iptables FORWARD 规则是否生效<li>确认 AllowedIPs 包含了对端的内网网段</ol><p><strong>OpenWrt 局域网设备无法访问远端：</strong><ol><li>检查 OpenWrt 防火墙是否允许 lan 到 vpn 区域的转发<li>确认路由表中有到远端网段的路由<li>在路由器上 <code>traceroute</code> 看看流量是否经过了 WireGuard 接口</ol><h3 id=chi-jiu-hua-he-zi-qi-dong>持久化和自启动</h3><p>确保网络重启后 WireGuard 自动恢复：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># ECS 上
+sudo systemctl enable wg-quick@wg0
+
+# 确认 IP 转发在重启后仍然生效
+echo "net.ipv4.ip_forward = 1" | sudo tee /etc/sysctl.d/99-wireguard.conf
+sudo sysctl -p /etc/sysctl.d/99-wireguard.conf
+</code></pre><p>OpenWrt 通过 LuCI 配置的接口默认会开机自启，不需要额外操作。<h2 id=shi-yong-ti-yan>使用体验</h2><p>用了几个月下来，几点感受：<ul><li><strong>稳定性很好</strong>：手机从 5G 切 WiFi、WiFi 切 5G，基本上无感知切换，WireGuard 的无状态设计在这方面确实有优势<li><strong>延迟可接受</strong>：通过云服务器中转，两个家庭网络之间额外增加大约 10-20ms 的延迟，日常使用完全没问题<li><strong>免维护</strong>：配置好之后基本不用管，服务器重启也会自动恢复<li><strong>OpenWrt 网关方案好用</strong>：家里的 NAS、打印机、监控摄像头这些不能装 VPN 的设备都能被远程访问到，这是最实用的部分</ul><p>如果设备多了，手动管理配置文件会比较麻烦，可以考虑用 <a href=https://github.com/wg-easy/wg-easy>wg-easy</a> 这个项目，它提供了一个简洁的 Web 界面来管理 WireGuard。<h2 id=xiang-guan-zi-yuan>相关资源</h2><ul><li><a href=https://www.wireguard.com/quickstart/>WireGuard 官方文档</a> -- 安装和基础配置<li><a href=https://www.wireguard.com/papers/wireguard.pdf>WireGuard 白皮书</a> -- 深入了解协议设计<li><a href=https://openwrt.org/docs/guide-user/services/vpn/wireguard/start>OpenWrt WireGuard 配置指南</a> -- 路由器端详细配置<li><a href=https://github.com/wg-easy/wg-easy>wg-easy</a> -- Web 管理界面，适合管理多个 Peer</ul></div><div id=comments-issue-id style=display:none>13</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

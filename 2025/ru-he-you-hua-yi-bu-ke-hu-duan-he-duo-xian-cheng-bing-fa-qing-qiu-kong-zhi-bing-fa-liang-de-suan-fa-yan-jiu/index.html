@@ -1,0 +1,409 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="异步客户端和多线程并发请求怎么控量。从信号量到 PID 控制器、令牌桶、自适应并发，每种算法用 Python 代码讲清楚原理和适用场景。" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content=如何优化异步客户端和多线程并发请求：控制并发量的算法研究 property=og:title><meta content="异步客户端和多线程并发请求怎么控量。从信号量到 PID 控制器、令牌桶、自适应并发，每种算法用 Python 代码讲清楚原理和适用场景。" property=og:description><meta content=https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ property=og:url><meta content=2025-02-06T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content=如何优化异步客户端和多线程并发请求：控制并发量的算法研究 name=twitter:title><meta content="异步客户端和多线程并发请求怎么控量。从信号量到 PID 控制器、令牌桶、自适应并发，每种算法用 Python 代码讲清楚原理和适用场景。" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "如何优化异步客户端和多线程并发请求：控制并发量的算法研究",
+  "description": "异步客户端和多线程并发请求怎么控量。从信号量到 PID 控制器、令牌桶、自适应并发，每种算法用 Python 代码讲清楚原理和适用场景。",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-02-06",
+  
+  "dateModified": "2025-02-06",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "asyncio.Semaphore 和 threading.Semaphore 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "asyncio.Semaphore 是协程级的，用在 async/await 里，不会阻塞线程；threading.Semaphore 是操作系统级的，会真把线程阻塞住。看你用的是异步还是多线程。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "PID 控制器用在并发控制里靠谱吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有效，但得耐心调参。P、I、D 三个系数没调好，并发量要么剧烈震荡，要么半天收敛不了。实际用的时候，先拿纯 P 跑起来，再慢慢加 I 和 D。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "令牌桶和漏桶算法有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "令牌桶允许突发——桶里攒了令牌就能一次用掉；漏桶严格按固定速率放行。要偶尔突发用令牌桶，要严格匀速用漏桶。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "自适应并发调整策略适合什么场景？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "你不确定对面能扛多大并发、或者它的负载会变的时候，自适应最好用。它自己探上限，失败率一高就降速，比手动设参数灵活。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "生产环境应该选哪种并发控制方案？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "大多数场景固定信号量就够，简单可靠。对面 API 有明确的 rate limit 就用令牌桶。负载不可预测、要自动适应，再上 PID 或自适应。别过度工程化。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>如何优化异步客户端和多线程并发请求：控制并发量的算法研究 - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ id=title>如何优化异步客户端和多线程并发请求：控制并发量的算法研究</a><div id=date>2025-02-06</div><div id=content><blockquote><p>This post is also available in <a href=/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/>English</a>.</blockquote><p>在高并发场景里，"发请求"这件事没有看起来那么简单。<p>你可能写了一个爬虫，或者要批量调用第三方 API。一开始跑得很顺畅，但请求量一上去，问题就来了：接口开始 429，事件循环卡住了，或者线程池直接把对面服务打挂。<p>这篇文章从最基础的信号量讲起，一步步走到 PID 控制器、令牌桶、自适应并发调整。每种方案都有完整的 Python 代码，拿来就能跑。<h2 id=xian-kan-quan-ju-bing-fa-kong-zhi-de-he-xin-si-lu>先看全局：并发控制的核心思路</h2><p>不管你用的是 <code>asyncio</code> 还是 <code>threading</code>，并发控制的核心问题都是一样的：<strong>怎么在「尽可能快」和「不把系统打崩」之间找到平衡</strong>。<p>下面这张图展示了一个通用的并发控制流程：<pre class=mermaid>graph LR
+    A[请求队列] --> B{并发控制器}
+    B -->|获取令牌/信号量| C[Worker 池]
+    C --> D[目标服务]
+    D -->|响应| E{反馈收集}
+    E -->|成功率/延迟| B
+    E --> F[结果聚合]
+
+    style A fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A5F
+    style B fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style C fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    style D fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B
+    style E fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style F fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A5F</pre><p>关键在那个<strong>反馈回路</strong>：把请求的成功率、响应时间作为信号，反过来调整并发量。这就是从「固定并发」到「动态并发」的核心区别。<h2 id=1-xin-hao-liang-zui-jian-dan-de-bing-fa-xian-zhi>1. 信号量：最简单的并发限制</h2><p>信号量（Semaphore）是并发控制的起点。思路很直接：设一个上限，同时只允许 N 个任务运行，多的排队等着。<h3 id=yi-bu-xin-hao-liang>异步信号量</h3><p>在 <code>asyncio</code> 里，信号量用 <code>asyncio.Semaphore</code>：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+
+async def fetch_url(semaphore: asyncio.Semaphore, client: httpx.AsyncClient, url: str):
+    async with semaphore:  # 进入时 -1，退出时 +1
+        response = await client.get(url)
+        return response.status_code
+
+async def main():
+    urls = [f"https://httpbin.org/delay/1" for _ in range(50)]
+    semaphore = asyncio.Semaphore(10)  # 最多 10 个请求同时飞
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        tasks = [fetch_url(semaphore, client, url) for url in urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    success = sum(1 for r in results if isinstance(r, int) and r == 200)
+    print(f"完成: {success}/{len(urls)} 成功")
+
+asyncio.run(main())
+</code></pre><p>这段代码的关键：<code>async with semaphore</code> 是一个上下文管理器，进入时信号量计数减 1，退出时加 1。当计数为 0 时，新的 <code>async with</code> 会挂起（不是阻塞线程），等到有任务完成释放信号量后才继续。<h3 id=xian-cheng-xin-hao-liang>线程信号量</h3><p>在多线程里，原理一样，API 略有不同：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import concurrent.futures
+import threading
+import time
+import random
+
+def fetch_with_semaphore(semaphore: threading.Semaphore, task_id: int):
+    with semaphore:
+        print(f"[Task {task_id}] 开始执行")
+        time.sleep(random.uniform(0.1, 0.5))  # 模拟网络请求
+        print(f"[Task {task_id}] 完成")
+        return task_id
+
+def main():
+    semaphore = threading.Semaphore(5)  # 最多 5 个线程同时执行
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        futures = [
+            executor.submit(fetch_with_semaphore, semaphore, i)
+            for i in range(30)
+        ]
+        results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+    print(f"完成 {len(results)} 个任务")
+
+main()
+</code></pre><h3 id=xin-hao-liang-de-ju-xian>信号量的局限</h3><p>信号量好用，但有一个明显的问题：<strong>并发上限是写死的</strong>。<p>你设 10，那就永远是 10。但现实中：<ul><li>凌晨 3 点服务器空闲，10 太保守<li>下午 3 点流量高峰，10 可能太激进<li>目标服务刚好在发布，承载能力临时下降</ul><p>怎么办？得让并发量「活」起来。<h2 id=2-pid-kong-zhi-qi-yong-fan-kui-hui-lu-dong-tai-diao-can>2. PID 控制器：用反馈回路动态调参</h2><p>PID 控制器（比例-积分-微分控制器）是工业控制里的经典算法。它的思路是：观察系统的实际状态和目标状态之间的差距（误差），然后根据误差来调整输出。<p>用在并发控制里：<ul><li><strong>目标</strong>：把失败率控制在某个阈值以下（比如 5%）<li><strong>输出</strong>：并发量<li><strong>反馈</strong>：实际的请求失败率</ul><h3 id=pid-san-ge-fen-liang>PID 三个分量</h3><table><thead><tr><th>分量<th>作用<th>并发控制中的含义<tbody><tr><td><strong>P（比例）</strong><td>根据当前误差调整<td>失败率高了，立刻降并发<tr><td><strong>I（积分）</strong><td>累计历史误差，消除稳态偏差<td>失败率一直略高，持续微调<tr><td><strong>D（微分）</strong><td>根据误差变化速度调整<td>失败率突然飙升，快速响应</table><h3 id=wan-zheng-shi-xian>完整实现</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+import time
+import random
+
+class PIDController:
+    """PID 控制器，用于动态调整并发量"""
+
+    def __init__(self, kp: float, ki: float, kd: float,
+                 target: float, min_output: int, max_output: int):
+        self.kp = kp          # 比例系数
+        self.ki = ki          # 积分系数
+        self.kd = kd          # 微分系数
+        self.target = target  # 目标失败率
+        self.min_output = min_output
+        self.max_output = max_output
+
+        self._integral = 0.0
+        self._prev_error = 0.0
+
+    def compute(self, current_value: float) -> int:
+        """根据当前失败率计算新的并发量"""
+        error = self.target - current_value  # 正值 = 还有余量可以加速
+
+        # P: 当前误差
+        p_term = self.kp * error
+
+        # I: 累积误差（加 anti-windup 限制）
+        self._integral += error
+        self._integral = max(-50, min(50, self._integral))  # 防止积分饱和
+        i_term = self.ki * self._integral
+
+        # D: 误差变化率
+        d_term = self.kd * (error - self._prev_error)
+        self._prev_error = error
+
+        output = p_term + i_term + d_term
+        return int(max(self.min_output, min(self.max_output, output)))
+
+
+async def fetch_with_pid(url: str, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
+    """带信号量的异步请求"""
+    async with semaphore:
+        try:
+            resp = await client.get(url, timeout=10)
+            # 模拟：随机失败来演示 PID 调整
+            if random.random() < 0.15:
+                return False
+            return resp.status_code == 200
+        except Exception:
+            return False
+
+
+async def main():
+    pid = PIDController(
+        kp=20.0, ki=0.5, kd=5.0,
+        target=0.05,       # 目标失败率 5%
+        min_output=2,       # 最少 2 并发
+        max_output=50       # 最多 50 并发
+    )
+
+    current_concurrency = 10
+    url = "https://httpbin.org/delay/0"
+
+    async with httpx.AsyncClient() as client:
+        for batch in range(10):
+            semaphore = asyncio.Semaphore(current_concurrency)
+            tasks = [fetch_with_pid(url, client, semaphore) for _ in range(20)]
+            results = await asyncio.gather(*tasks)
+
+            failure_rate = sum(1 for r in results if not r) / len(results)
+            new_concurrency = pid.compute(failure_rate)
+
+            print(f"Batch {batch+1}: "
+                  f"并发={current_concurrency}, "
+                  f"失败率={failure_rate:.1%}, "
+                  f"调整后并发={new_concurrency}")
+
+            current_concurrency = new_concurrency
+
+asyncio.run(main())
+</code></pre><h3 id=pid-diao-can-jian-yi>PID 调参建议</h3><p>调 PID 参数是一门手艺。几个经验值：<ol><li><strong>先只用 P</strong>：把 <code>ki</code> 和 <code>kd</code> 设为 0，调 <code>kp</code> 让系统大致能跟上<li><strong>加 I 消除稳态误差</strong>：如果发现失败率稳定在目标值附近但就是到不了，加一点 <code>ki</code><li><strong>加 D 抑制震荡</strong>：如果并发量来回剧烈波动，加 <code>kd</code><li><strong>一定要加 anti-windup</strong>：限制积分项的累积范围，防止积分饱和后系统失控</ol><h2 id=3-ling-pai-tong-kong-zhi-qing-qiu-su-lu>3. 令牌桶：控制请求速率</h2><p>信号量控制的是「同时有多少请求在飞」，令牌桶控制的是「每秒能发多少请求」。这是两个不同的维度。<h3 id=ling-pai-tong-vs-xin-hao-liang>令牌桶 vs 信号量</h3><p>举个例子：信号量设 10，意味着最多 10 个请求同时进行。但如果每个请求只要 10ms 就返回，那一秒钟你就发了 1000 个请求。信号量管不了这个。<p>令牌桶的思路：<ul><li>桶里有令牌，以固定速率生成（比如每秒 100 个）<li>每个请求消耗一个令牌<li>桶满了就不再生成（有上限）<li>没有令牌就等着</ul><h3 id=xian-cheng-an-quan-de-ling-pai-tong-shi-xian>线程安全的令牌桶实现</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import threading
+import time
+
+class TokenBucket:
+    """线程安全的令牌桶"""
+
+    def __init__(self, rate: float, capacity: int):
+        self.rate = rate          # 令牌生成速率（个/秒）
+        self.capacity = capacity  # 桶的最大容量
+        self._tokens = float(capacity)
+        self._last_refill = time.monotonic()
+        self._lock = threading.Lock()
+
+    def _refill(self):
+        """按时间补充令牌"""
+        now = time.monotonic()
+        elapsed = now - self._last_refill
+        new_tokens = elapsed * self.rate
+        self._tokens = min(self.capacity, self._tokens + new_tokens)
+        self._last_refill = now
+
+    def acquire(self, timeout: float = None) -> bool:
+        """获取一个令牌。成功返回 True，超时返回 False"""
+        deadline = time.monotonic() + timeout if timeout else None
+
+        while True:
+            with self._lock:
+                self._refill()
+                if self._tokens >= 1:
+                    self._tokens -= 1
+                    return True
+
+            # 没有令牌，等一下再试
+            if deadline and time.monotonic() >= deadline:
+                return False
+            time.sleep(0.01)  # 10ms 间隔重试
+
+
+class RateLimitedExecutor:
+    """带速率限制的任务执行器"""
+
+    def __init__(self, rate: float, capacity: int, max_workers: int):
+        self.bucket = TokenBucket(rate, capacity)
+        self.max_workers = max_workers
+
+    def execute(self, task_fn, task_args_list):
+        """执行一批任务"""
+        import concurrent.futures
+
+        def wrapped(args):
+            # 先拿令牌，再执行
+            if self.bucket.acquire(timeout=30):
+                return task_fn(*args)
+            else:
+                raise TimeoutError("获取令牌超时")
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+            futures = [pool.submit(wrapped, args) for args in task_args_list]
+            return [f.result() for f in concurrent.futures.as_completed(futures)]
+
+
+# 使用示例
+def call_api(task_id: int):
+    print(f"[{time.strftime('%H:%M:%S')}] Task {task_id} 执行中")
+    time.sleep(0.1)
+    return f"Task {task_id} 完成"
+
+executor = RateLimitedExecutor(
+    rate=10,       # 每秒 10 个请求
+    capacity=20,   # 最多攒 20 个令牌（允许短暂突发）
+    max_workers=5
+)
+
+results = executor.execute(call_api, [(i,) for i in range(30)])
+print(f"\n完成 {len(results)} 个任务")
+</code></pre><h3 id=asyncio-ban-ling-pai-tong>asyncio 版令牌桶</h3><p>如果你用的是异步模型，令牌桶可以用 <code>asyncio.Event</code> 实现，避免 busy-wait：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import time
+
+class AsyncTokenBucket:
+    """异步令牌桶"""
+
+    def __init__(self, rate: float, capacity: int):
+        self.rate = rate
+        self.capacity = capacity
+        self._tokens = float(capacity)
+        self._last_refill = time.monotonic()
+        self._event = asyncio.Event()
+        self._event.set()
+
+    async def acquire(self):
+        """获取一个令牌（协程会挂起，不阻塞线程）"""
+        while True:
+            now = time.monotonic()
+            elapsed = now - self._last_refill
+            self._tokens = min(self.capacity, self._tokens + elapsed * self.rate)
+            self._last_refill = now
+
+            if self._tokens >= 1:
+                self._tokens -= 1
+                return True
+
+            # 计算下一个令牌生成的时间
+            wait_time = (1 - self._tokens) / self.rate
+            await asyncio.sleep(wait_time)
+</code></pre><h2 id=4-zi-gua-ying-bing-fa-diao-zheng-cong-1-kai-shi-tan-ce-shang-xian>4. 自适应并发调整：从 1 开始探测上限</h2><p>前面几种方案都需要你提前知道一些参数（并发上限、目标失败率、令牌速率）。但如果你完全不知道目标服务能承受多少呢？<p>自适应并发调整的思路很简单：<strong>从低并发开始，逐步加速，直到开始出错，然后退回来</strong>。类似于 TCP 的拥塞控制。<h3 id=he-xin-luo-ji>核心逻辑</h3><pre><code>并发量 = 1
+每个批次结束后：
+  如果 失败率 < 阈值 → 并发量 += 步长（加速探测）
+  如果 失败率 > 阈值 → 并发量 = 并发量 / 2（快速退避）
+  并发量 = clamp(并发量, 最小值, 最大值)
+</code></pre><h3 id=wan-zheng-shi-xian-1>完整实现</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+import random
+
+class AdaptiveConcurrencyController:
+    """自适应并发控制器 — 自动探测最佳并发量"""
+
+    def __init__(self, min_concurrency: int = 1, max_concurrency: int = 100,
+                 failure_threshold: float = 0.1, step: int = 2):
+        self.min_concurrency = min_concurrency
+        self.max_concurrency = max_concurrency
+        self.failure_threshold = failure_threshold  # 允许的最大失败率
+        self.step = step  # 每次增加的并发量
+
+        self.current_concurrency = min_concurrency
+        self._history = []  # 记录每轮的 (并发量, 失败率)
+
+    def adjust(self, failure_rate: float):
+        """根据失败率调整并发量"""
+        old = self.current_concurrency
+
+        if failure_rate <= self.failure_threshold:
+            # 还有余量，加速
+            self.current_concurrency = min(
+                self.max_concurrency,
+                self.current_concurrency + self.step
+            )
+        else:
+            # 超过阈值，快速退避（减半）
+            self.current_concurrency = max(
+                self.min_concurrency,
+                self.current_concurrency // 2
+            )
+
+        self._history.append((old, failure_rate, self.current_concurrency))
+        return self.current_concurrency
+
+    def report(self):
+        """打印调整历史"""
+        print("\n--- 并发调整历史 ---")
+        print(f"{'轮次':>4} | {'并发量':>6} | {'失败率':>6} | {'调整后':>6}")
+        print("-" * 40)
+        for i, (old, rate, new) in enumerate(self._history, 1):
+            arrow = "↑" if new > old else ("↓" if new < old else "→")
+            print(f"{i:>4} | {old:>6} | {rate:>5.1%} | {new:>5} {arrow}")
+
+
+async def fetch(client: httpx.AsyncClient, semaphore: asyncio.Semaphore, url: str):
+    async with semaphore:
+        try:
+            resp = await client.get(url, timeout=10)
+            # 模拟：并发越高，失败率越高
+            simulated_failure = random.random() < (semaphore._value / 100)
+            return not simulated_failure and resp.status_code == 200
+        except Exception:
+            return False
+
+
+async def main():
+    controller = AdaptiveConcurrencyController(
+        min_concurrency=1,
+        max_concurrency=50,
+        failure_threshold=0.15,  # 15% 失败率阈值
+        step=3
+    )
+
+    url = "https://httpbin.org/delay/0"
+    batch_size = 20
+
+    async with httpx.AsyncClient() as client:
+        for round_num in range(15):
+            concurrency = controller.current_concurrency
+            semaphore = asyncio.Semaphore(concurrency)
+
+            tasks = [fetch(client, semaphore, url) for _ in range(batch_size)]
+            results = await asyncio.gather(*tasks)
+
+            failure_rate = sum(1 for r in results if not r) / len(results)
+            controller.adjust(failure_rate)
+
+    controller.report()
+
+asyncio.run(main())
+</code></pre><p>运行后你会看到并发量先逐步上升，在失败率超过阈值后快速回退，最终在某个范围内稳定——这就是自适应的效果。<h2 id=5-shi-zhan-xuan-xing-na-chong-fang-an-gua-he-ni>5. 实战选型：哪种方案适合你？</h2><table><thead><tr><th>场景<th>推荐方案<th>理由<tbody><tr><td>对接有明确 rate limit 的 API<td>令牌桶<td>直接按 API 限制设速率<tr><td>并发量大致已知，追求简单<td>固定信号量<td>三行代码搞定<tr><td>目标服务负载不可预测<td>自适应并发<td>自动探测，不用猜参数<tr><td>需要精确控制失败率<td>PID 控制器<td>反馈回路最精细<tr><td>需要同时控制并发和速率<td>信号量 + 令牌桶<td>两者组合使用</table><h3 id=ji-ge-shi-zhan-jian-yi>几个实战建议</h3><ol><li><strong>先用固定信号量</strong>。大多数情况下，设一个保守的并发上限就够了。不要过度工程化。<li><strong>监控先行</strong>。不管用哪种方案，先把成功率、响应时间、并发量这些指标记录下来。有数据才能调参。<li><strong>令牌桶和信号量可以叠加</strong>。信号量控制同时在飞的请求数，令牌桶控制每秒的请求速率，两者不矛盾。<li><strong>重试要带退避</strong>。并发控制解决的是「发多快」的问题，重试策略解决的是「失败了怎么办」的问题。两者要配合，记得用指数退避（exponential backoff）。<li><strong>测试环境和生产环境差异很大</strong>。本地测试跑得好的参数，上了生产可能完全不同。留好动态调整的能力。</ol><h2 id=zui-hou>最后</h2><p>并发控制说到底就一个问题：<strong>怎么在「跑得快」和「别把对面打崩」之间找平衡</strong>。<p>信号量是最简单的答案，能覆盖大多数场景；要控速率就上令牌桶；想精细控制失败率，PID 的反馈回路最细；完全不知道对面底细，就让自适应自己去探上限。<p>我的建议还是老一套：从简单的开始，遇到问题再升级。别一上来就堆最复杂的方案，那本身就跟「控制复杂度」拧着来了。</div><div id=comments-issue-id style=display:none>7</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

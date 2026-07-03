@@ -1,0 +1,148 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="从零开始搭建 Proxmox VE 虚拟化平台：ISO 镜像制作、系统安装、存储优化、国内源配置、Cloud-Init 模板创建，一篇搞定 Homelab 的虚拟化底座。" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content="私家 Homelab 篇一：Proxmox VE 安装和基本配置" property=og:title><meta content="从零开始搭建 Proxmox VE 虚拟化平台：ISO 镜像制作、系统安装、存储优化、国内源配置、Cloud-Init 模板创建，一篇搞定 Homelab 的虚拟化底座。" property=og:description><meta content=https://blog.fullstackjam.com/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ property=og:url><meta content=2024-03-04T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="私家 Homelab 篇一：Proxmox VE 安装和基本配置" name=twitter:title><meta content="从零开始搭建 Proxmox VE 虚拟化平台：ISO 镜像制作、系统安装、存储优化、国内源配置、Cloud-Init 模板创建，一篇搞定 Homelab 的虚拟化底座。" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "私家 Homelab 篇一：Proxmox VE 安装和基本配置",
+  "description": "从零开始搭建 Proxmox VE 虚拟化平台：ISO 镜像制作、系统安装、存储优化、国内源配置、Cloud-Init 模板创建，一篇搞定 Homelab 的虚拟化底座。",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2024-03-04",
+  
+  "dateModified": "2024-03-04",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "Proxmox VE 和 ESXi 比，家用选哪个？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PVE 免费开源、基于 Debian、支持 KVM 和 LXC 容器，社区活跃。ESXi 免费版功能阉割严重，而且 Broadcom 收购 VMware 后政策更不友好。家用 Homelab 场景下 PVE 是目前最佳选择。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Proxmox 安装对硬件有什么要求？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "最低要求：支持 VT-x/VT-d 的 64 位 CPU、至少 2GB 内存（建议 8GB+）、至少 32GB 存储。网卡建议用 Intel 芯片，兼容性最好。家用 Homelab 推荐至少 32GB 内存和 NVMe SSD。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "为什么要删掉 local-lvm 只用一个 local 分区？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PVE 默认把硬盘分成 root 和 data 两个逻辑卷，data 用的 lvm-thin 格式。单机使用时这种分法浪费空间且管理复杂，不如合并成一个大分区，用目录存储（dir）统一管理 ISO、备份、磁盘镜像。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Cloud-Init 模板有什么好处？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "创建一次模板，以后每次需要新虚拟机只需要克隆 + 改参数，几分钟就能拿到一台配好网络、SSH、基础软件的虚拟机。不需要每次都从头装系统，效率提升巨大。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "国内网络装 Proxmox 会不会很慢？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "默认源在国外，确实很慢。但换成中科大或清华镜像源后速度会好很多。建议装完系统后第一件事就是换源，然后再做后续配置。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>私家 Homelab 篇一：Proxmox VE 安装和基本配置 - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ id=title>私家 Homelab 篇一：Proxmox VE 安装和基本配置</a><div id=date>2024-03-04</div><div id=content><p>折腾 Homelab 有一段时间了，今天把 Proxmox VE 的安装和基础配置过程完整记录一下。这是"私家 Homelab"系列的第一篇，先把虚拟化底座搭好。<h2 id=wei-shi-yao-xuan-proxmox-ve>为什么选 Proxmox VE</h2><p>选虚拟化平台之前，我也纠结过 ESXi、Unraid、TrueNAS Scale。最后选了 Proxmox VE（以下简称 PVE），理由很简单：<ul><li><strong>免费开源</strong>：基于 Debian，没有功能阉割，企业订阅只是多了技术支持<li><strong>KVM + LXC 双引擎</strong>：重量级服务跑虚拟机（KVM），轻量级服务跑容器（LXC），灵活度拉满<li><strong>Web UI 好用</strong>：浏览器里就能管理所有虚拟机和容器，不需要装额外客户端<li><strong>社区活跃</strong>：论坛、Wiki 质量都很高，遇到问题基本都能搜到</ul><p>特别是 Broadcom 收购 VMware 之后，ESXi 免费版的前景更不明朗了。PVE 是目前 Homelab 圈子里的主流选择。<h2 id=an-zhuang-pve-xi-tong>安装 PVE 系统</h2><h3 id=zhun-bei-gong-zuo>准备工作</h3><ol><li>从<a href=https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso>官网</a>下载最新版 PVE ISO 镜像<li>用 <a href=https://rufus.ie/en/>Rufus</a>（Windows）或 <a href=https://etcher.balena.io/>balenaEtcher</a>（macOS/Linux）制作 USB 启动盘<li>确保目标机器的 BIOS 已开启 VT-x / VT-d 虚拟化支持</ol><h3 id=an-zhuang-bu-zou>安装步骤</h3><p>U 盘插入目标机器，重启进入 BIOS，修改启动顺序为 U 盘优先。之后基本就是一路"下一步"：<ol><li><strong>选择安装盘</strong>：选你要装系统的硬盘，建议用 SSD/NVMe<li><strong>设置地区和时区</strong>：选 Asia/Shanghai<li><strong>设置密码和邮箱</strong>：root 密码一定要记牢，邮箱随便填<li><strong>网络配置</strong>：这一步很关键，建议先插好网线，让它自动获取 IP。记下这个 IP 地址（比如我的是 <code>192.168.2.217</code>），之后访问 Web UI 要用</ol><p>安装完成后就可以拔掉显示器了。从此以后，所有操作都通过 Web UI 或 SSH 完成。<h3 id=fang-wen-web-ui>访问 Web UI</h3><p>在同局域网的另一台设备上打开浏览器，访问：<pre><code>https://192.168.2.217:8006/
+</code></pre><p>注意几点：<ul><li>是 <strong>https</strong> 不是 http<li>浏览器会提示 HTTPS 证书无效，正常现象，忽略即可<li>用户名是 <code>root</code>，密码是安装时设置的</ul><p>登录后就能看到 PVE 的管理界面了：</p><img alt="Proxmox VE Dashboard 概览：左侧树形导航、资源监控面板、系统信息" src=/images/proxmox-dashboard-overview.svg style=width:100%;max-width:900px><p>左侧是树形导航，列出了数据中心下所有的节点、虚拟机、容器、存储；右侧是当前选中对象的详情面板，包括 CPU、内存、存储的使用情况和系统信息。<h2 id=ji-ben-pei-zhi>基本配置</h2><p>PVE 装好后，先做几项基础配置，省得后面踩坑。<h3 id=1-guan-bi-qi-ye-ding-yue-yuan>1. 关闭企业订阅源</h3><p>PVE 默认启用了企业订阅源，没订阅的话 <code>apt update</code> 会报错。<p><strong>操作路径</strong>：Datacenter -> pve -> Updates -> Repositories<p>找到 Origin 为 <code>Proxmox</code> 的企业源（通常是最后两个），点 <code>Disable</code> 关掉。然后点 <code>Add</code>，添加 <code>No-Subscription</code> 免费源。<h3 id=2-huan-guo-nei-jing-xiang-yuan>2. 换国内镜像源</h3><p>默认源在国外，速度感人。换成中科大镜像：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 备份原始源
+mkdir -p /etc/apt/sources_backup
+cp /etc/apt/sources.list /etc/apt/sources_backup/sources.list.bak
+cp /etc/apt/sources.list.d/ceph.list /etc/apt/sources_backup/ceph.list.bak
+cp /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources_backup/pve-enterprise.list.bak
+
+# 替换 Debian 源为中科大镜像
+sed -i 's|^deb http://ftp.debian.org|deb https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list
+sed -i 's|^deb http://security.debian.org|deb https://mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list
+
+# 替换 Ceph 源
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-quincy bookworm no-subscription" > /etc/apt/sources.list.d/ceph.list
+
+# 更新软件包索引
+apt update -y
+</code></pre><h3 id=3-xiu-gai-cun-chu-pei-zhi>3. 修改存储配置</h3><p>PVE 默认的 <code>local</code> 存储只允许存放 ISO 和备份文件。要让它支持虚拟机磁盘等所有类型：<p><strong>操作路径</strong>：Datacenter -> Storage -> local -> Edit<p>把 Content 下的所有类型都勾上（Disk image、ISO image、Container template、Snippets、VZDump backup file 等）。<h3 id=4-he-bing-ci-pan-fen-qu-dan-pan-yong-hu-tui-jian>4. 合并磁盘分区（单盘用户推荐）</h3><p>PVE 安装时默认把硬盘分成两个逻辑卷：<code>pve-root</code>（系统分区）和 <code>pve-data</code>（数据分区，lvm-thin 格式）。单机使用时，这种分法反而浪费空间。不如合并成一个大分区：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 查看当前磁盘使用情况
+df -h
+
+# 查看逻辑卷信息
+lvdisplay
+
+# 卸载并删除 data 卷
+umount /dev/pve/data
+lvremove /dev/pve/data
+
+# 把释放的空间全部给 root 卷
+lvresize -l +100%FREE /dev/pve/root
+
+# 扩展文件系统
+resize2fs /dev/mapper/pve-root
+</code></pre><p>操作完成后验证一下：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>df -h
+# 输出类似：
+# /dev/mapper/pve-root  450G  2.5G  428G   1% /
+</code></pre><p>这样整个硬盘的空间就都归 root 分区使用了。<blockquote><p><strong>注意</strong>：删除 <code>pve-data</code> 后，记得去 Web UI 的 Datacenter -> Storage 里把 <code>local-lvm</code> 删掉，只保留 <code>local</code>。</blockquote><h3 id=5-an-zhuang-chang-yong-gong-ju>5. 安装常用工具</h3><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>apt update -y
+
+# CPU 频率和温度监控
+apt install linux-cpupower -y
+modprobe msr
+echo msr > /etc/modules-load.d/turbostat-msr.conf
+chmod +s /usr/sbin/turbostat
+
+# QEMU Guest Agent（让宿主机能正确管理虚拟机）
+apt install qemu-guest-agent -y
+
+# fail2ban（防暴力破解 SSH）
+apt install fail2ban -y
+</code></pre><p>如果你还想在 PVE 的 Summary 页面直接看到 CPU 温度和频率，可以装社区的增强脚本：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>(curl -Lf -o /tmp/temp.sh https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh || curl -Lf -o /tmp/temp.sh https://mirror.ghproxy.com/https://raw.githubusercontent.com/a904055262/PVE-manager-status/main/showtempcpufreq.sh) && chmod +x /tmp/temp.sh && /tmp/temp.sh remod
+</code></pre><h2 id=cloud-init-mo-ban-chuang-jian>Cloud-Init 模板创建</h2><p>每次需要新虚拟机都从 ISO 装一遍太蠢了。PVE 支持 Cloud-Init，和 AWS、阿里云那些云平台一样，可以做到克隆模板后自动配置网络、SSH 密钥、用户账号。<h3 id=shi-yao-shi-cloud-init>什么是 Cloud-Init</h3><p>Cloud-Init 是云环境下的标准初始化工具。虚拟机首次启动时，它会自动完成：<ul><li>设置主机名和网络配置（IP、DNS、网关）<li>注入 SSH 公钥<li>创建用户和设置密码<li>扩展文件系统到整个磁盘</ul><p>PVE 原生支持 Cloud-Init，但需要使用专门的 Cloud Image（不是普通的 ISO 安装镜像）。<h3 id=chuang-jian-ubuntu-cloud-init-mo-ban>创建 Ubuntu Cloud-Init 模板</h3><p>以 Ubuntu 24.04 LTS 为例：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 1. 下载 Ubuntu Cloud Image
+wget https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+
+# 2. 创建新虚拟机（ID 9000，留给模板用）
+qm create 9000 --name ubuntu-noble-template --memory 2048 --net0 virtio,bridge=vmbr0
+
+# 3. 将下载的镜像导入为虚拟机硬盘
+qm importdisk 9000 ubuntu-24.04-server-cloudimg-amd64.img local
+
+# 4. 将导入的硬盘通过 SCSI 挂载到虚拟机
+qm set 9000 --scsihw virtio-scsi-pci --scsi0 local:9000/vm-9000-disk-0.raw
+
+# 5. Cloud Image 默认只有 2GB，扩容到 50GB
+qm resize 9000 scsi0 50G
+
+# 6. 添加 Cloud-Init 光驱
+qm set 9000 --ide2 local:cloudinit
+</code></pre><h3 id=pei-zhi-bing-zhuan-wei-mo-ban>配置并转为模板</h3><p>命令执行完后，还需要在 Web UI 里完成几步：<ol><li><strong>调整启动顺序</strong>：Hardware -> Boot Order，确保 <code>scsi0</code> 在启动项中且已启用<li><strong>配置 Cloud-Init 参数</strong>：Cloud-Init 面板中设置： <ul><li><strong>User</strong>：你的用户名<li><strong>Password</strong>：登录密码<li><strong>SSH public key</strong>：你的 SSH 公钥（Cloud Image 默认禁用密码登录，必须设置）<li><strong>IP Config</strong>：DHCP 或静态 IP</ul><li><strong>点击 "Regenerate Image"</strong>：让配置生效<li><strong>启动虚拟机测试</strong>：SSH 登录，确认一切正常<li><strong>安装基础软件</strong>：</ol><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>sudo apt update -y
+sudo apt install neovim vim git qemu-guest-agent curl wget openssh-server -y
+</code></pre><ol start=6><li><strong>确认 QEMU Guest Agent 已安装并运行</strong>：</ol><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>sudo systemctl status qemu-guest-agent
+# 如果没有自带，手动安装：
+sudo apt install qemu-guest-agent -y
+</code></pre><ol start=7><li>根据需要安装 Docker、Python 等基础环境<li><strong>关闭虚拟机</strong>，然后右键 -> <strong>Convert to Template</strong></ol><h3 id=cong-mo-ban-ke-long-xin-xu-ni-ji>从模板克隆新虚拟机</h3><p>模板创建完成后，以后新建虚拟机只需要：<ol><li>右键模板 -> Clone<li>选择 Full Clone（完整克隆）<li>修改 Cloud-Init 参数（IP、主机名等）<li>启动，几分钟就能拿到一台可用的虚拟机</ol><h2 id=can-kao>参考</h2><ul><li><a href=https://thiscute.world/posts/proxmox-virtual-environment-instruction>Proxmox Virtual Environment 使用指南 - This Cute World</a><li><a href=https://pve.proxmox.com/wiki/Main_Page>Proxmox VE 官方文档</a><li><a href=https://cloudinit.readthedocs.io/>Cloud-Init 官方文档</a></ul></div><div id=comments-issue-id style=display:none>10</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

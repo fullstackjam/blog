@@ -1,0 +1,147 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="A complete guide to setting up Proxmox VE as your homelab virtualization platform — from USB boot drive creation to storage optimization, mirror configuration, and Cloud-Init template setup." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="My Homelab Part 1: Proxmox VE Installation and Basic Configuration" property=og:title><meta content="A complete guide to setting up Proxmox VE as your homelab virtualization platform — from USB boot drive creation to storage optimization, mirror configuration, and Cloud-Init template setup." property=og:description><meta content=https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ property=og:url><meta content=2024-03-04T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="My Homelab Part 1: Proxmox VE Installation and Basic Configuration" name=twitter:title><meta content="A complete guide to setting up Proxmox VE as your homelab virtualization platform — from USB boot drive creation to storage optimization, mirror configuration, and Cloud-Init template setup." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "My Homelab Part 1: Proxmox VE Installation and Basic Configuration",
+  "description": "A complete guide to setting up Proxmox VE as your homelab virtualization platform — from USB boot drive creation to storage optimization, mirror configuration, and Cloud-Init template setup.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2024-03-04",
+  
+  "dateModified": "2024-03-04",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "Why choose Proxmox VE over ESXi for a homelab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PVE is free and open-source, based on Debian, and supports both KVM virtual machines and LXC containers. ESXi's free tier has been increasingly restricted, especially after Broadcom's acquisition of VMware. PVE has a thriving community and no feature gating behind paid licenses."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What are the minimum hardware requirements for Proxmox VE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You need a 64-bit CPU with VT-x/VT-d support, at least 2GB RAM (8GB+ recommended), and 32GB storage minimum. Intel NICs tend to have the best driver compatibility. For a practical homelab, aim for 32GB+ RAM and an NVMe SSD."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Why remove local-lvm and merge everything into one partition?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PVE's default install splits your disk into root (ext4) and data (lvm-thin) logical volumes. For single-node homelab use, this wastes space and adds complexity. Merging into one partition with directory-based storage is simpler and gives you full control over disk allocation."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What is Cloud-Init and why should I use it with Proxmox?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cloud-Init is the industry-standard tool for initializing cloud instances. It automatically configures networking, SSH keys, user accounts, and filesystem expansion on first boot. With a Cloud-Init template in PVE, you can spin up a fully configured VM in minutes by cloning instead of installing from scratch every time."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Can I run Proxmox VE on old or low-end hardware?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, PVE itself is lightweight. An old desktop with an Intel Core i5, 16GB RAM, and a 256GB SSD makes a perfectly capable starter homelab. The key requirement is that the CPU supports hardware virtualization (VT-x/VT-d), which most CPUs from the last decade do."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>My Homelab Part 1: Proxmox VE Installation and Basic Configuration - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/ id=title>My Homelab Part 1: Proxmox VE Installation and Basic Configuration</a><div id=date>2024-03-04</div><div id=content><p>I have been running a homelab for a while now, and this post documents the full process of getting Proxmox VE up and running as the virtualization foundation. This is Part 1 of my "Homelab" series. Let's get the hypervisor sorted first.<h2 id=why-proxmox-ve>Why Proxmox VE</h2><p>Before committing to a platform, I evaluated ESXi, Unraid, and TrueNAS Scale. Proxmox VE (PVE) won for a few straightforward reasons:<ul><li><strong>Free and open-source</strong>: Built on Debian. No feature gating; the paid subscription only adds tech support.<li><strong>KVM + LXC</strong>: Run full virtual machines (KVM) for heavy workloads and lightweight containers (LXC) for services that don't need a full OS. Best of both worlds.<li><strong>Solid Web UI</strong>: Manage everything from a browser. No thick client needed.<li><strong>Active community</strong>: The forums and wiki are genuinely helpful. Most problems have already been solved by someone.</ul><p>Especially after Broadcom's acquisition of VMware made ESXi's free tier future uncertain, PVE has become the default choice in the homelab community.<h2 id=installing-pve>Installing PVE</h2><h3 id=what-you-need>What You Need</h3><ol><li>Download the latest PVE ISO from the <a href=https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso>official site</a><li>Flash it to a USB drive with <a href=https://rufus.ie/en/>Rufus</a> (Windows) or <a href=https://etcher.balena.io/>balenaEtcher</a> (macOS/Linux)<li>Make sure VT-x / VT-d is enabled in your target machine's BIOS</ol><h3 id=installation-walkthrough>Installation Walkthrough</h3><p>Plug in the USB drive, boot from it, and follow the installer. The key steps:<ol><li><strong>Select target disk</strong>: Pick the drive you want PVE on. SSD or NVMe recommended.<li><strong>Country and timezone</strong>: Set to your region.<li><strong>Root password and email</strong>: Remember the root password. The email can be anything.<li><strong>Network configuration</strong>: This is the important one. Plug in an Ethernet cable and let it auto-detect an IP address. Write it down (mine was <code>192.168.2.217</code>). You'll need this to access the Web UI.</ol><p>Once the installation finishes, you can disconnect the monitor. Everything from here on is done through the Web UI or SSH.<h3 id=accessing-the-web-ui>Accessing the Web UI</h3><p>From another device on the same network, open a browser and go to:<pre><code>https://192.168.2.217:8006/
+</code></pre><p>A few things to note:<ul><li>It's <strong>https</strong>, not http<li>Your browser will warn about an invalid HTTPS certificate. This is expected, just proceed<li>Username is <code>root</code>, password is what you set during install</ul><p>After logging in, you'll see the PVE management dashboard:</p><img alt="Proxmox VE Dashboard overview: tree navigation on the left, resource gauges and system info on the right" src=/images/proxmox-dashboard-overview.en.svg style=width:100%;max-width:900px><p>The left panel shows a tree of your datacenter, nodes, VMs, containers, and storage. The right panel shows details for whatever you have selected: CPU, memory, storage usage, and system information.<h2 id=basic-configuration>Basic Configuration</h2><p>A few things to configure right after installation to avoid headaches later.<h3 id=1-disable-the-enterprise-repository>1. Disable the Enterprise Repository</h3><p>PVE ships with the enterprise repository enabled by default. Without a subscription, <code>apt update</code> will throw errors.<p><strong>Navigate to</strong>: Datacenter -> pve -> Updates -> Repositories<p>Find the entries with Proxmox enterprise origins (usually the last two) and click <code>Disable</code>. Then click <code>Add</code> and select the <code>No-Subscription</code> repository.<h3 id=2-set-up-package-mirrors-optional>2. Set Up Package Mirrors (Optional)</h3><p>If you're in a region where the default Debian mirrors are slow, switch to a closer mirror. Here's an example using USTC mirrors (useful for users in China):<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Backup original sources
+mkdir -p /etc/apt/sources_backup
+cp /etc/apt/sources.list /etc/apt/sources_backup/sources.list.bak
+cp /etc/apt/sources.list.d/ceph.list /etc/apt/sources_backup/ceph.list.bak
+cp /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources_backup/pve-enterprise.list.bak
+
+# Replace Debian sources with USTC mirror
+sed -i 's|^deb http://ftp.debian.org|deb https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list
+sed -i 's|^deb http://security.debian.org|deb https://mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list
+
+# Replace Ceph source
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-quincy bookworm no-subscription" > /etc/apt/sources.list.d/ceph.list
+
+# Update package index
+apt update -y
+</code></pre><p>For other regions, just swap in your preferred Debian mirror.<h3 id=3-configure-storage-content-types>3. Configure Storage Content Types</h3><p>By default, the <code>local</code> storage only accepts ISO images and backups. To store VM disks and other content types:<p><strong>Navigate to</strong>: Datacenter -> Storage -> local -> Edit<p>Check all content types under the Content dropdown (Disk image, ISO image, Container template, Snippets, VZDump backup file, etc.).<h3 id=4-merge-disk-partitions-recommended-for-single-disk-setups>4. Merge Disk Partitions (Recommended for Single-Disk Setups)</h3><p>PVE's installer creates two logical volumes by default: <code>pve-root</code> (system, ext4) and <code>pve-data</code> (VM storage, lvm-thin). For a single-node homelab, this split wastes space. Merging them gives you one big partition:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Check current disk usage
+df -h
+
+# View logical volumes
+lvdisplay
+
+# Unmount and remove the data volume
+umount /dev/pve/data
+lvremove /dev/pve/data
+
+# Expand root to use all free space
+lvresize -l +100%FREE /dev/pve/root
+
+# Resize the filesystem
+resize2fs /dev/mapper/pve-root
+</code></pre><p>Verify the result:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>df -h
+# Should show something like:
+# /dev/mapper/pve-root  450G  2.5G  428G   1% /
+</code></pre><p>Your entire disk is now available under the root partition.<blockquote><p><strong>Important</strong>: After removing <code>pve-data</code>, go to Datacenter -> Storage in the Web UI and delete the <code>local-lvm</code> entry. Keep only <code>local</code>.</blockquote><h3 id=5-install-essential-tools>5. Install Essential Tools</h3><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>apt update -y
+
+# CPU frequency and temperature monitoring
+apt install linux-cpupower -y
+modprobe msr
+echo msr > /etc/modules-load.d/turbostat-msr.conf
+chmod +s /usr/sbin/turbostat
+
+# QEMU Guest Agent (lets the host properly manage VMs)
+apt install qemu-guest-agent -y
+
+# fail2ban (protect SSH from brute-force attacks)
+apt install fail2ban -y
+</code></pre><p>There are also community scripts that add CPU temperature and frequency readouts directly to PVE's Summary page, if you want that level of monitoring at a glance.<h2 id=creating-a-cloud-init-template>Creating a Cloud-Init Template</h2><p>Installing from an ISO every time you need a new VM is tedious. PVE supports Cloud-Init, the same mechanism used by AWS, GCP, and other cloud providers, to auto-configure VMs on first boot.<h3 id=what-cloud-init-does>What Cloud-Init Does</h3><p>When a VM boots for the first time with Cloud-Init, it automatically:<ul><li>Configures hostname and networking (IP, DNS, gateway)<li>Injects SSH public keys<li>Creates user accounts and sets passwords<li>Expands the filesystem to fill the disk</ul><p>PVE has native Cloud-Init support, but you need a Cloud Image (not a regular ISO installer).<h3 id=building-an-ubuntu-cloud-init-template>Building an Ubuntu Cloud-Init Template</h3><p>Using Ubuntu 24.04 LTS as an example:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># 1. Download the Ubuntu Cloud Image
+wget https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+
+# 2. Create a new VM (ID 9000, reserved for templates)
+qm create 9000 --name ubuntu-noble-template --memory 2048 --net0 virtio,bridge=vmbr0
+
+# 3. Import the downloaded image as a VM disk
+qm importdisk 9000 ubuntu-24.04-server-cloudimg-amd64.img local
+
+# 4. Attach the imported disk via SCSI
+qm set 9000 --scsihw virtio-scsi-pci --scsi0 local:9000/vm-9000-disk-0.raw
+
+# 5. Resize the disk from 2GB to 50GB
+qm resize 9000 scsi0 50G
+
+# 6. Add a Cloud-Init CD-ROM drive
+qm set 9000 --ide2 local:cloudinit
+</code></pre><h3 id=configure-and-convert-to-template>Configure and Convert to Template</h3><p>After running the commands above, finish the setup in the Web UI:<ol><li><strong>Set boot order</strong>: Hardware -> Boot Order. Make sure <code>scsi0</code> is enabled and listed.<li><strong>Configure Cloud-Init</strong>: In the Cloud-Init panel, set: <ul><li><strong>User</strong>: Your username<li><strong>Password</strong>: A login password<li><strong>SSH public key</strong>: Your public key (Cloud Images disable password-based SSH by default, so this is mandatory)<li><strong>IP Config</strong>: DHCP or a static IP</ul><li><strong>Click "Regenerate Image"</strong> to apply the configuration.<li><strong>Boot the VM and test</strong>: SSH in and verify everything works.<li><strong>Install base packages</strong>:</ol><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>sudo apt update -y
+sudo apt install neovim vim git qemu-guest-agent curl wget openssh-server -y
+</code></pre><ol start=6><li><strong>Confirm QEMU Guest Agent is running</strong>:</ol><pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>sudo systemctl status qemu-guest-agent
+# If not installed:
+sudo apt install qemu-guest-agent -y
+</code></pre><ol start=7><li>Install any additional tools you want in every VM (Docker, Python, etc.)<li><strong>Shut down the VM</strong>, then right-click -> <strong>Convert to Template</strong></ol><h3 id=cloning-vms-from-the-template>Cloning VMs from the Template</h3><p>With the template ready, creating a new VM is trivial:<ol><li>Right-click the template -> Clone<li>Choose Full Clone<li>Adjust Cloud-Init parameters (IP, hostname, etc.)<li>Start it up. You'll have a fully configured VM in minutes</ol><h2 id=references>References</h2><ul><li><a href=https://thiscute.world/posts/proxmox-virtual-environment-instruction>Proxmox Virtual Environment Guide - This Cute World</a><li><a href=https://pve.proxmox.com/wiki/Main_Page>Proxmox VE Official Documentation</a><li><a href=https://cloudinit.readthedocs.io/>Cloud-Init Documentation</a></ul></div><div id=comments-issue-id style=display:none>10</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

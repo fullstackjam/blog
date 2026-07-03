@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <filter id="shadow5">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+  </defs>
+  <rect width="900" height="400" rx="16" fill="url(#bg5)"/>
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E3A5F">initramfs：初始 RAM 文件系统</text>
+
+  <!-- Timeline flow: left to right -->
+  <!-- Step 1: Kernel extracts initramfs -->
+  <g filter="url(#shadow5)">
+    <rect x="30" y="70" width="180" height="130" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="120" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#059669">1. 解压</text>
+    <line x1="55" y1="108" x2="185" y2="108" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="120" y="128" text-anchor="middle" font-size="11" fill="#334155">内核从压缩归档</text>
+    <text x="120" y="144" text-anchor="middle" font-size="11" fill="#334155">中解压 initramfs</text>
+    <text x="120" y="182" text-anchor="middle" font-size="10" fill="#94A3B8">cpio + gzip/zstd</text>
+  </g>
+  <line x1="210" y1="135" x2="240" y2="135" stroke="#059669" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <!-- Step 2: udev device detection -->
+  <g filter="url(#shadow5)">
+    <rect x="240" y="70" width="180" height="130" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="330" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#059669">2. udev</text>
+    <line x1="265" y1="108" x2="395" y2="108" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="330" y="128" text-anchor="middle" font-size="11" fill="#334155">检测硬件</text>
+    <text x="330" y="144" text-anchor="middle" font-size="11" fill="#334155">加载设备驱动</text>
+    <text x="330" y="160" text-anchor="middle" font-size="11" fill="#334155">创建 /dev 节点</text>
+    <text x="330" y="182" text-anchor="middle" font-size="10" fill="#94A3B8">存储、网络等</text>
+  </g>
+  <line x1="420" y1="135" x2="450" y2="135" stroke="#059669" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <!-- Step 3: Mount root filesystem -->
+  <g filter="url(#shadow5)">
+    <rect x="450" y="70" width="180" height="130" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="540" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#059669">3. 挂载根分区</text>
+    <line x1="475" y1="108" x2="605" y2="108" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="540" y="128" text-anchor="middle" font-size="11" fill="#334155">找到根设备</text>
+    <text x="540" y="144" text-anchor="middle" font-size="11" fill="#334155">必要时执行 fsck</text>
+    <text x="540" y="160" text-anchor="middle" font-size="11" fill="#334155">以只读方式挂载</text>
+    <text x="540" y="182" text-anchor="middle" font-size="10" fill="#94A3B8">root= 内核参数</text>
+  </g>
+  <line x1="630" y1="135" x2="660" y2="135" stroke="#059669" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <!-- Step 4: pivot_root -->
+  <g filter="url(#shadow5)">
+    <rect x="660" y="70" width="210" height="130" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="765" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#059669">4. pivot_root</text>
+    <line x1="685" y1="108" x2="845" y2="108" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="765" y="128" text-anchor="middle" font-size="11" fill="#334155">切换到真实的</text>
+    <text x="765" y="144" text-anchor="middle" font-size="11" fill="#334155">根文件系统，释放</text>
+    <text x="765" y="160" text-anchor="middle" font-size="11" fill="#334155">initramfs 内存</text>
+    <text x="765" y="182" text-anchor="middle" font-size="10" fill="#94A3B8">exec /sbin/init</text>
+  </g>
+
+  <!-- Bottom: what's inside initramfs -->
+  <g filter="url(#shadow5)">
+    <rect x="30" y="230" width="840" height="130" rx="14" fill="#fff" stroke="#BFDBFE" stroke-width="1.5"/>
+    <text x="450" y="258" text-anchor="middle" font-size="14" font-weight="600" fill="#1E40AF">initramfs 内容</text>
+
+    <rect x="55" y="272" width="145" height="68" rx="8" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+    <text x="127" y="296" text-anchor="middle" font-size="11" font-weight="600" fill="#1E40AF">/bin, /sbin</text>
+    <text x="127" y="314" text-anchor="middle" font-size="10" fill="#64748B">busybox, mount</text>
+    <text x="127" y="328" text-anchor="middle" font-size="10" fill="#64748B">switch_root</text>
+
+    <rect x="215" y="272" width="145" height="68" rx="8" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="287" y="296" text-anchor="middle" font-size="11" font-weight="600" fill="#5B21B6">/lib/modules</text>
+    <text x="287" y="314" text-anchor="middle" font-size="10" fill="#64748B">存储驱动</text>
+    <text x="287" y="328" text-anchor="middle" font-size="10" fill="#64748B">文件系统驱动 (ext4...)</text>
+
+    <rect x="375" y="272" width="145" height="68" rx="8" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="447" y="296" text-anchor="middle" font-size="11" font-weight="600" fill="#059669">/etc</text>
+    <text x="447" y="314" text-anchor="middle" font-size="10" fill="#64748B">udev 规则</text>
+    <text x="447" y="328" text-anchor="middle" font-size="10" fill="#64748B">modprobe 配置</text>
+
+    <rect x="535" y="272" width="145" height="68" rx="8" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="607" y="296" text-anchor="middle" font-size="11" font-weight="600" fill="#92400E">/scripts</text>
+    <text x="607" y="314" text-anchor="middle" font-size="10" fill="#64748B">初始化脚本</text>
+    <text x="607" y="328" text-anchor="middle" font-size="10" fill="#64748B">Hook 函数</text>
+
+    <rect x="695" y="272" width="145" height="68" rx="8" fill="#FFF1F2" stroke="#FDA4AF" stroke-width="1"/>
+    <text x="767" y="296" text-anchor="middle" font-size="11" font-weight="600" fill="#9F1239">/dev</text>
+    <text x="767" y="314" text-anchor="middle" font-size="10" fill="#64748B">console, null</text>
+    <text x="767" y="328" text-anchor="middle" font-size="10" fill="#64748B">初始设备</text>
+  </g>
+
+  <text x="450" y="390" text-anchor="middle" font-size="10" fill="#94A3B8">blog.fullstackjam.com</text>
+</svg>

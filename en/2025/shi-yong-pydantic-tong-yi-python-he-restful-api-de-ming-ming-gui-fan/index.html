@@ -1,0 +1,164 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Python uses snake_case, JavaScript wants camelCase. Instead of manual field mapping, use Pydantic's alias_generator and to_camel to auto-convert between naming conventions in FastAPI — for both GET and POST requests." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="Unifying Python and RESTful API Naming Conventions with Pydantic" property=og:title><meta content="Python uses snake_case, JavaScript wants camelCase. Instead of manual field mapping, use Pydantic's alias_generator and to_camel to auto-convert between naming conventions in FastAPI — for both GET and POST requests." property=og:description><meta content=https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ property=og:url><meta content=2025-02-05T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="Unifying Python and RESTful API Naming Conventions with Pydantic" name=twitter:title><meta content="Python uses snake_case, JavaScript wants camelCase. Instead of manual field mapping, use Pydantic's alias_generator and to_camel to auto-convert between naming conventions in FastAPI — for both GET and POST requests." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Unifying Python and RESTful API Naming Conventions with Pydantic",
+  "description": "Python uses snake_case, JavaScript wants camelCase. Instead of manual field mapping, use Pydantic's alias_generator and to_camel to auto-convert between naming conventions in FastAPI — for both GET and POST requests.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-02-05",
+  
+  "dateModified": "2025-02-05",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "Why do Python and JavaScript use different naming conventions?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Python's PEP 8 style guide recommends snake_case (e.g., item_id), while JavaScript convention uses camelCase (e.g., itemId). Both are well-established standards in their respective ecosystems, so the practical solution is automatic conversion at the API boundary rather than forcing one side to adopt the other's style."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What is the difference between alias and alias_generator in Pydantic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "alias is set per-field and maps one specific field name to an alias (good for GET query params with few fields). alias_generator is set at the model level and applies a conversion function (like to_camel) to all fields automatically — ideal for POST request bodies with many fields. You can use both in the same project."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What does populate_by_name = True do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "By default, once an alias is set, Pydantic only accepts the alias name for input. Setting populate_by_name = True allows both the original field name (snake_case) and the alias (camelCase) to be used when creating model instances. This makes backend testing easier while still supporting frontend camelCase input."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Does this approach affect OpenAPI documentation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, positively. FastAPI's auto-generated Swagger docs will display camelCase field names when alias_generator is configured. Frontend developers see exactly the field names they need to use, with no mental translation required."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "How does this work with Pydantic V1 vs V2?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pydantic V2 uses model_config = ConfigDict(...) instead of the V1 class Config inner class. The to_camel function is imported from pydantic.alias_generators. The code in this article follows V2 conventions. If you're still on V1, replace ConfigDict with class Config and adjust imports accordingly."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>Unifying Python and RESTful API Naming Conventions with Pydantic - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ id=title>Unifying Python and RESTful API Naming Conventions with Pydantic</a><div id=date>2025-02-05</div><div id=content><blockquote><p>This post is also available in <a href=/2025/%E4%BD%BF%E7%94%A8-pydantic-%E7%BB%9F%E4%B8%80-python-%E5%92%8C-restful-api-%E7%9A%84%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/>Chinese</a>.</blockquote><p>Every Python backend developer has had this conversation: you write <code>item_id</code> in your code, the API returns <code>item_id</code> in JSON, and then a frontend colleague asks — "Can you change that to <code>itemId</code>? We use camelCase in JavaScript."<p>You can either manually map every field (tedious and error-prone), or make the frontend deal with underscores (ugly in JS). Neither option is great.<p>Pydantic solves this with a single config line.<hr><h2 id=the-problem>The Problem</h2><p>Two naming conventions, both perfectly reasonable:<ul><li><strong>Python (PEP 8)</strong>: <code>snake_case</code> — <code>item_id</code>, <code>search_query</code>, <code>created_at</code><li><strong>JavaScript / REST APIs</strong>: <code>camelCase</code> — <code>itemId</code>, <code>searchQuery</code>, <code>createdAt</code></ul><p>Both are standard in their ecosystems. Forcing either side to adopt the other's convention creates friction. The right approach: <strong>keep snake_case in your Python code, expose camelCase in your API, and let Pydantic handle the conversion automatically.</strong></p><img alt="Conversion flow from Python snake_case to API camelCase via Pydantic" src=/images/pydantic-naming-flow.en.svg style=width:100%;max-width:900px><hr><h2 id=get-requests-use-query-s-alias-parameter>GET Requests: Use Query's alias Parameter</h2><p>GET parameters come through the URL query string, and there are usually just a few. For this, use <code>Query</code> with <code>alias</code> to map each one:<pre class=language-python data-lang=python><code class=language-python data-lang=python>from fastapi import FastAPI, Query
+
+app = FastAPI()
+
+@app.get("/items/")
+async def get_item(
+    item_id: int = Query(..., alias="itemId"),
+    search_query: str | None = Query(None, alias="searchQuery"),
+):
+    return {"item_id": item_id, "search_query": search_query}
+</code></pre><p>The frontend calls:<pre><code>GET /items/?itemId=42&searchQuery=example
+</code></pre><p>Inside the handler, you get <code>item_id=42</code> and <code>search_query="example"</code> — clean PEP 8 names throughout your Python code.<p>Response:<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "item_id": 42,
+  "search_query": "example"
+}
+</code></pre><p>Note that <strong>the response JSON still uses snake_case</strong> here. If you want the response in camelCase too, you'll need a <code>response_model</code> backed by a Pydantic model — which we'll cover next.<hr><h2 id=post-requests-use-alias-generator-for-bulk-conversion>POST Requests: Use alias_generator for Bulk Conversion</h2><p>POST request bodies typically have more fields. Writing <code>alias</code> for each one is tedious. Pydantic's <code>alias_generator</code> lets you configure it once at the model level and every field converts automatically:<pre class=language-python data-lang=python><code class=language-python data-lang=python>from fastapi import FastAPI
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
+
+app = FastAPI()
+
+class ItemCreate(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+    item_id: int = Field(..., description="The ID of the item")
+    search_query: str | None = Field(None, max_length=50, description="A search query")
+    created_at: str | None = Field(None, description="Creation timestamp")
+
+@app.post("/items/")
+async def create_item(item: ItemCreate):
+    return item
+</code></pre><p>Three key settings:<ol><li><strong><code>alias_generator = to_camel</code></strong>: Automatically maps <code>item_id</code> to <code>itemId</code>, <code>search_query</code> to <code>searchQuery</code>, and so on for every field.<li><strong><code>populate_by_name = True</code></strong>: Allows both snake_case and camelCase for input. Without this, only camelCase would be accepted.<li><strong><code>to_camel</code></strong>: A built-in conversion function from <code>pydantic.alias_generators</code>.</ol><p>Frontend sends a POST:<pre class=language-json data-lang=json><code class=language-json data-lang=json>POST /items/
+Content-Type: application/json
+
+{
+  "itemId": 42,
+  "searchQuery": "example",
+  "createdAt": "2025-02-05T10:00:00Z"
+}
+</code></pre><p>In the handler, <code>item.item_id</code> is 42, <code>item.search_query</code> is <code>"example"</code> — snake_case all the way through your Python code.<p>Response (since <code>alias_generator</code> also affects serialization, it outputs camelCase automatically):<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "itemId": 42,
+  "searchQuery": "example",
+  "createdAt": "2025-02-05T10:00:00Z"
+}
+</code></pre><hr><h2 id=making-get-responses-camelcase-too>Making GET Responses camelCase Too</h2><p>As mentioned, a plain <code>return {"item_id": ...}</code> from a GET handler produces snake_case in the response. To unify it, add a <code>response_model</code>:<pre class=language-python data-lang=python><code class=language-python data-lang=python>class ItemResponse(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+    item_id: int
+    search_query: str | None = None
+
+@app.get("/items/", response_model=ItemResponse)
+async def get_item(
+    item_id: int = Query(..., alias="itemId"),
+    search_query: str | None = Query(None, alias="searchQuery"),
+):
+    return ItemResponse(item_id=item_id, search_query=search_query)
+</code></pre><p>Now the GET response is camelCase too:<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "itemId": 42,
+  "searchQuery": "example"
+}
+</code></pre><hr><h2 id=extract-a-base-class>Extract a Base Class</h2><p>If multiple models in your project need camelCase conversion, repeating <code>model_config</code> everywhere gets old fast. Extract a base class:<pre class=language-python data-lang=python><code class=language-python data-lang=python>from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
+
+class CamelModel(BaseModel):
+    """Base model for all models that need camelCase API serialization."""
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+# Just inherit from it
+class ItemCreate(CamelModel):
+    item_id: int
+    search_query: str | None = None
+    created_at: str | None = None
+
+class UserProfile(CamelModel):
+    user_name: str
+    email_address: str
+    is_active: bool = True
+</code></pre><p>Every model inheriting <code>CamelModel</code> gets camelCase aliases for free.<hr><h2 id=gotchas>Gotchas</h2><p>A few things that can trip you up:<ol><li><p><strong><code>by_alias</code> when serializing manually</strong>: If you call <code>model.model_dump()</code> yourself, it outputs snake_case by default. For camelCase, use <code>model.model_dump(by_alias=True)</code>. FastAPI's <code>response_model</code> handles this automatically.</p><li><p><strong>Nested models</strong>: <code>alias_generator</code> only affects the current model's fields, not nested ones. Nested models need their own <code>alias_generator</code> config — another reason to use the base class approach.</p><li><p><strong>ORM integration</strong>: If you use SQLAlchemy or similar, keep ORM models in snake_case and let Pydantic models handle the conversion. Don't mix naming conventions at the ORM layer.</p><li><p><strong>OpenAPI docs</strong>: With <code>alias_generator</code> configured, FastAPI's auto-generated Swagger UI shows camelCase field names. Frontend developers see exactly the names they need — no guesswork.</p></ol><hr><h2 id=summary>Summary</h2><p>The rule is simple: <strong>write snake_case in Python, expose camelCase in your API, let Pydantic bridge the gap.</strong><p>The practical setup:<ul><li>For GET params (few fields): <code>Query(alias="camelCase")</code> per field<li>For POST bodies (many fields): <code>alias_generator = to_camel</code> at the model level<li>Add <code>populate_by_name = True</code> so both naming styles are accepted as input<li>Extract a <code>CamelModel</code> base class and reuse it across the project</ul><p>Both sides write idiomatic code, and Pydantic handles the translation in between.</div><div id=comments-issue-id style=display:none>5</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

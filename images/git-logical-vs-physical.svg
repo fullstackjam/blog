@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="blueBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <linearGradient id="amberBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- ========================================== -->
+  <!-- LEFT SIDE: 逻辑模型 -->
+  <!-- ========================================== -->
+  <rect x="16" y="16" width="424" height="418" rx="16" fill="url(#blueBg)" stroke="#93C5FD" stroke-width="2" filter="url(#shadow)"/>
+  <text x="36" y="50" font-size="17" font-weight="700" fill="#1E40AF">逻辑模型（二十年没动）</text>
+  <rect x="290" y="30" width="138" height="26" rx="13" fill="#2563EB"/>
+  <text x="359" y="48" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">每个 commit 是完整快照</text>
+
+  <!-- Commit B -->
+  <rect x="36" y="72" width="130" height="44" rx="10" fill="#fff" stroke="#93C5FD" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="56" y="88" font-size="11" font-weight="600" fill="#2563EB">commit</text>
+  <text x="56" y="106" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#1E40AF">B (最新)</text>
+
+  <!-- Tree B -->
+  <rect x="210" y="72" width="120" height="44" rx="10" fill="#fff" stroke="#6EE7B7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="230" y="88" font-size="11" font-weight="600" fill="#059669">tree</text>
+  <text x="230" y="106" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#065F46">B</text>
+
+  <!-- Arrow commit B → tree B -->
+  <path d="M166,94 L206,94" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+  <!-- Blob 1 (changed in B) -->
+  <rect x="74" y="140" width="110" height="36" rx="8" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="88" y="157" font-size="10" font-weight="600" fill="#92400E">blob</text>
+  <text x="128" y="157" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#78716C">x (新)</text>
+
+  <!-- Blob 2 (shared) — positioned in the center between the two trees -->
+  <rect x="280" y="180" width="140" height="36" rx="8" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="2"/>
+  <text x="294" y="197" font-size="10" font-weight="600" fill="#92400E">blob</text>
+  <text x="334" y="197" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#78716C">y (未改)</text>
+
+  <!-- Arrow tree B → blob 1 -->
+  <path d="M250,116 L180,140" stroke="#059669" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+  <!-- Arrow tree B → blob 2 (shared) -->
+  <path d="M300,116 L330,176" stroke="#059669" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+
+  <!-- Commit A -->
+  <rect x="36" y="246" width="130" height="44" rx="10" fill="#fff" stroke="#93C5FD" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="56" y="262" font-size="11" font-weight="600" fill="#2563EB">commit</text>
+  <text x="56" y="280" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#1E40AF">A (上一次)</text>
+
+  <!-- Tree A -->
+  <rect x="210" y="246" width="120" height="44" rx="10" fill="#fff" stroke="#6EE7B7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="230" y="262" font-size="11" font-weight="600" fill="#059669">tree</text>
+  <text x="230" y="280" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#065F46">A</text>
+
+  <!-- Arrow commit A → tree A -->
+  <path d="M166,268 L206,268" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+  <!-- Blob 3 (old version, only in A) -->
+  <rect x="74" y="314" width="110" height="36" rx="8" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="88" y="331" font-size="10" font-weight="600" fill="#92400E">blob</text>
+  <text x="128" y="331" font-size="10" font-family="'SF Mono', 'Fira Code', monospace" fill="#78716C">x (旧)</text>
+
+  <!-- Arrow tree A → blob 3 -->
+  <path d="M250,290 L180,314" stroke="#059669" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+  <!-- Arrow tree A → blob 2 (shared!) -->
+  <path d="M300,290 L330,216" stroke="#059669" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+
+  <!-- Arrow commit B → commit A (parent) -->
+  <path d="M101,116 L101,242" stroke="#93C5FD" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrowBlue)"/>
+  <text x="108" y="184" font-size="10" fill="#93C5FD">parent</text>
+
+  <!-- Shared blob annotation -->
+  <rect x="280" y="222" width="148" height="20" rx="6" fill="#D1FAE5"/>
+  <text x="354" y="236" font-size="10" font-weight="500" fill="#059669" text-anchor="middle">未改的文件 → 共享 blob</text>
+
+  <!-- Left bottom note -->
+  <text x="36" y="380" font-size="12" font-weight="600" fill="#1E40AF">Linus 2005 年设计的模型</text>
+  <text x="36" y="398" font-size="11" fill="#64748B">commit → tree → blob，三层指针</text>
+  <text x="36" y="414" font-size="11" fill="#64748B">内容寻址 + 有向无环图，至今没改过</text>
+
+  <!-- ========================================== -->
+  <!-- DIVIDER -->
+  <!-- ========================================== -->
+  <line x1="456" y1="40" x2="456" y2="410" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="8,6"/>
+  <text x="456" y="430" font-size="11" fill="#94A3B8" text-anchor="middle">vs</text>
+
+  <!-- ========================================== -->
+  <!-- RIGHT SIDE: 物理存储 -->
+  <!-- ========================================== -->
+  <rect x="472" y="16" width="412" height="418" rx="16" fill="url(#greenBg)" stroke="#6EE7B7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="492" y="50" font-size="17" font-weight="700" fill="#065F46">物理存储（一直在优化）</text>
+
+  <!-- Timeline line -->
+  <line x1="520" y1="80" x2="520" y2="340" stroke="#059669" stroke-width="2"/>
+
+  <!-- 2005: loose objects -->
+  <circle cx="520" cy="100" r="8" fill="#059669"/>
+  <text x="540" y="96" font-size="13" font-weight="600" fill="#065F46">2005 — Loose Objects</text>
+  <rect x="540" y="106" width="320" height="56" rx="8" fill="#fff" stroke="#A7F3D0" stroke-width="1" filter="url(#shadow)"/>
+  <text x="556" y="126" font-size="12" fill="#64748B">每个对象一个文件，存在</text>
+  <text x="556" y="126" font-size="12" fill="#64748B" dx="0"> </text>
+  <text x="556" y="142" font-size="11" font-family="'SF Mono', 'Fira Code', monospace" fill="#1E40AF">.git/objects/3b/18e512...</text>
+  <text x="556" y="156" font-size="11" fill="#94A3B8">简单粗暴，zlib 压缩</text>
+
+  <!-- 2005+: packfile -->
+  <circle cx="520" cy="190" r="8" fill="#059669"/>
+  <text x="540" y="186" font-size="13" font-weight="600" fill="#065F46">2005+ — Packfile</text>
+  <rect x="540" y="196" width="320" height="56" rx="8" fill="#fff" stroke="#A7F3D0" stroke-width="1" filter="url(#shadow)"/>
+  <text x="556" y="216" font-size="12" fill="#64748B">多个对象打包成一个 .pack 文件</text>
+  <text x="556" y="232" font-size="12" fill="#64748B">Delta 压缩：相似对象之间只存差异</text>
+  <text x="556" y="246" font-size="11" fill="#94A3B8">gc / push / fetch 时自动触发</text>
+
+  <!-- 进行中: SHA256 -->
+  <circle cx="520" cy="290" r="8" fill="#D97706" stroke="#fff" stroke-width="2"/>
+  <text x="540" y="286" font-size="13" font-weight="600" fill="#065F46">进行中 — SHA-256 迁移</text>
+  <rect x="540" y="296" width="320" height="40" rx="8" fill="#fff" stroke="#FCD34D" stroke-width="1" filter="url(#shadow)"/>
+  <text x="556" y="314" font-size="12" fill="#64748B">SHA-1 → SHA-256，更抗碰撞</text>
+  <text x="556" y="330" font-size="11" fill="#94A3B8">模型不变，只换算法；生态卡住，至今仍非默认</text>
+
+  <!-- Bottom callout -->
+  <rect x="492" y="362" width="376" height="56" rx="10" fill="rgba(255,255,255,0.75)" stroke="#059669" stroke-width="1.5"/>
+  <text x="680" y="386" font-size="15" font-weight="700" fill="#065F46" text-anchor="middle">模型没动，零件换了一轮</text>
+  <text x="680" y="406" font-size="12" fill="#64748B" text-anchor="middle">逻辑层稳定 → 物理层可以放心换引擎</text>
+</svg>

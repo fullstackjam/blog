@@ -1,0 +1,128 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Python 3.8 升级到 3.11 后 SSL 证书验证突然报错？这篇文章带你搞清楚 Python 3.10+ 的 SSL 默认行为到底改了什么，以及三种修复思路。" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content="排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化" property=og:title><meta content="Python 3.8 升级到 3.11 后 SSL 证书验证突然报错？这篇文章带你搞清楚 Python 3.10+ 的 SSL 默认行为到底改了什么，以及三种修复思路。" property=og:description><meta content=https://blog.fullstackjam.com/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/ property=og:url><meta content=2025-02-06T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化" name=twitter:title><meta content="Python 3.8 升级到 3.11 后 SSL 证书验证突然报错？这篇文章带你搞清楚 Python 3.10+ 的 SSL 默认行为到底改了什么，以及三种修复思路。" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化",
+  "description": "Python 3.8 升级到 3.11 后 SSL 证书验证突然报错？这篇文章带你搞清楚 Python 3.10+ 的 SSL 默认行为到底改了什么，以及三种修复思路。",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-02-06",
+  
+  "dateModified": "2025-02-06",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "Python 3.8 升级到 3.11 后为什么 SSL 连接会报错？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Python 3.10 开始，ssl 模块默认启用了更严格的证书验证：check_hostname 默认为 True，verify_mode 默认为 CERT_REQUIRED。之前在 3.8 中用 CLIENT_AUTH 目的创建的上下文不会强制验证，升级后同样的代码会因为证书链不完整或主机名不匹配而失败。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "ssl.create_default_context() 在 Python 3.8 和 3.11 中有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "主要区别在三个方面：1) 协议从 PROTOCOL_TLS 变为 PROTOCOL_TLS_CLIENT；2) check_hostname 默认从宽松变为强制 True；3) verify_mode 在 CLIENT_AUTH 场景下从 CERT_NONE 变为 CERT_REQUIRED。这些变化意味着 3.11 会严格验证服务器证书。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "直接禁用 SSL 验证安全吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不安全。禁用 check_hostname 和 verify_mode 会让连接容易受到中间人攻击（MITM）。这种做法只适合本地调试，绝对不应该用在生产环境。正确做法是修复证书链或者用 certifi 加载正确的 CA 证书。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "怎么快速确认是 SSL 配置问题还是证书本身的问题？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用 openssl s_client -connect host:port -showcerts 检查服务器证书链是否完整，再用 python -c 'import ssl; print(ssl.get_default_verify_paths())' 确认 Python 使用的 CA 证书路径。如果 openssl 验证通过但 Python 报错，大概率是 Python 的 CA 路径配置问题。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "用 aiohttp 怎么正确配置 SSL 上下文？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "推荐用 ssl.create_default_context() 创建上下文，然后用 context.load_verify_locations(certifi.where()) 加载 CA 证书，再通过 aiohttp.TCPConnector(ssl=context) 传入。如果需要客户端证书，再额外调用 context.load_cert_chain()。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化 - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/ id=title>排查 Python 版本升级后的 SSL 问题：从 Python 3.8 到 3.11 的配置变化</a><div id=date>2025-02-06</div><div id=content><p>升级 Python 版本本来是个常规操作——直到你的 SSL 连接突然全部挂掉。<p>我在把项目从 Python 3.8 升到 3.11 的时候就遇到了这个问题。之前跑了一年多的代码，升级后直接报 <code>certificate verify failed</code>。排查了半天，发现不是证书坏了，而是 Python 3.10 开始悄悄收紧了 SSL 的默认配置。<p>这篇文章记录整个排查过程，以及我理解到的根本原因和几种修复思路。<h2 id=xian-xiang-sheng-ji-hou-ssl-zhi-jie-zha-liao>现象：升级后 SSL 直接炸了</h2><p>项目用 <code>aiohttp</code> 做 HTTPS 请求，SSL 上下文是这样配的：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+
+context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+context.load_cert_chain(certfile="mycertfile", keyfile="mykeyfile")
+</code></pre><p>Python 3.8 下跑了一年多，没任何问题。升到 3.11 后，所有 HTTPS 请求都报错：<pre><code>aiohttp.client_exceptions.ClientConnectorCertificateError:
+  Cannot connect to host example.com:443 ssl:True
+  [SSLCertVerificationError: certificate verify failed:
+   unable to get local issuer certificate]
+</code></pre><p>第一反应是证书过期了？检查了一下，没有。证书文件一模一样，服务器也没动过。那问题只可能出在客户端——Python 本身。<h2 id=dao-di-gai-liao-shi-yao>到底改了什么？</h2><p>花了点时间翻 Python changelog 和 ssl 模块文档，总算搞清楚了。核心变化发生在 <strong>Python 3.10</strong>（PEP 644），3.11 继承了这些变化。</p><img alt="Python SSL 默认配置变化：3.8 vs 3.10+" src=/images/python-ssl-changes.svg style=width:100%;max-width:900px><h3 id=bian-hua-yi-mo-ren-xie-yi-geng-yan-ge>变化一：默认协议更严格</h3><p>Python 3.8 的 <code>ssl.create_default_context()</code> 用的是 <code>PROTOCOL_TLS</code>，这个协议比较宽松，客户端和服务端都能用。<p>Python 3.10+ 改成了 <code>PROTOCOL_TLS_CLIENT</code>，这个协议专门用于客户端连接，并且<strong>强制开启证书验证</strong>。<h3 id=bian-hua-er-check-hostname-mo-ren-kai-qi>变化二：check_hostname 默认开启</h3><p>在 3.8 中，如果你用 <code>ssl.Purpose.CLIENT_AUTH</code> 创建上下文，<code>check_hostname</code> 实际上是 <code>False</code>——它不会验证服务器证书的主机名是否匹配。<p>3.10+ 里，不管你用什么 Purpose，<code>check_hostname</code> 默认都是 <code>True</code>。如果证书的 CN（Common Name）或 SAN（Subject Alternative Name）跟你连接的主机名不一致，直接报错。<h3 id=bian-hua-san-verify-mode-mo-ren-cert-required>变化三：verify_mode 默认 CERT_REQUIRED</h3><p>3.8 用 <code>CLIENT_AUTH</code> 时，<code>verify_mode</code> 是 <code>CERT_NONE</code>——压根不验证服务器证书。这意味着即使证书链不完整、根证书缺失，连接照样能建立。<p>3.10+ 改成了 <code>CERT_REQUIRED</code>，要求完整的证书链验证。如果 Python 找不到对应的 CA 根证书，就会报 <code>unable to get local issuer certificate</code>。<h3 id=yi-ju-hua-zong-jie>一句话总结</h3><p><strong>Python 3.8 默认信任一切，Python 3.10+ 默认不信任任何东西。</strong> 你之前的代码"能跑"只是因为验证被关掉了，不是因为证书配置正确。<h2 id=pai-cha-bu-zou>排查步骤</h2><p>在知道原因之前，我是这样一步步定位的。如果你遇到类似问题，可以按这个顺序排查：<h3 id=di-yi-bu-que-ren-shi-python-de-wen-ti-bu-shi-zheng-shu-de-wen-ti>第一步：确认是 Python 的问题，不是证书的问题</h3><p>用 <code>openssl</code> 直接检查服务器证书：<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>openssl s_client -connect example.com:443 -showcerts
+</code></pre><p>如果输出里有 <code>Verify return code: 0 (ok)</code>，说明证书本身没问题，问题在 Python 这边。<h3 id=di-er-bu-jian-cha-python-yong-de-ca-lu-jing>第二步：检查 Python 用的 CA 路径</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+print(ssl.get_default_verify_paths())
+</code></pre><p>输出类似：<pre><code>DefaultVerifyPaths(
+  cafile='/opt/homebrew/etc/openssl@3/cert.pem',
+  capath='/opt/homebrew/etc/openssl@3/certs',
+  ...
+)
+</code></pre><p>确认这些路径下确实有 CA 证书文件。macOS 上特别容易踩坑——系统 OpenSSL 和 Homebrew 装的 OpenSSL 用的是不同的证书路径。<h3 id=di-san-bu-dui-bi-3-8-he-3-11-de-sslcontext-mo-ren-zhi>第三步：对比 3.8 和 3.11 的 SSLContext 默认值</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+
+# 看看你的上下文到底长什么样
+ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+print(f"protocol: {ctx.protocol}")
+print(f"check_hostname: {ctx.check_hostname}")
+print(f"verify_mode: {ctx.verify_mode}")
+</code></pre><p>在 Python 3.8 和 3.11 分别跑一遍，你就能看到差异。<h2 id=san-chong-xiu-fu-fang-an>三种修复方案</h2><h3 id=fang-an-yi-xiu-fu-zheng-shu-lian-tui-jian>方案一：修复证书链（推荐）</h3><p>这是最正确的做法。把完整的证书链配好，让验证正常通过：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+import certifi
+
+context = ssl.create_default_context(cafile=certifi.where())
+context.load_cert_chain(certfile="mycertfile", keyfile="mykeyfile")
+</code></pre><p><code>certifi</code> 是一个维护良好的 CA 证书包，pip 可以直接装。这样做的好处是不依赖系统的 CA 路径，跨平台一致。<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>pip install certifi
+</code></pre><h3 id=fang-an-er-shou-dong-pei-zhi-sslcontext>方案二：手动配置 SSLContext</h3><p>如果你需要更细粒度的控制，可以手动创建 SSLContext：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.load_verify_locations("/path/to/ca-bundle.crt")
+context.load_cert_chain(certfile="mycertfile", keyfile="mykeyfile")
+
+# 用于 aiohttp
+import aiohttp
+connector = aiohttp.TCPConnector(ssl=context)
+async with aiohttp.ClientSession(connector=connector) as session:
+    async with session.get("https://example.com") as resp:
+        print(await resp.text())
+</code></pre><h3 id=fang-an-san-jin-yong-yan-zheng-jin-xian-diao-shi>方案三：禁用验证（仅限调试）</h3><p>如果你只是想在本地快速调试，临时禁用验证：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import ssl
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.check_hostname = False
+context.verify_mode = ssl.CERT_NONE
+context.load_cert_chain(certfile="mycertfile", keyfile="mykeyfile")
+</code></pre><p><strong>注意：</strong> 这种做法会让连接暴露在中间人攻击风险下。只在本地调试时使用，绝对不要用在生产环境。你的 code review 流程应该能拦住这种代码。<h2 id=yi-ge-rong-yi-hu-lue-de-keng-macos-shang-de-ca-lu-jing>一个容易忽略的坑：macOS 上的 CA 路径</h2><p>macOS 用户特别需要注意：如果你用 Homebrew 装了 Python，它链接的 OpenSSL 可能跟系统自带的不一样。这意味着 Python 可能找不到系统 Keychain 里的 CA 证书。<p>最简单的解决办法就是用 <code>certifi</code>：<pre class=language-python data-lang=python><code class=language-python data-lang=python>import certifi
+print(certifi.where())
+# 输出类似: /path/to/python/site-packages/certifi/cacert.pem
+</code></pre><p>然后把这个路径传给 <code>ssl.create_default_context(cafile=certifi.where())</code>。<h2 id=zong-jie>总结</h2><p>Python 3.10+ 收紧 SSL 默认配置是好事——它强制你正确处理证书验证，而不是假装问题不存在。但如果你从 3.8 直接升上来，这个变化会很突然。<p>关键 takeaway：<ol><li><strong><code>ssl.create_default_context()</code> 的行为在 3.10 变了</strong> —— <code>check_hostname</code> 和 <code>verify_mode</code> 默认开启<li><strong>先确认是客户端问题还是证书问题</strong> —— 用 <code>openssl s_client</code> 排除服务端因素<li><strong>优先修复证书链，而不是禁用验证</strong> —— <code>certifi</code> 包是最省事的方案<li><strong>macOS 上注意 CA 路径</strong> —— Homebrew Python 和系统 Python 用不同的证书路径</ol><h3 id=can-kao-wen-dang>参考文档</h3><ul><li><a href=https://docs.python.org/zh-cn/3.11/library/ssl.html>Python 3.11 ssl 模块文档</a><li><a href=https://peps.python.org/pep-0644/>PEP 644 — Require OpenSSL 1.1.1 or newer</a><li><a href=https://pypi.org/project/certifi/>certifi — Python Certificate Authority Bundle</a></ul></div><div id=comments-issue-id style=display:none>6</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

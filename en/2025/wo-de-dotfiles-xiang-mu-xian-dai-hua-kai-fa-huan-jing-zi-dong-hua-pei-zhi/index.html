@@ -1,0 +1,176 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="A pure config management approach with GNU Stow: modular design, one-command deployment, paired with OpenBoot for full new-machine automation." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="My Dotfiles Project: Automating Modern Dev Environment Setup" property=og:title><meta content="A pure config management approach with GNU Stow: modular design, one-command deployment, paired with OpenBoot for full new-machine automation." property=og:description><meta content=https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/ property=og:url><meta content=2025-10-15T00:00:00+00:00 property=article:published_time><meta content=2026-06-08T00:00:00+00:00 property=article:modified_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="My Dotfiles Project: Automating Modern Dev Environment Setup" name=twitter:title><meta content="A pure config management approach with GNU Stow: modular design, one-command deployment, paired with OpenBoot for full new-machine automation." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "My Dotfiles Project: Automating Modern Dev Environment Setup",
+  "description": "A pure config management approach with GNU Stow: modular design, one-command deployment, paired with OpenBoot for full new-machine automation.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-10-15",
+  
+  "dateModified": "2026-06-08",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "What's the difference between a dotfiles project and just copying config files?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Copying scatters configs across your home directory, making it hard to sync changes back to a repo. A dotfiles project uses GNU Stow to create symlinks — your config files live in a git repo, and any edit is automatically version-controlled. You can roll back, diff, and sync to other machines instantly."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What is GNU Stow and why use it for dotfiles?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GNU Stow is a symlink manager originally designed for managing software installations in /usr/local. For dotfiles, it maps a directory tree in your repo to corresponding locations in your home directory, automatically creating symlinks. No manual ln -s commands, no mapping files — the directory structure IS the configuration."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Why not handle software installation in the dotfiles repo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Config files and software installation are separate concerns. Configs change frequently and need fine-grained management; software installation is one-time and declarative. Splitting them keeps the dotfiles repo pure, while a dedicated tool like OpenBoot handles the installation side."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "How long does it take to set up a new machine?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "With OpenBoot, one command does everything automatically: install Homebrew and packages, clone dotfiles, deploy symlinks, install Oh-My-Zsh and plugins. The whole process takes about 10-15 minutes, mostly spent on Homebrew installing packages."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What does the --no-folding flag do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "By default, Stow creates directory-level symlinks (folding) — linking an entire directory instead of individual files. With --no-folding, Stow only creates file-level symlinks, keeping target directories as real directories. This prevents issues when other programs need to write to the same directory, like Claude Code creating sessions/ under ~/.claude/."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>My Dotfiles Project: Automating Modern Dev Environment Setup - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/ id=title>My Dotfiles Project: Automating Modern Dev Environment Setup</a><div id=date>2025-10-15</div><div id=content><p>The worst part of setting up a new machine isn't installing software — Homebrew handles that in one command. The painful part is all the config files scattered across your system. <code>.gitconfig</code> in your home directory, SSH config in <code>.ssh/</code>, Zsh config, terminal config, AI coding tool configs... Manually moving everything takes half a day, and you will forget something.<p>This post walks through how I use GNU Stow to manage all my configs, paired with <a href=https://openboot.dev>OpenBoot</a> for software installation, so a new machine gets everything in one command.<hr><h2 id=the-core-idea>The Core Idea</h2><p>The project does exactly one thing: <strong>manage config file symlinks</strong>. Software installation is handled by OpenBoot.<pre class=mermaid>graph LR
+    A["curl openboot.dev"] --> B["Install Homebrew&LTbr/>+ packages"]
+    A --> C["clone dotfiles&LTbr/>to ~/.dotfiles"]
+    C --> D["make install"]
+    D --> D1["Git config"]
+    D --> D2["SSH config"]
+    D --> D3["Zsh config"]
+    D --> D4["Claude Code"]
+    D --> D5["Ghostty"]
+    D --> D6["OpenCode"]
+
+    style A fill:#EFF6FF,stroke:#2563EB,color:#1E40AF
+    style B fill:#ECFDF5,stroke:#059669,color:#065F46
+    style C fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style D fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style D1 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D2 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D3 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D4 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D5 fill:#fff,stroke:#94A3B8,color:#64748B
+    style D6 fill:#fff,stroke:#94A3B8,color:#64748B</pre><p>Full automated setup in one line:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>curl -fsSL openboot.dev/fullstackjam | bash
+</code></pre><p>OpenBoot handles everything: install Homebrew and packages, clone dotfiles to <code>~/.dotfiles</code>, deploy configs via Stow, install Oh-My-Zsh and plugins.<p>To deploy configs only:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>git clone https://github.com/fullstackjam/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+make install
+</code></pre><hr><h2 id=project-structure>Project Structure</h2><p>The project is split into independent modules, one directory per config group:<pre><code>dotfiles/
+├── Makefile                              # Entrypoint — install / uninstall
+├── git/.gitconfig                        # Git configuration
+├── ssh/.ssh/config                       # SSH client config
+├── zsh/.zshrc                            # Zsh configuration
+├── claude/.claude/CLAUDE.md              # Claude Code global instructions
+├── claude/.claude/settings.json          # Claude Code settings
+├── claude/.claude/statusline-command.sh  # Claude Code statusline script
+├── ghostty/.config/ghostty/config        # Ghostty terminal configuration
+├── opencode/.config/opencode/opencode.json
+├── opencode/.config/opencode/oh-my-openagent.json
+├── opencode/.config/opencode/tui.json
+└── .gitignore
+</code></pre><p>The key insight: <strong>each directory's internal structure mirrors its target path in the home directory</strong>. For example, <code>ghostty/.config/ghostty/config</code> gets symlinked to <code>~/.config/ghostty/config</code>. The directory structure IS the mapping — no rules to configure.<p>Why this design works:<ul><li><strong>Modules are independent.</strong> Add or remove configs without affecting anything else.<li><strong>Failures are contained.</strong> If one module's symlinks break, everything else keeps working.<li><strong>Debugging is obvious.</strong> Directory names tell you exactly what each config group does.</ul><hr><h2 id=gnu-stow-symlinks-done-right>GNU Stow: Symlinks Done Right</h2><p>Most people manage dotfiles by either copying files around or writing a pile of <code>ln -s</code> commands. Copying breaks version control sync. Manual <code>ln -s</code> becomes unmaintainable past a handful of files.<p>GNU Stow solves this properly. Its logic is simple: take a directory and "project" it onto a target directory, creating matching symlinks automatically.<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Symlink everything in git/ to $HOME
+stow --no-folding --target="$HOME" git
+</code></pre><p>After running this:<pre><code>~/.gitconfig                    → ~/.dotfiles/git/.gitconfig
+~/.ssh/config                   → ~/.dotfiles/ssh/.ssh/config
+~/.zshrc                        → ~/.dotfiles/zsh/.zshrc
+</code></pre><p>Note the <code>--no-folding</code> flag instead of the default behavior. By default, Stow creates directory-level symlinks (folding) — it would symlink the entire <code>~/.claude</code> directory to the repo. But Claude Code creates runtime directories like <code>sessions/</code> under <code>~/.claude/</code>, and that breaks if the whole directory is a symlink. <code>--no-folding</code> forces Stow to only create file-level symlinks, keeping target directories as real directories.<p>Why not just use <code>ln -s</code>? Because Stow handles all the tedious parts: automatic target path resolution and conflict detection. Manual <code>ln -s</code> is fine for 5 files. For 30+, it's a nightmare.<hr><h2 id=makefile-as-simple-as-it-gets>Makefile: As Simple As It Gets</h2><p>Earlier versions had a complex Makefile with install, deploy, status, clean, and per-module targets. After splitting software installation into OpenBoot, the Makefile became minimal:<pre class=language-makefile data-lang=makefile><code class=language-makefile data-lang=makefile>HOME     ?= $(shell echo $$HOME)
+STOW     := stow --no-folding -v --target=$(HOME)
+PACKAGES := git ssh zsh claude ghostty opencode
+
+.PHONY: install uninstall
+
+install:
+	mkdir -p $(HOME)/.ssh $(HOME)/.claude $(HOME)/.config/ghostty $(HOME)/.config/opencode
+	$(STOW) $(PACKAGES)
+
+uninstall:
+	stow -D --no-folding -v --target=$(HOME) $(PACKAGES)
+</code></pre><p>Two commands: <code>make install</code> to deploy, <code>make uninstall</code> to clean up.<p><code>install</code> first creates necessary target directories with <code>mkdir -p</code>, then stows all packages in one go. The <code>-v</code> (verbose) flag shows each symlink being created.<p>Adding a new module is trivial — just add its name to the <code>PACKAGES</code> list.<hr><h2 id=what-s-included>What's Included</h2><h3 id=git>Git</h3><pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[user]
+    name = fullstackjam
+    email = fullstackjam@outlook.com
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --decorate --graph --all
+    amend = commit --amend --no-edit
+    undo = reset HEAD~1
+    wip = commit -am "WIP"
+
+[pull]
+    rebase = true
+
+[rerere]
+    enabled = true
+
+[help]
+    autocorrect = 1
+
+[credential]
+    helper = osxkeychain
+</code></pre><p>Beyond the usual aliases, a few practical settings: <code>pull.rebase = true</code> defaults to rebase instead of merge; <code>rerere</code> remembers conflict resolutions so identical conflicts resolve automatically next time; <code>help.autocorrect</code> fixes mistyped commands.<h3 id=ssh>SSH</h3><pre><code>Host *
+    ServerAliveInterval 30
+    ControlMaster auto
+    ControlPath ~/.ssh/%r@%h:%p
+    IdentityAgent ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+
+Host github.com
+    HostName ssh.github.com
+    User git
+    port 443
+</code></pre><p>Two key choices: <strong>1Password SSH Agent</strong> for key management — private keys never live on disk as files; GitHub over <strong>port 443</strong> (<code>ssh.github.com</code>) so pushes work even on networks that block port 22.<h3 id=zsh>Zsh</h3><p>Built on Oh-My-Zsh with a focused plugin set:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>plugins=(git helm kubectl fast-syntax-highlighting zsh-autocomplete)
+</code></pre><p>Plus modern CLI tool integrations:<ul><li><strong>fzf</strong>: fuzzy search (<code>source <(fzf --zsh)</code>)<li><strong>zoxide</strong>: smart cd (<code>eval "$(zoxide init zsh)"</code>)<li>A convenience alias: <code>alias c="claude --dangerously-skip-permissions"</code></ul><h3 id=claude-code>Claude Code</h3><p>Added in 2025 — global config for the AI coding assistant. Three files:<ul><li><strong>CLAUDE.md</strong>: global behavioral instructions defining coding style preferences (simplicity first, surgical changes, goal-driven execution, etc.)<li><strong>settings.json</strong>: model selection, permission mode, enabled plugins (superpowers, codex, etc.)<li><strong>statusline-command.sh</strong>: terminal statusline script in robbyrussell style showing directory, Git branch, model, and context usage</ul><p>Managing Claude Code config in dotfiles means your AI assistant's behavior preferences come along to new machines automatically.<h3 id=ghostty>Ghostty</h3><p>Config for the <a href=https://ghostty.org>Ghostty</a> terminal emulator:<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 14
+background-opacity = 0.95
+background-blur = 20
+cursor-style = block
+cursor-style-blink = false
+copy-on-select = clipboard
+macos-option-as-alt = left
+</code></pre><p>Font, transparency, cursor style, macOS integration. Small details like copy-on-select and left Option as Alt that add up to a smoother terminal experience.<h3 id=opencode>OpenCode</h3><p>Config for another AI coding tool, including plugin settings (oh-my-openagent, superpowers) and TUI interface configuration.<hr><h2 id=making-it-your-own>Making It Your Own</h2><p>If you want to fork this project and customize it, here's what to change:<ol><li><strong>Git identity</strong>: Edit <code>git/.gitconfig</code> — update name and email<li><strong>SSH</strong>: Edit <code>ssh/.ssh/config</code> — adjust for your key management setup<li><strong>Zsh</strong>: Edit <code>zsh/.zshrc</code> — tweak plugins and aliases<li><strong>AI tools</strong>: Modify configs under <code>claude/</code> or <code>opencode/</code>, or remove modules you don't use<li><strong>New modules</strong>: Create a directory (e.g., <code>tmux/</code>), lay out config files matching the Stow structure, add the name to <code>PACKAGES</code> in the Makefile, and add the target directory to the <code>mkdir -p</code> line if it doesn't exist</ol><hr><h2 id=wrapping-up>Wrapping Up</h2><p>This project evolved through several iterations and converged on a clean separation:<ul><li><strong>Dotfiles repo</strong> handles only config files — GNU Stow for symlinks, Makefile as the entry point<li><strong>Software installation</strong> is delegated to <a href=https://openboot.dev>OpenBoot</a> — Homebrew, packages, Oh-My-Zsh in one command</ul><p>This keeps the dotfiles repo pure — just config files and a minimal Makefile. New machine setup: <code>curl -fsSL openboot.dev/fullstackjam | bash</code>, 10 minutes, done.<p>If you're still manually copying config files between machines, seriously consider building your own dotfiles project. A couple hours of upfront investment saves half a day every time you set up or reinstall.<p>Project: <a href=https://github.com/fullstackjam/dotfiles>github.com/fullstackjam/dotfiles</a></div><div id=comments-issue-id style=display:none>14</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

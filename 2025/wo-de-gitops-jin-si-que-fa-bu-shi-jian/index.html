@@ -1,0 +1,182 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="从零开始构建基于 Argo Rollouts 和 Gateway API 的金丝雀发布流水线，实现自动化流量切分、指标分析与自动回滚，告别全量发布的提心吊胆" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content="我的 GitOps 金丝雀发布实践：Argo Rollouts 与 Gateway API" property=og:title><meta content="从零开始构建基于 Argo Rollouts 和 Gateway API 的金丝雀发布流水线，实现自动化流量切分、指标分析与自动回滚，告别全量发布的提心吊胆" property=og:description><meta content=https://blog.fullstackjam.com/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ property=og:url><meta content=2025-11-27T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="我的 GitOps 金丝雀发布实践：Argo Rollouts 与 Gateway API" name=twitter:title><meta content="从零开始构建基于 Argo Rollouts 和 Gateway API 的金丝雀发布流水线，实现自动化流量切分、指标分析与自动回滚，告别全量发布的提心吊胆" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "我的 GitOps 金丝雀发布实践：Argo Rollouts 与 Gateway API",
+  "description": "从零开始构建基于 Argo Rollouts 和 Gateway API 的金丝雀发布流水线，实现自动化流量切分、指标分析与自动回滚，告别全量发布的提心吊胆",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-11-27",
+  
+  "dateModified": "2025-11-27",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "金丝雀发布和蓝绿部署有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "蓝绿是维护两套完整环境，一次性把流量全切过去。金丝雀是渐进的，先给新版本分一点流量（比如 5%-20%），看指标没问题再慢慢加，风险更可控。Argo Rollouts 两种都支持。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "为什么选 Gateway API 而不是 Ingress？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ingress 的流量切分靠各家控制器的私有注解，写法不统一，换个控制器就得改一圈配置。Gateway API 是 Kubernetes 官方推的新标准，HTTPRoute 原生有 weight 字段做切分，跨控制器通用。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Argo Rollouts 和 ArgoCD 是什么关系？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ArgoCD 管 GitOps 同步，保证集群状态和 Git 仓库一致；Argo Rollouts 管发布策略，控制新版本怎么上线。一个管「部署什么」，一个管「怎么发布」，独立但互补。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "本地开发怎么测试金丝雀发布？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用 Kind 或 k3d 起个本地集群，装上 Traefik + Argo Rollouts + Prometheus 就行。组件不少，记得给 Docker 多分点内存（建议 8GB 以上）。仓库里有完整的本地部署指南。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "PromQL 查询返回空值怎么办？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "这是个常见坑。没流量的时候 PromQL 返回空值，Argo Rollouts 会当成失败直接回滚。在查询后面加 or vector(1) 兜底，让无流量时默认算成功。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>我的 GitOps 金丝雀发布实践：Argo Rollouts 与 Gateway API - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ id=title>我的 GitOps 金丝雀发布实践：Argo Rollouts 与 Gateway API</a><div id=date>2025-11-27</div><div id=content><p>还记得我之前写的 <a href=https://github.com/fullstackjam/k8s-gitops>k8s-gitops</a> 项目吗？那个项目帮我把 Homelab 的基础设施代码化了，ArgoCD 一跑，集群状态就和 Git 仓库保持一致。"怎么部署"这个问题算是解决了。<p>但是用了几个月之后，一个新的焦虑冒出来了：<strong>怎么安全地更新？</strong><p>每次改了代码推上去，ArgoCD 自动同步，新版本直接全量上线。我的心情可以用四个字概括——听天由命。万一代码有 Bug？万一配置写错了？所有用户（虽然主要是我的家人和朋友）瞬间受到影响，想回滚都要手忙脚乱操作一番。<p>这让我开始想：能不能像大厂那样，先给一小部分流量看新版本，确认没问题了再全量推广？<p>于是就有了这个项目：<a href=https://github.com/fullstackjam/canary-deployment>canary-deployment</a>。<h2 id=quan-liang-fa-bu-de-wen-ti>全量发布的问题</h2><p>先说说"大爆炸"发布为什么让人不踏实。<p>传统的 Kubernetes Deployment 滚动更新，虽然不是瞬间切换，但新 Pod 一 Ready 就开始接流量，整个过程只有几十秒。如果新版本有问题，你发现的时候，可能已经有大量请求打到了有问题的 Pod 上。<p>更要命的是回滚得靠你自己去敲 <code>kubectl rollout undo</code>，或者 ArgoCD 手动 Sync 回上一个版本。真出事手忙脚乱的时候，谁能保证不敲错？<p>我想要的是这样一个流程：<pre class=mermaid>graph LR
+    A[Git Push] --> B[ArgoCD Sync]
+    B --> C[创建 Canary Pod]
+    C --> D[切 20% 流量]
+    D --> E{指标分析}
+    E -->|正常| F[切 50% 流量]
+    F --> G{指标分析}
+    G -->|正常| H[全量上线]
+    E -->|异常| I[自动回滚]
+    G -->|异常| I
+
+    style A fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style B fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style C fill:#D1FAE5,stroke:#059669,color:#065F46
+    style D fill:#D1FAE5,stroke:#059669,color:#065F46
+    style F fill:#D1FAE5,stroke:#059669,color:#065F46
+    style H fill:#D1FAE5,stroke:#059669,color:#065F46
+    style E fill:#FEF3C7,stroke:#D97706,color:#92400E
+    style G fill:#FEF3C7,stroke:#D97706,color:#92400E
+    style I fill:#FEE2E2,stroke:#DC2626,color:#991B1B</pre><p>代码推上去，系统自己走完试探、观察、推进或止损这一圈，不用人盯着。这才是 GitOps 该有的样子。<h2 id=ji-zhu-xuan-xing>技术选型</h2><p>要实现上面的流程，得有三个核心组件配合：<p><strong>Argo Rollouts</strong>，渐进式交付控制器。它扩展了 Kubernetes 原生的 Deployment，提供了 <code>Rollout</code> 资源，让你可以定义金丝雀或蓝绿发布策略。说白了，它就是那个指挥"先切多少流量、什么时候推进、什么时候回滚"的大脑。<p><strong>Gateway API + Traefik</strong>，流量切分的执行者。Gateway API 是 Kubernetes 网络层的新标准（你可以理解为 Ingress 的继任者），它的 <code>HTTPRoute</code> 资源原生支持 <code>weight</code> 字段来做流量分配。Traefik 作为 Gateway Controller 负责实际执行。和以前 Ingress 时代各家靠私有注解实现流量切分不同，Gateway API 是标准化的，换控制器也不用改配置。<p><strong>Prometheus</strong>，指标采集和查询。它要回答的就一个问题："新版本到底行不行？" Argo Rollouts 会定期查 Prometheus，根据数据决定继续推进还是回滚。<p>说白了，Rollouts 拿主意，Gateway API 干活，Prometheus 提供判断依据。<h2 id=he-xin-shi-xian>核心实现</h2><h3 id=rollout-zhong-xin-ding-yi-fa-bu>Rollout：重新定义"发布"</h3><p>在 Argo Rollouts 里，不再用 <code>Deployment</code>，改用 <code>Rollout</code> 资源。它长得和 Deployment 几乎一样，关键区别是多了个 <code>strategy</code> 字段：<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: demo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-app
+  strategy:
+    canary:
+      stableService: demo-app-stable
+      canaryService: demo-app-canary
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayapi:
+            httpRoute: demo-app-route
+            namespace: default
+      steps:
+        - setWeight: 20
+        - pause: {duration: 30s}
+        - setWeight: 50
+        - pause: {duration: 30s}
+        - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      containers:
+        - name: demo-app
+          image: demo-app:v2
+          ports:
+            - containerPort: 8080
+</code></pre><p>这段配置定义了一个三步走的发布策略：<ol><li>镜像更新后，先创建新版本 Pod，把 20% 的流量切过去<li>暂停 30 秒，这段时间 Prometheus 在持续采集指标<li>指标正常的话，流量升到 50%，再观察 30 秒<li>最后全量上线</ol><p>注意这里有两个 Service：<code>demo-app-stable</code> 指向旧版本 Pod，<code>demo-app-canary</code> 指向新版本 Pod。Argo Rollouts 通过修改 HTTPRoute 里的 weight 来控制流量在两者之间的分配比例。<h3 id=analysistemplate-rang-shu-ju-shuo-hua>AnalysisTemplate：让数据说话</h3><p>光有流量切分只是第一步。真正的关键是：<strong>谁来决定"继续"还是"回滚"？</strong><p>靠人一直盯着 Grafana？不现实，人总要睡觉，也总有看走眼的时候。<p><code>AnalysisTemplate</code> 就是 Argo Rollouts 的自动裁判。我定义了一个基于成功率的检查：<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  metrics:
+    - name: success-rate
+      interval: 1m
+      count: 3
+      successCondition: result[0] >= 0.99
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus-server.prometheus-system.svc.cluster.local:80
+          query: |
+            sum(rate(http_requests_total{status!~"5.*"}[1m]))
+            /
+            sum(rate(http_requests_total[1m]))
+</code></pre><p>这个模板告诉 Argo Rollouts：<ul><li>每 1 分钟查一次 Prometheus<li>总共查 3 次<li>只要 HTTP 成功率低于 99%，就算失败<li>允许最多 1 次失败，超过就触发回滚</ul><p>然后在 Rollout 的 steps 里引用它：<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>steps:
+  - setWeight: 20
+  - analysis:
+      templates:
+        - templateName: success-rate
+  - setWeight: 50
+  - pause: {duration: 30s}
+  - setWeight: 100
+</code></pre><p>这样，流量切到 20% 之后，Argo Rollouts 会自动运行分析。分析通过才继续推进，失败就自动回滚。全程不需要人工干预。<h3 id=gateway-api-liu-liang-qie-fen-de-biao-zhun-hua>Gateway API：流量切分的标准化</h3><p>以前用 Ingress 做金丝雀，Nginx 要写 <code>nginx.ingress.kubernetes.io/canary-weight</code> 注解，Traefik 又是另一套写法。换个 Ingress Controller 就得改一圈配置，痛苦不堪。<p>Gateway API 把流量切分变成了一等公民。看看 HTTPRoute 的配置，简洁明了：<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-app-route
+spec:
+  parentRefs:
+    - name: traefik-gateway
+  hostnames:
+    - "demo.homelab.local"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: demo-app-stable
+          port: 80
+          weight: 100
+        - name: demo-app-canary
+          port: 80
+          weight: 0
+</code></pre><p>初始状态 stable 100%、canary 0%。发布时 Argo Rollouts 自动修改 weight 值，Traefik 实时生效。这是标准 API，不是注解黑魔法。<h2 id=yan-shi-kan-xi-tong-zi-ji-gan-huo>演示：看系统自己干活</h2><p>为了验证这套系统真的能自动止损，我在 Demo App 里加了个故障注入功能。Helm Values 里设置 <code>errorRate: 50</code>，模拟新版本有 50% 概率返回 500 错误。<p>发布过程是这样的：<ol><li><strong>Git Push</strong>：修改镜像 tag，推送到仓库<li><strong>ArgoCD Sync</strong>：ArgoCD 检测到 Git 变化，同步新的 Rollout 配置到集群<li><strong>金丝雀启动</strong>：Argo Rollouts 创建新版本 Pod，修改 HTTPRoute 将 20% 流量导向新 Pod<li><strong>分析运行</strong>：AnalysisTemplate 开始查询 Prometheus，发现成功率只有 50% 左右<li><strong>自动回滚</strong>：分析判定失败，Argo Rollouts 立即将 HTTPRoute weight 切回 stable 100%，新版本标记为 <code>Degraded</code></ol><p>整个过程大概两三分钟，不需要任何人工操作。影响范围也被控制在了 20% 的流量内，而且持续时间很短。<p>对比一下全量发布：100% 的用户受影响，持续到你手动回滚为止。差距一目了然。<h2 id=cai-guo-de-keng>踩过的坑</h2><p>实话说，搭建过程并不顺利。记录几个让我折腾了比较久的问题：<h3 id=gateway-api-crd-ban-ben-dui-qi>Gateway API CRD 版本对齐</h3><p>Traefik 对 Gateway API 的支持在快速迭代中，不同版本的 Traefik 支持的 Gateway API CRD 版本不一样。我一开始装了最新的 CRD，结果 Traefik 不认识，报了一堆看不懂的错。<p>解决方法：查 Traefik 的 Release Notes，确认它支持的 Gateway API 版本，然后安装对应版本的 CRD。别贪新。<h3 id=promql-kong-zhi-xian-jing>PromQL 空值陷阱</h3><p>这个坑最隐蔽。当新版本刚启动、还没有流量的时候，PromQL 查询返回的是空值（不是 0，是真的没有数据）。Argo Rollouts 拿到空值后会判定分析失败，直接回滚。<p>也就是说，你的新版本还没接到第一个请求，就被回滚了。<p>解决方法是在 PromQL 里加兜底逻辑：<pre class=language-promql data-lang=promql><code class=language-promql data-lang=promql>sum(rate(http_requests_total{status!~"5.*"}[1m]))
+/
+sum(rate(http_requests_total[1m]))
+or vector(1)
+</code></pre><p><code>or vector(1)</code> 的意思是：如果前面的查询返回空值，就用 1（100% 成功率）代替。<h3 id=ben-di-zi-yuan-xiao-hao>本地资源消耗</h3><p>在本地 Kind 集群里跑 Traefik + ArgoCD + Argo Rollouts + Prometheus + Demo App，光 idle 状态就要吃掉 4-5GB 内存。建议给 Docker Desktop 分配至少 8GB 内存，否则 Pod 会因为 OOMKill 不停重启，你还以为是配置问题。<h2 id=zui-hou>最后</h2><p>搭完这套，我的 Homelab 发布流程从"推代码然后祈祷"变成了"推代码然后喝茶"。<p>ArgoCD 让集群状态跟着 Git 走，Argo Rollouts 把全量发布换成了渐进式加自动回滚，Prometheus 则让"行不行"这件事由数据来定，而不是靠我拍脑袋。三个凑一起，才是我想要的那套发布方式。<p>如果你也受够了全量发布的提心吊胆，可以来我的仓库看看：<p><strong>项目地址</strong>：<a href=https://github.com/fullstackjam/canary-deployment>canary-deployment</a></div><div id=comments-issue-id style=display:none>15</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>
