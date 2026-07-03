@@ -6,6 +6,9 @@ generate_feeds = true
 feed_filenames = ["rss.xml"]
 minify_html = true
 
+[link_checker]
+external_level = "warn"
+
 [languages.en]
 title = "Jam's Blog"
 description = "A developer's journey through code, automation, and modern web development."
