@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <linearGradient id="bg7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <filter id="shadow7">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#92400E"/>
+    </marker>
+  </defs>
+  <rect width="900" height="520" rx="16" fill="url(#bg7)"/>
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E3A5F">systemd：服务管理 (PID 1)</text>
+
+  <!-- PID 1 at top -->
+  <g filter="url(#shadow7)">
+    <rect x="330" y="55" width="240" height="55" rx="12" fill="#fff" stroke="#F59E0B" stroke-width="2"/>
+    <text x="450" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">systemd (PID 1)</text>
+    <text x="450" y="98" text-anchor="middle" font-size="11" fill="#64748B">/lib/systemd/systemd</text>
+  </g>
+
+  <!-- Lines down to targets -->
+  <line x1="250" y1="110" x2="250" y2="140" stroke="#92400E" stroke-width="1.5" marker-end="url(#arr7)"/>
+  <line x1="450" y1="110" x2="450" y2="140" stroke="#92400E" stroke-width="1.5" marker-end="url(#arr7)"/>
+  <line x1="660" y1="110" x2="660" y2="140" stroke="#92400E" stroke-width="1.5" marker-end="url(#arr7)"/>
+  <line x1="250" y1="110" x2="450" y2="110" stroke="#92400E" stroke-width="1.5"/>
+  <line x1="450" y1="110" x2="660" y2="110" stroke="#92400E" stroke-width="1.5"/>
+
+  <!-- Target cards -->
+  <g filter="url(#shadow7)">
+    <rect x="130" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+    <text x="250" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">basic.target</text>
+    <text x="250" y="180" text-anchor="middle" font-size="10" fill="#64748B">套接字、定时器、路径</text>
+  </g>
+
+  <g filter="url(#shadow7)">
+    <rect x="330" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+    <text x="450" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">multi-user.target</text>
+    <text x="450" y="180" text-anchor="middle" font-size="10" fill="#64748B">非图形化多用户模式</text>
+  </g>
+
+  <g filter="url(#shadow7)">
+    <rect x="540" y="140" width="240" height="50" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+    <text x="660" y="162" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">graphical.target</text>
+    <text x="660" y="180" text-anchor="middle" font-size="10" fill="#64748B">桌面 / 显示管理器</text>
+  </g>
+
+  <!-- Services under basic.target -->
+  <line x1="175" y1="190" x2="175" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="250" y1="190" x2="250" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="325" y1="190" x2="325" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+
+  <g filter="url(#shadow7)">
+    <rect x="140" y="215" width="70" height="38" rx="6" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="175" y="239" text-anchor="middle" font-size="9" fill="#059669">udev</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="215" y="215" width="70" height="38" rx="6" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="250" y="239" text-anchor="middle" font-size="9" fill="#059669">tmpfiles</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="290" y="215" width="70" height="38" rx="6" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="325" y="239" text-anchor="middle" font-size="9" fill="#059669">journald</text>
+  </g>
+
+  <!-- Services under multi-user.target -->
+  <line x1="390" y1="190" x2="390" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="450" y1="190" x2="450" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="510" y1="190" x2="510" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+
+  <g filter="url(#shadow7)">
+    <rect x="355" y="215" width="70" height="38" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="390" y="239" text-anchor="middle" font-size="9" fill="#5B21B6">sshd</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="415" y="215" width="70" height="38" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="450" y="239" text-anchor="middle" font-size="9" fill="#5B21B6">网络管理</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="475" y="215" width="70" height="38" rx="6" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="510" y="239" text-anchor="middle" font-size="9" fill="#5B21B6">cron</text>
+  </g>
+
+  <!-- Services under graphical.target -->
+  <line x1="600" y1="190" x2="600" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="660" y1="190" x2="660" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="720" y1="190" x2="720" y2="215" stroke="#64748B" stroke-width="1" stroke-dasharray="4"/>
+
+  <g filter="url(#shadow7)">
+    <rect x="565" y="215" width="70" height="38" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="600" y="239" text-anchor="middle" font-size="9" fill="#92400E">gdm/sddm</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="625" y="215" width="70" height="38" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="660" y="239" text-anchor="middle" font-size="9" fill="#92400E">Xorg</text>
+  </g>
+  <g filter="url(#shadow7)">
+    <rect x="685" y="215" width="70" height="38" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="720" y="239" text-anchor="middle" font-size="9" fill="#92400E">PulseAudio</text>
+  </g>
+
+  <!-- systemctl commands reference -->
+  <g filter="url(#shadow7)">
+    <rect x="40" y="285" width="820" height="200" rx="14" fill="#fff" stroke="#FCD34D" stroke-width="1.5"/>
+    <text x="450" y="312" text-anchor="middle" font-size="14" font-weight="600" fill="#1E3A5F">systemctl 常用命令</text>
+
+    <rect x="65" y="328" width="245" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="187" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">服务控制</text>
+    <text x="187" y="368" text-anchor="middle" font-size="10" fill="#64748B">start | stop | restart | status</text>
+    <text x="187" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl restart httpd</text>
+
+    <rect x="325" y="328" width="245" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="447" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">开机配置</text>
+    <text x="447" y="368" text-anchor="middle" font-size="10" fill="#64748B">enable | disable | is-enabled</text>
+    <text x="447" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl enable sshd</text>
+
+    <rect x="585" y="328" width="250" height="60" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="710" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">目标 / 运行级别</text>
+    <text x="710" y="368" text-anchor="middle" font-size="10" fill="#64748B">get-default | set-default | isolate</text>
+    <text x="710" y="382" text-anchor="middle" font-size="9" fill="#94A3B8">systemctl set-default graphical.target</text>
+
+    <rect x="65" y="400" width="750" height="38" rx="8" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+    <text x="440" y="424" text-anchor="middle" font-size="11" fill="#1E40AF">日志：journalctl -u 服务名 | journalctl -b（当前启动）| journalctl -f（实时跟踪）</text>
+
+    <text x="450" y="470" text-anchor="middle" font-size="10" fill="#94A3B8">单元类型：.service | .socket | .timer | .mount | .target | .path | .slice</text>
+  </g>
+
+  <text x="450" y="510" text-anchor="middle" font-size="10" fill="#94A3B8">blog.fullstackjam.com</text>
+</svg>

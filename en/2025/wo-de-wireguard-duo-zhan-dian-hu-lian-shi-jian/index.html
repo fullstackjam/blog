@@ -1,0 +1,225 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Building a Hub-and-Spoke WireGuard VPN to connect multiple home networks and mobile devices. A hands-on guide covering network planning, key management, routing configuration, OpenWrt gateway setup, and troubleshooting." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="My WireGuard Multi-Site VPN Setup: Connecting Home Networks" property=og:title><meta content="Building a Hub-and-Spoke WireGuard VPN to connect multiple home networks and mobile devices. A hands-on guide covering network planning, key management, routing configuration, OpenWrt gateway setup, and troubleshooting." property=og:description><meta content=https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ property=og:url><meta content=2025-10-13T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="My WireGuard Multi-Site VPN Setup: Connecting Home Networks" name=twitter:title><meta content="Building a Hub-and-Spoke WireGuard VPN to connect multiple home networks and mobile devices. A hands-on guide covering network planning, key management, routing configuration, OpenWrt gateway setup, and troubleshooting." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "My WireGuard Multi-Site VPN Setup: Connecting Home Networks",
+  "description": "Building a Hub-and-Spoke WireGuard VPN to connect multiple home networks and mobile devices. A hands-on guide covering network planning, key management, routing configuration, OpenWrt gateway setup, and troubleshooting.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-10-13",
+  
+  "dateModified": "2025-10-13",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "What are the pros and cons of a Hub-and-Spoke WireGuard architecture?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The main advantage is simplicity -- all nodes only need a tunnel to the central server, making configuration and management straightforward. The downside is the central node becomes a single point of failure, and all traffic routes through it, adding latency. For home use, the simplicity usually outweighs the drawbacks."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What does the AllowedIPs parameter do in WireGuard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AllowedIPs serves two roles: as an outbound routing table (traffic destined for these IPs goes through this tunnel) and as an inbound ACL (packets from this peer must have a source IP within this list, otherwise they are dropped). You need to include both the peer's VPN IP and the LAN subnets it represents."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Why use an OpenWrt router as a WireGuard gateway?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Running WireGuard on the router means every device on the local network can transparently access remote networks without installing a VPN client. This is especially useful for NAS boxes, printers, IoT devices, and other gear that can't run VPN software."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Does WireGuard automatically reconnect after a network change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WireGuard is stateless by design -- there is no persistent 'connection' to drop. With PersistentKeepalive = 25, the client sends a keepalive packet every 25 seconds to maintain NAT mappings. When the network comes back, the tunnel resumes automatically without manual intervention."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Why not use Tailscale or ZeroTier instead of self-hosted WireGuard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tailscale and ZeroTier are great for convenience, but they rely on third-party coordination servers. Self-hosted WireGuard gives you full control over your data path, no device limits, lower latency (direct to your own server), and more flexibility in routing configuration."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>My WireGuard Multi-Site VPN Setup: Connecting Home Networks - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/ id=title>My WireGuard Multi-Site VPN Setup: Connecting Home Networks</a><div id=date>2025-10-13</div><div id=content><p>I have two homes with network gear in each, plus I frequently need to access my NAS and VMs remotely. I wanted a VPN that could tie everything together. After trying OpenVPN and IPSec, I settled on WireGuard -- the config files are short, performance is excellent, and it runs in kernel space. The overall experience is noticeably better than the alternatives.<p>This post documents the entire process from planning to deployment, including the pitfalls I hit and practical lessons learned.<h2 id=requirements-and-choosing-a-solution>Requirements and Choosing a Solution</h2><p>Here's what I needed:<ul><li><strong>Remote access</strong>: Reach my NAS, VMs, and K8s cluster from anywhere<li><strong>Network-to-network</strong>: Both home LANs can talk to each other, with devices on each network not needing to individually run WireGuard<li><strong>Mobile access</strong>: Phone and laptop can connect back home at any time, especially on public WiFi<li><strong>Self-hosted</strong>: No reliance on Tailscale, ZeroTier, or other third-party services -- I want my traffic on my own infrastructure</ul><p>Here's how the options stacked up:<table><thead><tr><th>Solution<th>Pros<th>Cons<tbody><tr><td>OpenVPN<td>Mature, good NAT traversal<td>Poor performance, complex config, userspace<tr><td>IPSec/IKEv2<td>Standard protocol, native OS support<td>Very complex config, hard to troubleshoot<tr><td>Tailscale<td>Zero-config, great NAT traversal<td>Third-party dependency, device limits on free tier<tr><td><strong>WireGuard</strong><td><strong>Kernel-space, fast, minimal config</strong><td><strong>Needs a server with a public IP</strong></table><p>I went with WireGuard in a Hub-and-Spoke architecture: one Alibaba Cloud ECS instance with a public IP acts as the relay. All devices connect to this server, which forwards traffic between them. Simple to manage, easy to reason about.<h2 id=network-topology>Network Topology</h2><p>Here's what my network looks like:<pre class=mermaid>
+flowchart TD
+    Internet[Public Internet]
+
+    subgraph Cloud[Alibaba Cloud ECS Relay Server]
+        ECS[&LTstrong>ECS Relay Server&LT/strong>&LTbr>Public IP: 203.0.113.1&LTbr>VPN IP: 192.168.151.1/24&LTbr>Port: 24356/UDP]
+    end
+
+    subgraph HomeA[Home Network A]
+        OP1[&LTstrong>OpenWrt Gateway A&LT/strong>&LTbr>LAN: 192.168.2.1/24&LTbr>VPN: 192.168.151.2/24]
+        OtherA[Other Devices&LTbr>192.168.2.0/24]
+    end
+
+    subgraph HomeB[Home Network B]
+        OP2[&LTstrong>OpenWrt Gateway B&LT/strong>&LTbr>LAN: 192.168.4.1/24&LTbr>VPN: 192.168.151.3/24]
+        OtherB[Other Devices&LTbr>192.168.4.0/24]
+    end
+
+    subgraph Mobile[Mobile Devices]
+        MAC[&LTstrong>MacBook&LT/strong>&LTbr>VPN IP: 192.168.151.4/24]
+        IPH[&LTstrong>iPhone&LT/strong>&LTbr>VPN IP: 192.168.151.5/24]
+    end
+
+    Internet -- Internet Connection --> ECS
+
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP1
+    ECS -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> OP2
+    MAC -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+    IPH -- WireGuard Tunnel&LTbr>PersistentKeepalive: 25 --> ECS
+
+    OP1 -- LAN Network --> OtherA
+    OP2 -- LAN Network --> OtherB
+</pre><p>Key points:<ul><li><strong>VPN subnet</strong>: <code>192.168.151.0/24</code>, dedicated to WireGuard tunnels<li><strong>Two home subnets</strong>: <code>192.168.2.0/24</code> and <code>192.168.4.0/24</code> -- plan these to avoid conflicts<li><strong>OpenWrt gateways</strong>: Running WireGuard on the router means every device on the LAN gets transparent access to remote networks, no per-device client needed<li><strong>Mobile devices</strong>: Connect directly to the ECS relay, with access to all subnets</ul><h2 id=how-wireguard-works>How WireGuard Works</h2><p>WireGuard's core is public key cryptography. Each node holds a key pair (private + public). Peers exchange public keys and can then establish encrypted tunnels -- no certificate authority (CA) needed like OpenVPN.<p>Here's how a connection is established:<pre class=mermaid>
+sequenceDiagram
+    participant S as Server&LTbr/>(Private: S_priv, Public: S_pub)
+    participant C as Client&LTbr/>(Private: C_priv, Public: C_pub)
+
+    Note over S,C: Configuration phase: exchange public keys
+    S->>S: Add C_pub to config file
+    C->>C: Add S_pub to config file
+
+    Note over S,C: Handshake process
+    C->>S: 1. Send handshake initiation&LTbr/>(encrypted with S_pub, signed with C_priv)
+    S->>S: 2. Decrypt with S_priv, verify with C_pub
+    S->>C: 3. Send handshake response&LTbr/>(encrypted with C_pub, signed with S_priv)
+    C->>C: 4. Decrypt with C_priv, verify with S_pub
+
+    Note over S,C: Both sides derive session keys
+    Note over S,C: 5. Handshake complete, shared secret established
+
+    Note over S,C: Data transfer
+    S->>C: Send encrypted data
+    C->>S: Send encrypted data
+</pre><p>Some technical details worth noting:<ul><li><strong>Noise protocol framework</strong>: WireGuard uses the Noise_IKpsk2 handshake pattern, built on Curve25519, ChaCha20, Poly1305, and BLAKE2s<li><strong>1-RTT handshake</strong>: Connection setup takes a single round trip -- much faster than OpenVPN's TLS handshake<li><strong>Stateless design</strong>: There's no "connection" concept, just cryptographic routing. Survives network switches without re-handshaking<li><strong>Key rotation</strong>: Session keys rotate automatically every 2 minutes with zero manual intervention</ul><h2 id=step-by-step-setup>Step-by-Step Setup</h2><h3 id=1-install-wireguard>1. Install WireGuard</h3><p>Installation is straightforward on every platform:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Ubuntu / Debian
+sudo apt update && sudo apt install wireguard
+
+# OpenWrt (via opkg)
+opkg update && opkg install wireguard-tools kmod-wireguard luci-proto-wireguard
+</code></pre><p>For phones and laptops, grab the official WireGuard app from the App Store or Google Play.<h3 id=2-generate-key-pairs>2. Generate Key Pairs</h3><p>Generate a unique key pair for each node:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Set secure file permissions
+umask 077
+
+# Generate and display a key pair (one-liner, no files left behind)
+wg genkey | tee /dev/stderr | wg pubkey
+# First line of output is the private key, second is the public key
+</code></pre><p>Or do it step by step for clarity:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Generate private key
+wg genkey > server_private.key
+
+# Derive public key from private key
+wg pubkey < server_private.key > server_public.key
+
+# View the keys (guard the private key!)
+cat server_private.key
+cat server_public.key
+</code></pre><p>You need key pairs for: the ECS server, both OpenWrt routers, MacBook, and iPhone. Then cross-configure the public keys -- each node's config includes the public keys of every peer it needs to talk to.<h3 id=3-understanding-allowedips>3. Understanding AllowedIPs</h3><p>This is the most error-prone part of WireGuard configuration, so it deserves its own section. <code>AllowedIPs</code> serves two roles simultaneously:<ul><li><strong>Outbound routing</strong>: Traffic destined for IPs in this list gets sent to this peer<li><strong>Inbound filtering</strong>: Packets received from this peer must have a source IP within this list, or they're dropped</ul><p>For example, on the ECS server, setting <code>AllowedIPs = 192.168.151.2/32, 192.168.2.0/24</code> for Home A's router means:<ol><li>Traffic bound for <code>192.168.151.2</code> or <code>192.168.2.0/24</code> goes through this tunnel<li>Packets arriving through this tunnel must originate from <code>192.168.151.2</code> or the <code>192.168.2.0/24</code> subnet</ol><h3 id=4-central-node-configuration-ecs-server>4. Central Node Configuration (ECS Server)</h3><p>This is the core of the architecture -- all traffic flows through here.<p>Create <code>/etc/wireguard/wg0.conf</code>:<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+Address = 192.168.151.1/24
+ListenPort = 24356
+PrivateKey = &LTserver_private_key>
+
+# Enable IP forwarding (allow Linux to route between subnets)
+PostUp = sysctl -w net.ipv4.ip_forward=1
+
+# iptables rules: allow forwarding on the WireGuard interface + NAT
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer] # Home Network A - OpenWrt router
+PublicKey = &LTrouter_a_public_key>
+AllowedIPs = 192.168.151.2/32, 192.168.2.0/24
+
+[Peer] # Home Network B - OpenWrt router
+PublicKey = &LTrouter_b_public_key>
+AllowedIPs = 192.168.151.3/32, 192.168.4.0/24
+
+[Peer] # MacBook
+PublicKey = &LTmacbook_public_key>
+AllowedIPs = 192.168.151.4/32
+
+[Peer] # iPhone
+PublicKey = &LTiphone_public_key>
+AllowedIPs = 192.168.151.5/32
+</code></pre><p>Start the service and configure the firewall:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Enable WireGuard and start on boot
+sudo systemctl enable --now wg-quick@wg0
+
+# Open the UDP port
+sudo ufw allow 24356/udp
+
+# Check tunnel status
+sudo wg show
+</code></pre><p>The <code>wg show</code> output displays each peer's latest handshake time and transfer stats. If a peer's <code>latest handshake</code> is empty, the connection hasn't been established yet -- time to troubleshoot.<h3 id=5-openwrt-router-configuration>5. OpenWrt Router Configuration</h3><p>The router is the linchpin of this setup -- as a gateway, it lets every device on the LAN transparently access remote networks.<p>WireGuard config file (you can also configure this through the LuCI web interface):<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = &LTrouter_private_key>
+Address = 192.168.151.2/24
+
+[Peer]
+PublicKey = &LTserver_public_key>
+Endpoint = 203.0.113.1:24356
+AllowedIPs = 192.168.151.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p>Key configuration points:<ul><li><strong>AllowedIPs</strong> includes the VPN subnet and the <em>other</em> home's subnet, but <em>not</em> this router's own LAN subnet (otherwise you create a routing loop)<li><strong>PersistentKeepalive = 25</strong>: Routers are typically behind NAT, so they need periodic keepalive packets to maintain the mapping. 25 seconds is a good interval<li><strong>Endpoint</strong>: Only the server needs a fixed Endpoint (public IP). The router doesn't need one -- WireGuard automatically remembers the peer's address after the first handshake</ul><p>In OpenWrt's firewall settings, you also need to:<ol><li>Add the WireGuard interface to a firewall zone (e.g., create a <code>vpn</code> zone)<li>Allow forwarding from <code>lan</code> to <code>vpn</code><li>Allow forwarding from <code>vpn</code> to <code>lan</code> (if you want remote access to local devices)</ol><h3 id=6-mobile-device-configuration>6. Mobile Device Configuration</h3><p>Phone and laptop configs are relatively simple:<pre class=language-ini data-lang=ini><code class=language-ini data-lang=ini>[Interface]
+PrivateKey = &LTdevice_private_key>
+Address = 192.168.151.4/24
+DNS = 192.168.151.1
+
+[Peer]
+PublicKey = &LTserver_public_key>
+Endpoint = 203.0.113.1:24356
+AllowedIPs = 192.168.151.0/24, 192.168.2.0/24, 192.168.4.0/24
+PersistentKeepalive = 25
+</code></pre><p>Here <code>AllowedIPs</code> includes all subnets you need to reach. Don't set it to <code>0.0.0.0/0</code> (unless you want <em>all</em> traffic routed through the VPN) -- that would funnel everything through the server, adding latency and wasting bandwidth.<p><code>DNS = 192.168.151.1</code> is optional. Use it if you're running a DNS server (like Pi-hole) on the ECS instance; otherwise, remove it.<h3 id=7-verify-connectivity>7. Verify Connectivity</h3><p>Once all nodes are configured, test each path:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># Check all peer status on ECS
+sudo wg show
+
+# Ping various nodes from a mobile device
+ping 192.168.151.1   # ECS server
+ping 192.168.151.2   # Router A's VPN IP
+ping 192.168.2.1     # Router A's LAN IP
+ping 192.168.4.1     # Router B's LAN IP
+
+# Cross-subnet test (from a device on Home A, reach Home B)
+ping 192.168.4.100   # A device on Home Network B
+
+# Verify routing table
+ip route | grep wg0
+</code></pre><h2 id=tips-and-troubleshooting>Tips and Troubleshooting</h2><h3 id=security-hardening>Security Hardening</h3><ul><li><strong>Use a non-standard port</strong>: The default 51820 is too easy to scan; I use 24356<li><strong>Lock down key permissions</strong>: Private key files should be chmod 600, readable only by root<li><strong>Precise AllowedIPs</strong>: Don't use <code>0.0.0.0/0</code>; specify only the subnets you need<li><strong>Firewall</strong>: Only open the WireGuard UDP port in the ECS security group, nothing else</ul><h3 id=common-issues>Common Issues</h3><p><strong>Tunnel won't come up:</strong><ol><li>Double-check that public keys are correct on both sides (the most common mistake is swapping public and private keys)<li>Verify both the ECS security group <em>and</em> the system firewall allow the UDP port<li>Run <code>tcpdump -i eth0 udp port 24356</code> on the server to see if packets are arriving</ol><p><strong>Can ping VPN IPs but can't reach the remote LAN:</strong><ol><li>Check if IP forwarding is enabled: <code>cat /proc/sys/net/ipv4/ip_forward</code> should return <code>1</code><li>Verify iptables FORWARD rules are active<li>Confirm AllowedIPs includes the remote LAN subnet</ol><p><strong>OpenWrt LAN devices can't reach remote networks:</strong><ol><li>Check if OpenWrt firewall allows forwarding from <code>lan</code> to the <code>vpn</code> zone<li>Verify the routing table has routes to the remote subnets<li>Run <code>traceroute</code> from the router to see if traffic goes through the WireGuard interface</ol><h3 id=persistence-and-auto-start>Persistence and Auto-Start</h3><p>Make sure WireGuard survives reboots:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># On ECS
+sudo systemctl enable wg-quick@wg0
+
+# Make IP forwarding persistent across reboots
+echo "net.ipv4.ip_forward = 1" | sudo tee /etc/sysctl.d/99-wireguard.conf
+sudo sysctl -p /etc/sysctl.d/99-wireguard.conf
+</code></pre><p>Interfaces configured through LuCI on OpenWrt auto-start by default -- no extra steps needed.<h2 id=real-world-experience>Real-World Experience</h2><p>After running this setup for several months, here are my takeaways:<ul><li><strong>Rock-solid stability</strong>: Switching between 5G and WiFi on my phone is seamless. WireGuard's stateless design really shines here<li><strong>Acceptable latency</strong>: Relaying through the cloud server adds roughly 10-20ms between the two home networks -- perfectly fine for everyday use<li><strong>Zero maintenance</strong>: Once configured, it just works. Server reboots recover automatically<li><strong>The OpenWrt gateway approach is a game-changer</strong>: NAS, printers, security cameras, and other devices that can't run VPN software are all accessible remotely. This is the most practical part of the entire setup</ul><p>If you have a lot of peers to manage, hand-editing config files gets tedious. Check out <a href=https://github.com/wg-easy/wg-easy>wg-easy</a> -- it provides a clean web UI for managing WireGuard.<h2 id=resources>Resources</h2><ul><li><a href=https://www.wireguard.com/quickstart/>WireGuard Official Docs</a> -- Installation and basic configuration<li><a href=https://www.wireguard.com/papers/wireguard.pdf>WireGuard Whitepaper</a> -- Deep dive into the protocol design<li><a href=https://openwrt.org/docs/guide-user/services/vpn/wireguard/start>OpenWrt WireGuard Guide</a> -- Detailed router-side configuration<li><a href=https://github.com/wg-easy/wg-easy>wg-easy</a> -- Web management UI for multi-peer setups</ul></div><div id=comments-issue-id style=display:none>13</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

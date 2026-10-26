@@ -1,0 +1,164 @@
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Python 后端用 snake_case，前端 API 要 camelCase，手动转换既累又容易出错。用 Pydantic 的 alias_generator 和 to_camel 可以自动搞定，GET 和 POST 请求都能覆盖。" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ rel=canonical><meta content="Jam 的博客" property=og:site_name><meta content=zh_CN property=og:locale><meta content=article property=og:type><meta content="使用 Pydantic 统一 Python 和 RESTful API 的命名规范" property=og:title><meta content="Python 后端用 snake_case，前端 API 要 camelCase，手动转换既累又容易出错。用 Pydantic 的 alias_generator 和 to_camel 可以自动搞定，GET 和 POST 请求都能覆盖。" property=og:description><meta content=https://blog.fullstackjam.com/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ property=og:url><meta content=2025-02-05T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="使用 Pydantic 统一 Python 和 RESTful API 的命名规范" name=twitter:title><meta content="Python 后端用 snake_case，前端 API 要 camelCase，手动转换既累又容易出错。用 Pydantic 的 alias_generator 和 to_camel 可以自动搞定，GET 和 POST 请求都能覆盖。" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "使用 Pydantic 统一 Python 和 RESTful API 的命名规范",
+  "description": "Python 后端用 snake_case，前端 API 要 camelCase，手动转换既累又容易出错。用 Pydantic 的 alias_generator 和 to_camel 可以自动搞定，GET 和 POST 请求都能覆盖。",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-02-05",
+  
+  "dateModified": "2025-02-05",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "为什么前后端的命名规范会不一样？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JavaScript 社区用 camelCase（比如 itemId），Python 的 PEP 8 规范用 snake_case（比如 item_id）。两边都是各自语言的标准写法，硬改哪边都不合适，所以需要一个中间层来自动转换。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Pydantic 的 alias_generator 和手动写 alias 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "手动 alias 是一个字段一个字段地写映射，适合 GET 请求里少量参数的场景。alias_generator 是在 Model Config 里统一设置转换规则（比如 to_camel），所有字段自动生效，适合 POST 请求体里字段多的情况。两种可以混着用。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "populate_by_name = True 是什么意思？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "默认情况下，设了 alias 之后只能用 alias 名称来填充字段。设了 populate_by_name = True，就可以同时用原始字段名（snake_case）和 alias（camelCase）来传值，两种都认。后端测试和前端调用都方便。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "这种方案对 OpenAPI 文档有影响吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有，而且是好的影响。FastAPI 自动生成的 OpenAPI 文档会展示 camelCase 的字段名，前端开发者看到的文档直接就是他们需要用的字段名，不需要再做心理转换。"
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Pydantic V1 和 V2 的写法有什么不同？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pydantic V2 推荐用 model_config = ConfigDict(...) 替代 class Config，alias_generators 模块也从 pydantic.alias_generators 导入。本文的写法兼容 Pydantic V2，如果你还在用 V1，需要把 ConfigDict 改成 class Config 的写法。"
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>使用 Pydantic 统一 Python 和 RESTful API 的命名规范 - Jam 的博客</title><body><div id=header><a href=https://blog.fullstackjam.com>Jam 的博客</a><a href=https://blog.fullstackjam.com/about/>关于</a><a href=https://blog.fullstackjam.com/friends/>友链</a><a href=https://blog.fullstackjam.com/projects/>项目</a><a class=lang-switch href=https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/>[EN]</a></div><div id=container><a href=https://blog.fullstackjam.com/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/ id=title>使用 Pydantic 统一 Python 和 RESTful API 的命名规范</a><div id=date>2025-02-05</div><div id=content><p>写 Python 后端的人都知道一个别扭的事：你在代码里写 <code>item_id</code>，前端拿到的 JSON 也是 <code>item_id</code>，但前端同事会过来问你——"能不能改成 <code>itemId</code>？我们 JavaScript 都是 camelCase。"<p>改？每个字段都手动映射一遍，累。不改？前端代码里全是下划线，不伦不类。<p>Pydantic 可以一行配置解决这个问题。<h2 id=wen-ti-zai-na>问题在哪</h2><p>两套命名规范各有各的道理：<ul><li><strong>Python (PEP 8)</strong>：<code>snake_case</code> —— <code>item_id</code>, <code>search_query</code>, <code>created_at</code><li><strong>JavaScript / REST API</strong>：<code>camelCase</code> —— <code>itemId</code>, <code>searchQuery</code>, <code>createdAt</code></ul><p>都是各自社区的标准，谁也说服不了谁。硬要前端写 <code>item_id</code> 或者后端写 <code>itemId</code>，都是在给一边找不痛快。<p>正确的做法是：<strong>后端代码里继续写 snake_case，API 对外暴露 camelCase，中间让 Pydantic 自动转换。</strong></p><img alt="Python snake_case 到 API camelCase 的转换流程" src=/images/pydantic-naming-flow.svg style=width:100%;max-width:900px><h2 id=get-qing-qiu-yong-query-de-alias-can-shu>GET 请求：用 Query 的 alias 参数</h2><p>GET 请求的参数在 URL 查询字符串里，数量通常不多。这种场景用 <code>Query</code> 的 <code>alias</code> 参数逐个映射就行：<pre class=language-python data-lang=python><code class=language-python data-lang=python>from fastapi import FastAPI, Query
+
+app = FastAPI()
+
+@app.get("/items/")
+async def get_item(
+    item_id: int = Query(..., alias="itemId"),
+    search_query: str | None = Query(None, alias="searchQuery"),
+):
+    return {"item_id": item_id, "search_query": search_query}
+</code></pre><p>前端这样调：<pre><code>GET /items/?itemId=42&searchQuery=example
+</code></pre><p>后端函数里拿到的就是 <code>item_id=42</code>、<code>search_query="example"</code>，完全符合 PEP 8。<p>响应结果：<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "item_id": 42,
+  "search_query": "example"
+}
+</code></pre><p>这里有个细节——<strong>响应的 JSON 字段名还是 snake_case</strong>。如果你想让响应也变成 camelCase，需要用 <code>response_model</code> 配合 Pydantic 模型，下一节就会讲到。<h2 id=post-qing-qiu-yong-alias-generator-pi-liang-zhuan-huan>POST 请求：用 alias_generator 批量转换</h2><p>POST 请求的 body 通常字段更多，一个一个写 <code>alias</code> 太麻烦。Pydantic 提供了 <code>alias_generator</code>，在模型配置里写一次，所有字段自动转换：<pre class=language-python data-lang=python><code class=language-python data-lang=python>from fastapi import FastAPI
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
+
+app = FastAPI()
+
+class ItemCreate(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+    item_id: int = Field(..., description="The ID of the item")
+    search_query: str | None = Field(None, max_length=50, description="A search query")
+    created_at: str | None = Field(None, description="Creation timestamp")
+
+@app.post("/items/")
+async def create_item(item: ItemCreate):
+    return item
+</code></pre><p>三个关键配置：<ol><li><strong><code>alias_generator = to_camel</code></strong>：自动把 <code>item_id</code> 映射为 <code>itemId</code>，<code>search_query</code> 映射为 <code>searchQuery</code>，所有字段一步到位。<li><strong><code>populate_by_name = True</code></strong>：允许同时使用 snake_case 和 camelCase 来传值。没有这个配置，只能用 camelCase。<li><strong><code>to_camel</code></strong>：Pydantic 内置的转换函数，从 <code>pydantic.alias_generators</code> 导入。</ol><p>前端发 POST 请求：<pre class=language-json data-lang=json><code class=language-json data-lang=json>POST /items/
+Content-Type: application/json
+
+{
+  "itemId": 42,
+  "searchQuery": "example",
+  "createdAt": "2025-02-05T10:00:00Z"
+}
+</code></pre><p>后端收到后，<code>item.item_id</code> 就是 42，<code>item.search_query</code> 就是 <code>"example"</code>——Python 代码里始终是 snake_case。<p>响应结果（因为 <code>alias_generator</code> 也影响序列化，会自动用 camelCase 输出）：<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "itemId": 42,
+  "searchQuery": "example",
+  "createdAt": "2025-02-05T10:00:00Z"
+}
+</code></pre><h2 id=rang-get-de-xiang-ying-ye-bian-cheng-camelcase>让 GET 的响应也变成 camelCase</h2><p>前面说了，GET 请求直接 <code>return {"item_id": ...}</code> 的话，响应是 snake_case。要统一的话，加一个 <code>response_model</code>：<pre class=language-python data-lang=python><code class=language-python data-lang=python>class ItemResponse(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+    item_id: int
+    search_query: str | None = None
+
+@app.get("/items/", response_model=ItemResponse)
+async def get_item(
+    item_id: int = Query(..., alias="itemId"),
+    search_query: str | None = Query(None, alias="searchQuery"),
+):
+    return ItemResponse(item_id=item_id, search_query=search_query)
+</code></pre><p>这样 GET 请求的响应也会自动序列化为 camelCase：<pre class=language-json data-lang=json><code class=language-json data-lang=json>{
+  "itemId": 42,
+  "searchQuery": "example"
+}
+</code></pre><h2 id=chou-ge-ji-lei-bie-zhong-fu-xie>抽个基类，别重复写</h2><p>如果项目里很多模型都需要 camelCase 转换，每个都写一遍 <code>model_config</code> 太啰嗦。抽一个基类：<pre class=language-python data-lang=python><code class=language-python data-lang=python>from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
+
+class CamelModel(BaseModel):
+    """所有需要 camelCase API 风格的模型都继承这个。"""
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+# 之后直接继承就行
+class ItemCreate(CamelModel):
+    item_id: int
+    search_query: str | None = None
+    created_at: str | None = None
+
+class UserProfile(CamelModel):
+    user_name: str
+    email_address: str
+    is_active: bool = True
+</code></pre><p>所有继承 <code>CamelModel</code> 的模型自动就有 camelCase 的 alias。干净。<h2 id=zhu-yi-shi-xiang>注意事项</h2><p>几个容易踩的坑：<ol><li><p><strong><code>by_alias</code> 参数</strong>：如果你手动调用 <code>model.model_dump()</code> 序列化，默认输出 snake_case。要输出 camelCase，需要 <code>model.model_dump(by_alias=True)</code>。FastAPI 的 <code>response_model</code> 会自动处理这个。</p><li><p><strong>嵌套模型</strong>：<code>alias_generator</code> 只影响当前模型的字段名，不会递归转换嵌套模型。嵌套的模型也需要配置 <code>alias_generator</code>，所以用基类继承的方式最省事。</p><li><p><strong>和 ORM 配合</strong>：如果你用 SQLAlchemy 之类的 ORM，ORM 模型和 Pydantic 模型是分开的。ORM 用 snake_case，Pydantic 模型负责转换，不要在 ORM 层做命名转换。</p><li><p><strong>OpenAPI 文档</strong>：配了 <code>alias_generator</code> 之后，FastAPI 自动生成的 Swagger 文档里会显示 camelCase 的字段名，前端看文档直接就是他们需要的字段名。</p></ol><h2 id=xiao-jie>小结</h2><p>思路就一句：Python 代码里写 snake_case，API 对外暴露 camelCase，中间让 Pydantic 桥接。<p>具体怎么落地：<ul><li>GET 请求参数少，用 <code>Query(alias="camelCase")</code> 逐个映射<li>POST 请求体字段多，用 <code>alias_generator = to_camel</code> 批量转换<li>加 <code>populate_by_name = True</code> 让两种命名都能传值<li>抽一个 <code>CamelModel</code> 基类，全项目复用</ul><p>这样前后端各写各的风格，谁都不用迁就谁。</div><div id=comments-issue-id style=display:none>5</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

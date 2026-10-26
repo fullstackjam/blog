@@ -1,0 +1,182 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Building a canary deployment pipeline from scratch with Argo Rollouts and Gateway API -- automated traffic splitting, metric analysis, and rollback for a Homelab GitOps setup" name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API" property=og:title><meta content="Building a canary deployment pipeline from scratch with Argo Rollouts and Gateway API -- automated traffic splitting, metric analysis, and rollback for a Homelab GitOps setup" property=og:description><meta content=https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ property=og:url><meta content=2025-11-27T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API" name=twitter:title><meta content="Building a canary deployment pipeline from scratch with Argo Rollouts and Gateway API -- automated traffic splitting, metric analysis, and rollback for a Homelab GitOps setup" name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API",
+  "description": "Building a canary deployment pipeline from scratch with Argo Rollouts and Gateway API -- automated traffic splitting, metric analysis, and rollback for a Homelab GitOps setup",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-11-27",
+  
+  "dateModified": "2025-11-27",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "What is the difference between canary deployment and blue-green deployment?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Blue-green maintains two full environments and switches all traffic at once. Canary is gradual -- you route a small percentage of traffic (say 5-20%) to the new version first, monitor metrics, and only increase traffic if things look healthy. Argo Rollouts supports both strategies."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Why use Gateway API instead of Ingress for traffic splitting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ingress relies on vendor-specific annotations for traffic splitting -- each controller has its own syntax. Gateway API is the official Kubernetes successor to Ingress, with native weight-based routing in HTTPRoute. It is standardized across controllers, so you can swap implementations without rewriting configs."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "How do Argo Rollouts and ArgoCD relate to each other?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ArgoCD handles GitOps synchronization, ensuring your cluster state matches your Git repository. Argo Rollouts handles release strategy, controlling how new versions roll out. They are independent but complementary: ArgoCD manages 'what to deploy', Rollouts manages 'how to release'."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "How can I test canary deployments locally?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can use Kind or k3d to create a local Kubernetes cluster, then install Traefik, Argo Rollouts, and Prometheus. Allocate at least 8GB of memory to Docker since the full stack is resource-hungry. The project repository includes a complete local setup guide."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What happens when a PromQL query returns no data during canary analysis?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This is a common pitfall. When the canary has no traffic yet, PromQL returns empty results, which Argo Rollouts treats as a failure and triggers rollback. The fix is to add 'or vector(1)' to your query, which defaults to 100% success rate when there is no data."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/ id=title>My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API</a><div id=date>2025-11-27</div><div id=content><p>Remember my <a href=https://github.com/fullstackjam/k8s-gitops>k8s-gitops</a> project? It brought Infrastructure as Code to my Homelab -- ArgoCD keeps the cluster in sync with the Git repo, and the question of "how do I deploy things" was finally solved.<p>But after running it for a few months, a new anxiety crept in: <strong>how do I update things safely?</strong><p>Every time I pushed a change, ArgoCD would sync it, and the new version would go live for everyone immediately. My mental state during each deployment could be summed up in two words: pure hope. What if there is a bug? What if a config value is wrong? Every user (mainly my family and friends, but still) gets hit instantly, and rolling back means scrambling through kubectl commands.<p>That got me thinking: what if I could do what the big tech companies do -- route a small slice of traffic to the new version first, verify it is healthy, and then gradually ramp up?<p>That is how this project was born: <a href=https://github.com/fullstackjam/canary-deployment>canary-deployment</a>.<hr><h2 id=the-problem-with-all-at-once-releases>The problem with all-at-once releases</h2><p>Why "big bang" deployments are nerve-wracking.<p>A standard Kubernetes Deployment rolling update is not instantaneous, but new Pods start receiving traffic the moment they pass readiness checks. The whole rollout takes maybe 30 seconds. If the new version has a problem, by the time you notice, a significant chunk of requests has already hit the broken Pods.<p>Worse, rolling back depends on you running <code>kubectl rollout undo</code> or manually syncing ArgoCD to the previous version. At 2 AM when an alert wakes you up, are you confident you will get it right on the first try?<p>What I wanted was a flow like this:<pre class=mermaid>graph LR
+    A[Git Push] --> B[ArgoCD Sync]
+    B --> C[Create Canary Pod]
+    C --> D[Route 20% Traffic]
+    D --> E{Metric Analysis}
+    E -->|Healthy| F[Route 50% Traffic]
+    F --> G{Metric Analysis}
+    G -->|Healthy| H[Full Rollout]
+    E -->|Unhealthy| I[Auto Rollback]
+    G -->|Unhealthy| I
+
+    style A fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style B fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+    style C fill:#D1FAE5,stroke:#059669,color:#065F46
+    style D fill:#D1FAE5,stroke:#059669,color:#065F46
+    style F fill:#D1FAE5,stroke:#059669,color:#065F46
+    style H fill:#D1FAE5,stroke:#059669,color:#065F46
+    style E fill:#FEF3C7,stroke:#D97706,color:#92400E
+    style G fill:#FEF3C7,stroke:#D97706,color:#92400E
+    style I fill:#FEE2E2,stroke:#DC2626,color:#991B1B</pre><p>Push code, and the system automatically handles the full loop of probe, observe, promote or abort. No human in the loop. That is what GitOps should look like.<hr><h2 id=the-tech-stack>The tech stack</h2><p>To build this flow, I needed three components, each with a clear job:<p><strong>Argo Rollouts</strong> -- the progressive delivery controller. It extends Kubernetes with a <code>Rollout</code> resource that lets you define canary or blue-green release strategies. Think of it as the brain that decides "how much traffic to shift, when to advance, and when to roll back."<p><strong>Gateway API + Traefik</strong> -- the traffic splitter. Gateway API is the official Kubernetes successor to Ingress, and its <code>HTTPRoute</code> resource natively supports a <code>weight</code> field for traffic distribution. Traefik serves as the Gateway Controller that does the actual routing. Unlike the Ingress era where every controller had its own proprietary annotations for traffic splitting, Gateway API is standardized.<p><strong>Prometheus</strong> -- the metrics engine. It answers the critical question: "Is the new version actually working?" Argo Rollouts periodically queries Prometheus and uses the results to decide whether to continue or roll back.<p>The division of labor is clean: Rollouts makes decisions, Gateway API executes them, Prometheus provides the data.<hr><h2 id=implementation>Implementation</h2><h3 id=rollout-redefining-deploy>Rollout: redefining "deploy"</h3><p>With Argo Rollouts, you swap out <code>Deployment</code> for <code>Rollout</code>. It looks almost identical, except for the crucial <code>strategy</code> field:<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: demo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-app
+  strategy:
+    canary:
+      stableService: demo-app-stable
+      canaryService: demo-app-canary
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayapi:
+            httpRoute: demo-app-route
+            namespace: default
+      steps:
+        - setWeight: 20
+        - pause: {duration: 30s}
+        - setWeight: 50
+        - pause: {duration: 30s}
+        - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      containers:
+        - name: demo-app
+          image: demo-app:v2
+          ports:
+            - containerPort: 8080
+</code></pre><p>This defines a three-phase release strategy:<ol><li>When the image is updated, create new Pods and shift 20% of traffic to them<li>Pause for 30 seconds while Prometheus collects metrics<li>If metrics look good, ramp up to 50% and observe for another 30 seconds<li>Finally, go to 100%</ol><p>Notice the two Services: <code>demo-app-stable</code> points to the old Pods, <code>demo-app-canary</code> points to the new ones. Argo Rollouts controls traffic distribution by modifying the weight values in the HTTPRoute.<h3 id=analysistemplate-data-driven-decisions>AnalysisTemplate: data-driven decisions</h3><p>Traffic splitting is only half the story. The real question is: <strong>who decides whether to continue or roll back?</strong><p>A human staring at Grafana dashboards? At 3 AM?<p><code>AnalysisTemplate</code> is Argo Rollouts' automated referee. Here is a success-rate check:<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  metrics:
+    - name: success-rate
+      interval: 1m
+      count: 3
+      successCondition: result[0] >= 0.99
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus-server.prometheus-system.svc.cluster.local:80
+          query: |
+            sum(rate(http_requests_total{status!~"5.*"}[1m]))
+            /
+            sum(rate(http_requests_total[1m]))
+</code></pre><p>This template tells Argo Rollouts:<ul><li>Query Prometheus every 1 minute<li>Run 3 checks total<li>If the HTTP success rate drops below 99%, mark it as a failure<li>Allow at most 1 failure before triggering rollback</ul><p>Then you wire it into the Rollout steps:<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>steps:
+  - setWeight: 20
+  - analysis:
+      templates:
+        - templateName: success-rate
+  - setWeight: 50
+  - pause: {duration: 30s}
+  - setWeight: 100
+</code></pre><p>After traffic shifts to 20%, the analysis runs automatically. It only advances if the analysis passes. If it fails, traffic reverts to the stable version. No pager duty required.<h3 id=gateway-api-standardized-traffic-splitting>Gateway API: standardized traffic splitting</h3><p>In the Ingress days, canary deployments with Nginx meant writing <code>nginx.ingress.kubernetes.io/canary-weight</code> annotations. Traefik had its own syntax. Switch controllers and you would have to rewrite everything.<p>Gateway API makes traffic splitting a first-class citizen. Look at how clean the HTTPRoute is:<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml>apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-app-route
+spec:
+  parentRefs:
+    - name: traefik-gateway
+  hostnames:
+    - "demo.homelab.local"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: demo-app-stable
+          port: 80
+          weight: 100
+        - name: demo-app-canary
+          port: 80
+          weight: 0
+</code></pre><p>The initial state is stable at 100%, canary at 0%. During a release, Argo Rollouts updates the weight values and Traefik applies the changes in real time. This is a standard API, not annotation magic.<hr><h2 id=demo-watching-the-system-work>Demo: watching the system work</h2><p>To prove this setup can actually catch problems and self-heal, I added a fault injection feature to the Demo App. Setting <code>errorRate: 50</code> in Helm Values makes the new version return HTTP 500 errors 50% of the time.<p>Here is what happens during a release:<ol><li><strong>Git Push</strong> -- update the image tag and push to the repository<li><strong>ArgoCD Sync</strong> -- ArgoCD detects the change and syncs the new Rollout spec to the cluster<li><strong>Canary starts</strong> -- Argo Rollouts spins up new Pods and updates the HTTPRoute to send 20% of traffic to them<li><strong>Analysis runs</strong> -- the AnalysisTemplate queries Prometheus, which reports a success rate of around 50%<li><strong>Auto rollback</strong> -- the analysis fails, Argo Rollouts immediately sets the HTTPRoute weight back to 100% stable, and marks the new version as <code>Degraded</code></ol><p>The whole thing takes about two to three minutes, with zero manual intervention. The blast radius is limited to 20% of traffic for a very short window.<p>Compare that to a full rollout: 100% of users affected, lasting until you manually roll back. The difference is night and day.<hr><h2 id=lessons-learned>Lessons learned</h2><p>Setting this up was not exactly smooth sailing. Here are the issues that cost me the most time:<h3 id=gateway-api-crd-version-mismatch>Gateway API CRD version mismatch</h3><p>Traefik's Gateway API support is evolving rapidly. Different Traefik versions support different Gateway API CRD versions. I initially installed the latest CRDs, but Traefik did not recognize them and threw cryptic errors.<p>The fix: check Traefik's release notes for the Gateway API version it supports, and install the matching CRDs. Do not just grab the latest.<h3 id=the-promql-empty-result-trap>The PromQL empty result trap</h3><p>This one is subtle. When the canary has just started and has not received any traffic yet, the PromQL query returns empty (not zero -- literally no data). Argo Rollouts interprets empty results as a failure and triggers a rollback.<p>In other words, your new version gets rolled back before it even serves its first request.<p>The fix is to add a fallback to the PromQL query:<pre class=language-promql data-lang=promql><code class=language-promql data-lang=promql>sum(rate(http_requests_total{status!~"5.*"}[1m]))
+/
+sum(rate(http_requests_total[1m]))
+or vector(1)
+</code></pre><p>The <code>or vector(1)</code> means: if the preceding query returns empty, substitute 1 (i.e., 100% success rate).<h3 id=local-resource-consumption>Local resource consumption</h3><p>Running Traefik + ArgoCD + Argo Rollouts + Prometheus + a Demo App in a local Kind cluster eats 4-5 GB of memory just at idle. Give Docker Desktop at least 8 GB, or you will spend hours debugging OOMKilled Pods thinking it is a configuration issue.<hr><h2 id=wrapping-up>Wrapping up</h2><p>With this project, my Homelab release process went from "push and pray" to "push and relax."<p>GitOps solved <strong>consistency</strong> (cluster state = Git state). Argo Rollouts solved <strong>safety</strong> (progressive delivery + auto rollback). Prometheus solved <strong>observability</strong> (data over gut feeling). Together, they form what I consider a complete GitOps release pipeline.<p>If you are tired of the anxiety that comes with all-at-once deployments, check out the project:<p><strong>Repository</strong>: <a href=https://github.com/fullstackjam/canary-deployment>canary-deployment</a></div><div id=comments-issue-id style=display:none>15</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

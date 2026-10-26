@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="blueBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <linearGradient id="amberBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="38" font-size="20" font-weight="700" fill="#1E293B" text-anchor="middle">Git object model: commit → tree → blob</text>
+
+  <!-- ======================== -->
+  <!-- COMMIT card -->
+  <!-- ======================== -->
+  <rect x="310" y="64" width="280" height="90" rx="12" fill="url(#blueBg)" stroke="#93C5FD" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="326" y="78" width="68" height="24" rx="12" fill="#2563EB"/>
+  <text x="360" y="95" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">commit</text>
+  <text x="326" y="128" font-size="13" font-family="'SF Mono', 'Fira Code', monospace" fill="#1E40AF">20373c4a...</text>
+  <text x="326" y="146" font-size="11" fill="#64748B">tree: e9760c66...</text>
+
+  <!-- Arrow: commit → tree -->
+  <path d="M450,154 L450,194" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- ======================== -->
+  <!-- TREE card -->
+  <!-- ======================== -->
+  <rect x="270" y="198" width="360" height="110" rx="12" fill="url(#greenBg)" stroke="#6EE7B7" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="290" y="214" width="52" height="24" rx="12" fill="#059669"/>
+  <text x="316" y="231" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">tree</text>
+  <text x="290" y="260" font-size="13" font-family="'SF Mono', 'Fira Code', monospace" fill="#065F46">e9760c66...</text>
+
+  <!-- Tree entries -->
+  <text x="290" y="286" font-size="12" font-family="'SF Mono', 'Fira Code', monospace" fill="#64748B">100644 blob 3b18e512... a.txt</text>
+  <text x="290" y="302" font-size="12" font-family="'SF Mono', 'Fira Code', monospace" fill="#64748B">100644 blob 3b18e512... b.txt</text>
+
+  <!-- ======================== -->
+  <!-- BLOB card (single, shared) -->
+  <!-- ======================== -->
+  <rect x="330" y="370" width="240" height="90" rx="12" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="350" y="386" width="52" height="24" rx="12" fill="#D97706"/>
+  <text x="376" y="403" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">blob</text>
+  <text x="350" y="430" font-size="13" font-family="'SF Mono', 'Fira Code', monospace" fill="#92400E">3b18e512...</text>
+  <text x="350" y="448" font-size="12" fill="#78716C">content: "hello world"</text>
+
+  <!-- Arrow: tree entry a.txt → blob (left path) -->
+  <path d="M380,308 L380,330 Q380,345 395,350 L410,358 L420,366" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+
+  <!-- Arrow: tree entry b.txt → blob (right path) -->
+  <path d="M520,308 L520,330 Q520,345 505,350 L490,358 L480,366" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+
+  <!-- Labels on arrows -->
+  <text x="350" y="342" font-size="12" font-weight="500" fill="#065F46">a.txt</text>
+  <text x="528" y="342" font-size="12" font-weight="500" fill="#065F46">b.txt</text>
+
+  <!-- ======================== -->
+  <!-- Annotation callout -->
+  <!-- ======================== -->
+  <rect x="590" y="380" width="280" height="68" rx="10" fill="#fff" stroke="#FCD34D" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="610" y="404" font-size="13" font-weight="600" fill="#92400E">Same hash → stored only once</text>
+  <text x="610" y="424" font-size="12" fill="#78716C">a.txt and b.txt both say "hello world"</text>
+  <text x="610" y="440" font-size="12" fill="#78716C">Git dedupes: one blob on disk</text>
+
+  <!-- Dashed line from annotation to blob -->
+  <path d="M590,414 L574,414" stroke="#FCD34D" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- ======================== -->
+  <!-- Left-side legend -->
+  <!-- ======================== -->
+  <rect x="30" y="100" width="220" height="170" rx="10" fill="#fff" stroke="#E2E8F0" stroke-width="1" filter="url(#shadow)"/>
+  <text x="50" y="126" font-size="14" font-weight="600" fill="#1E293B">Three object types</text>
+
+  <rect x="50" y="140" width="10" height="10" rx="3" fill="#2563EB"/>
+  <text x="68" y="150" font-size="12" fill="#64748B">commit — who, when, why</text>
+
+  <rect x="50" y="166" width="10" height="10" rx="3" fill="#059669"/>
+  <text x="68" y="176" font-size="12" fill="#64748B">tree — filenames + pointers</text>
+
+  <rect x="50" y="192" width="10" height="10" rx="3" fill="#D97706"/>
+  <text x="68" y="202" font-size="12" fill="#64748B">blob — file content only</text>
+
+  <line x1="50" y1="218" x2="230" y2="218" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="50" y="238" font-size="11" fill="#94A3B8">Objects addressed by SHA-1</text>
+  <text x="50" y="254" font-size="11" fill="#94A3B8">Same content → same object</text>
+</svg>

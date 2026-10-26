@@ -1,0 +1,185 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="Three years of homelab evolution: from snowflake servers to GitOps, from manual deployments to automated observability. A hands-on journey through Infrastructure as Code, ArgoCD, and Prometheus." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="How My Homelab Embodies Modern DevOps Principles" property=og:title><meta content="Three years of homelab evolution: from snowflake servers to GitOps, from manual deployments to automated observability. A hands-on journey through Infrastructure as Code, ArgoCD, and Prometheus." property=og:description><meta content=https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/ property=og:url><meta content=2025-09-25T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="How My Homelab Embodies Modern DevOps Principles" name=twitter:title><meta content="Three years of homelab evolution: from snowflake servers to GitOps, from manual deployments to automated observability. A hands-on journey through Infrastructure as Code, ArgoCD, and Prometheus." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How My Homelab Embodies Modern DevOps Principles",
+  "description": "Three years of homelab evolution: from snowflake servers to GitOps, from manual deployments to automated observability. A hands-on journey through Infrastructure as Code, ArgoCD, and Prometheus.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-09-25",
+  
+  "dateModified": "2025-09-25",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "What hardware do I need to start a homelab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You don't need expensive gear. A few old laptops, mini PCs like Intel NUCs, or second-hand servers will do. My cluster started with a handful of cheap machines. The key is to get something running first — you can upgrade hardware later."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Is Kubernetes overkill for a homelab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If you just want to run a few containers, Docker Compose is enough. But if you want to systematically learn cloud-native technologies, K8s is unavoidable. Once you have more than a handful of services, K8s declarative management and automatic scheduling actually become easier than managing everything manually."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What is the difference between GitOps and traditional CI/CD?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Traditional CI/CD uses a push model: the CI pipeline builds and pushes directly to the server. GitOps uses a pull model: ArgoCD inside the cluster continuously watches the Git repo and automatically syncs any changes. Git becomes the single source of truth, every change is tracked, and rollback is just a git revert."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Does running a homelab help with career development?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. In interviews, you can talk about real problems you have solved instead of reciting textbook definitions. At work, issues like network policies, persistent volumes, and resource limits are things you have already debugged at home. Most importantly, you develop a DevOps mindset — that is worth more than knowing any single tool."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What tech stack do you recommend for a homelab from scratch?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Build it in stages. First, use Ansible for machine configuration to achieve Infrastructure as Code. Second, add K8s plus ArgoCD for GitOps automated deployment. Third, layer on Prometheus plus Grafana for observability. Get each stage working before moving to the next."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>How My Homelab Embodies Modern DevOps Principles - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/ id=title>How My Homelab Embodies Modern DevOps Principles</a><div id=date>2025-09-25</div><div id=content><p>Three years ago, when I started tinkering with <a href=https://github.com/fullstackjam/k8s-gitops>k8s-gitops</a>, I just wanted a Kubernetes cluster I could actually touch. Something to experiment with — break things, fix things, understand how they really work.<p>I didn't plan to end up with a production-grade setup that follows enterprise DevOps practices. That just sort of happened, one painful lesson at a time.<hr><h2 id=why-bother-with-a-homelab>Why bother with a homelab?</h2><p>Honestly? Curiosity.<p>At work, the K8s environment was locked down. I could look but not touch. Wanted to try a new feature? Get in the queue. Cloud services were convenient but expensive, and they abstract away the parts I wanted to understand.<p>The thing is, <strong>reading docs only gets you so far. You have to break things yourself.</strong><p>Early on, I couldn't even explain the difference between a Pod and a Service. I read every tutorial I could find, but it all felt abstract. Then I started building from scratch — writing every config file, debugging every networking issue — and the concepts clicked. There's no shortcut for that.<hr><h2 id=the-three-year-evolution>The three-year evolution</h2><p>My homelab evolved across three phases:<pre class=mermaid>graph LR
+    subgraph "Phase 1: Manual Era"
+        A[Manual SSH Setup] --> B[Snowflake Servers]
+        B --> C[Manual Deployments]
+    end
+
+    subgraph "Phase 2: Automation"
+        D[Ansible Playbooks] --> E[Standardized Nodes]
+        E --> F[K8s Cluster]
+    end
+
+    subgraph "Phase 3: GitOps"
+        G[Git Repository] --> H[ArgoCD Sync]
+        H --> I[Auto Deploy]
+        I --> J[Prometheus Metrics]
+        J --> K[Grafana Dashboards]
+    end
+
+    C -.->|"Had enough"| D
+    F -.->|"Manual deploys are painful"| G
+
+    style A fill:#FEE2E2,stroke:#EF4444
+    style B fill:#FEE2E2,stroke:#EF4444
+    style C fill:#FEE2E2,stroke:#EF4444
+    style D fill:#FEF3C7,stroke:#F59E0B
+    style E fill:#FEF3C7,stroke:#F59E0B
+    style F fill:#FEF3C7,stroke:#F59E0B
+    style G fill:#D1FAE5,stroke:#10B981
+    style H fill:#D1FAE5,stroke:#10B981
+    style I fill:#D1FAE5,stroke:#10B981
+    style J fill:#DBEAFE,stroke:#3B82F6
+    style K fill:#DBEAFE,stroke:#3B82F6</pre><p>Each phase was born out of frustration with the previous one. Let me walk through them.<hr><h2 id=phase-1-killing-the-snowflake-servers>Phase 1: Killing the snowflake servers</h2><h3 id=the-problem-every-machine-was-a-unique-work-of-art>The problem: every machine was a unique work of art</h3><p>In the beginning, every machine was hand-configured. One had Docker 20.10, another had Docker 24.0. One had iptables rules I added during a late-night debugging session. Another had mystery entries in <code>/etc/hosts</code> that nobody could explain. Config files were scattered everywhere, versions were inconsistent.<p>This is the classic "snowflake server" problem — every machine is unique, nobody dares touch them, and when something breaks, nobody can reproduce the environment.<p>When a machine died, the only option was a fresh OS install. And after reinstalling, I could never remember exactly what I had configured before.<h3 id=the-fix-infrastructure-as-code-with-ansible>The fix: Infrastructure as Code with Ansible</h3><p>I switched to <strong>Ansible</strong>. Everything from OS setup to software configuration became a playbook.<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml># Node initialization playbook (simplified)
+- hosts: k8s_nodes
+  tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install base dependencies
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - ca-certificates
+        state: present
+
+    - name: Configure kernel parameters
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+      loop:
+        - { key: net.bridge.bridge-nf-call-iptables, value: "1" }
+        - { key: net.ipv4.ip_forward, value: "1" }
+
+    - name: Install containerd
+      apt:
+        name: containerd
+        state: present
+</code></pre><p>Now rebuilding the entire cluster is one command:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash>ansible-playbook -i inventory/hosts site.yml
+</code></pre><p>Five minutes and the cluster is back online. More importantly, every machine has the exact same configuration. No more "this server is special" excuses.<p><strong>Biggest takeaway:</strong> Once your infrastructure is code, you stop being afraid of breaking things. You can always rebuild. The config lives in Git, so who changed what and when is always clear.<hr><h2 id=phase-2-gitops-saved-my-sanity>Phase 2: GitOps saved my sanity</h2><h3 id=the-problem-manual-deployments-are-a-nightmare>The problem: manual deployments are a nightmare</h3><p>The K8s cluster was up. Apps were running. But every update meant SSH-ing into the server and running commands by hand:<pre class=language-bash data-lang=bash><code class=language-bash data-lang=bash># The "standard" deployment process
+ssh master-node
+cd /home/user/manifests
+git pull
+kubectl apply -f deployment.yaml
+kubectl rollout status deployment/my-app
+# Hope nothing goes wrong...
+</code></pre><p>I would forget steps. Services would go down. Worse, I had no idea which version was actually running in production. One time I spent two hours debugging an issue, only to realize the "deployed" code was three days old — I had forgotten to actually deploy it.<h3 id=the-fix-argocd-declarative-config>The fix: ArgoCD + declarative config</h3><p><strong>ArgoCD</strong> changed everything.<p>The concept is simple: ArgoCD runs inside the cluster and continuously watches a Git repository. You describe the desired state as YAML, push to Git, and ArgoCD detects the change and syncs the cluster to match.<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml># ArgoCD Application definition
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/fullstackjam/k8s-gitops
+    targetRevision: main
+    path: apps/homepage
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+</code></pre><p>Now deployment is just a git push. Rollback? <code>git revert</code> and push — ArgoCD automatically restores the previous state. Every deployment has a full Git history, so "what changed yesterday?" is always answerable.<p>I set up different sync strategies for different kinds of workloads:<ul><li><strong>Infrastructure components</strong> (cert-manager, ingress-nginx): Manual sync. Validate in staging first.<li><strong>My own apps</strong> (blog, APIs): Auto sync. Push and ship.<li><strong>Third-party services</strong> (Grafana, Prometheus): Auto sync + selfHeal, preventing config drift from manual changes.</ul><p><strong>Deepest lesson:</strong> When deployment becomes a Git operation, the operational burden drops by half. No commands to memorize, no fear of fat-fingering something, and <code>git log</code> becomes your incident timeline.<hr><h2 id=phase-3-observability-so-i-can-sleep-at-night>Phase 3: Observability so I can sleep at night</h2><h3 id=the-problem-the-system-was-a-black-box>The problem: the system was a black box</h3><p>Before monitoring, troubleshooting was guesswork. CPU high? No idea. Running out of memory? Also no idea. I only found out services were down when someone told me.<p>My blog was down for two full days once and I had no clue — I don't check it every day. A friend finally messaged me: "Hey, your blog is broken."<h3 id=the-fix-prometheus-grafana-alerting>The fix: Prometheus + Grafana + alerting</h3><p>A proper monitoring stack made the entire system transparent.<p><strong>Prometheus</strong> collects metrics — CPU, memory, and disk for every node; resource usage for every Pod; request latency and error rates for every Service.<p><strong>Grafana</strong> visualizes it all. I built dashboards for different concerns:<ul><li><strong>Cluster overview:</strong> Node status, resource utilization, Pod counts<li><strong>Application monitoring:</strong> CPU/memory trends per service, restart counts<li><strong>Network monitoring:</strong> Ingress traffic, latency distribution</ul><p>The most important piece is <strong>alerting</strong>. I configured AlertManager to notify me when things go sideways:<pre class=language-yaml data-lang=yaml><code class=language-yaml data-lang=yaml># Alert rules (simplified)
+groups:
+  - name: node-alerts
+    rules:
+      - alert: NodeHighCPU
+        expr: node_cpu_seconds_total > 0.85
+        for: 5m
+        annotations:
+          summary: "Node CPU usage above 85%"
+
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        annotations:
+          summary: "Pod is crash-looping"
+
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.15
+        for: 10m
+        annotations:
+          summary: "Disk space below 15%"
+</code></pre><p>Now I get warnings before problems become outages. Last time a node's disk was filling up, I got an alert a full day before it would have caused issues. Cleared some logs, moved on with my life. Before monitoring, that node would have gone down and taken every Pod on it with it.<p><strong>Most practical lesson:</strong> Good monitoring isn't about showing off dashboards. It's about sleeping through the night.<hr><h2 id=the-real-takeaway-devops-is-a-mindset-not-a-toolbox>The real takeaway: DevOps is a mindset, not a toolbox</h2><p>After three years, the biggest value of this project isn't the technology. It's the shift in thinking.<p>I used to think DevOps was just a collection of tools — learn Docker, K8s, and CI/CD, and you're done. Actually doing it taught me that DevOps is a way of thinking:<ul><li><strong>Automate everything that can be automated</strong> — Ansible for config, ArgoCD for deployments, Renovate Bot for dependency updates<li><strong>Monitor everything that runs</strong> — A service without metrics is running blind<li><strong>Version-control everything</strong> — All configuration lives in Git. What changed, why, and who did it are always answerable<li><strong>Make everything reproducible</strong> — Anyone with the code can rebuild the entire environment</ul><p>Once these principles are internalized, you see every technical problem differently. Now whenever I build anything, the first questions are: "Can this be automated?" "Is there monitoring?" "Is this configuration versioned?"<hr><h2 id=career-impact>Career impact</h2><p>On a more practical note, this project has been a career accelerator.<p>In interviews, while others are reciting textbook definitions, I can talk naturally about real problems and solutions. Why network policies need explicit <code>policyTypes</code>. Why PV-to-PVC binding gets stuck. Why setting resource limits too low triggers OOMKill. These aren't abstract concepts anymore — they're bugs I have personally debugged.<p>At work, when similar issues come up, I can usually pinpoint the cause quickly. Because I have already seen it in my homelab.<hr><h2 id=advice-for-getting-started>Advice for getting started</h2><p>If you're thinking about building a homelab, here's what I've learned:<p><strong>Don't overcomplicate it from the start.</strong> I made this mistake — I tried to set up K8s, Istio, Vault, and ArgoCD all at once and ended up with a mess. Build incrementally. Suggested order: Docker, then K8s, then GitOps, then monitoring, then everything else.<p><strong>Pick one project and go deep.</strong> Don't bounce between Docker today, K8s tomorrow, and Terraform the day after. I stuck with one goal — "run a complete K8s cluster at home" — and followed it all the way through.<p><strong>Document every problem you solve.</strong> I still regularly reference my old notes. Many solutions are in there. And those notes become your best interview material.<p><strong>Don't be afraid to break things.</strong> It's your own environment. I've reinstalled the OS at least twenty times over three years, and every time I learned something new. Once Ansible was in place, reinstalling stopped being painful — one command and I'm back.<p><strong>Don't wait for the perfect architecture.</strong> I've seen too many people stuck in planning mode. Start with a single-node K8s cluster. Get something running. Fix problems as they come up.<p><strong>Join the community.</strong> The Kubernetes community is full of experienced people. Search "k8s-gitops" or "homelab" on GitHub for excellent reference projects.<hr><h2 id=final-thoughts>Final thoughts</h2><p><a href=https://github.com/fullstackjam/k8s-gitops>k8s-gitops</a> proves one thing: personal projects can have production-grade quality. The difference isn't scale — it's principles and practice.<p>Through Infrastructure as Code, GitOps, and observability, you can build systems that are stable, reliable, and maintainable. And everything you learn along the way transfers directly to your day job.<p>If you're considering a homelab, don't hesitate. Grab an old computer and start. Three years from now, you'll be glad you did.<hr><p><strong>Project:</strong> <a href=https://github.com/fullstackjam/k8s-gitops>https://github.com/fullstackjam/k8s-gitops</a><p><strong>Docs:</strong> <a href=https://k8s-gitops.fullstackjam.com>https://k8s-gitops.fullstackjam.com</a><p>Questions and discussions welcome on GitHub. Stars appreciated.</div><div id=comments-issue-id style=display:none>12</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

@@ -1,0 +1,405 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content=#000000 id=color_chrome name=theme-color><meta content=#000000 id=color_safari name=apple-mobile-web-app-status-bar-style><meta content="A deep dive into concurrency control algorithms for Python — from semaphores to PID controllers, token buckets, and adaptive concurrency adjustment. Complete code examples for each approach." name=description><meta content=fullstackjam name=author><link href=https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ rel=canonical><meta content="Jam's Blog" property=og:site_name><meta content=en_US property=og:locale><meta content=article property=og:type><meta content="Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting" property=og:title><meta content="A deep dive into concurrency control algorithms for Python — from semaphores to PID controllers, token buckets, and adaptive concurrency adjustment. Complete code examples for each approach." property=og:description><meta content=https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ property=og:url><meta content=2025-02-06T00:00:00+00:00 property=article:published_time><meta content=summary_large_image name=twitter:card><meta content=@fullstackjam name=twitter:creator><meta content="Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting" name=twitter:title><meta content="A deep dive into concurrency control algorithms for Python — from semaphores to PID controllers, token buckets, and adaptive concurrency adjustment. Complete code examples for each approach." name=twitter:description><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting",
+  "description": "A deep dive into concurrency control algorithms for Python — from semaphores to PID controllers, token buckets, and adaptive concurrency adjustment. Complete code examples for each approach.",
+  "author": {
+    "@type": "Person",
+    "name": "fullstackjam",
+    "url": "https://github.com/fullstackjam"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "fullstackjam"
+  },
+  "datePublished": "2025-02-06",
+  
+  "dateModified": "2025-02-06",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/"
+  }
+}
+</script><link rel="Shortcut Icon" href=https://blog.fullstackjam.com/favicon.svg><link href=https://blog.fullstackjam.com/favicon.svg rel=Bootmark><link title="Jam's Blog" href=https://blog.fullstackjam.com/rss.xml rel=alternate type=application/rss+xml><script type=application/ld+json>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    
+    {
+      "@type": "Question",
+      "name": "What is the difference between asyncio.Semaphore and threading.Semaphore?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "asyncio.Semaphore is a coroutine-level semaphore that suspends the coroutine without blocking the thread. threading.Semaphore is an OS-level semaphore that actually blocks the thread. Choose based on whether you are using async or threaded code."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Does a PID controller actually work for concurrency control?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, PID controllers work well for concurrency control, but tuning matters. Poorly chosen P, I, D coefficients can cause wild oscillations or sluggish convergence. Start with P-only control and add I and D incrementally."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "What is the difference between a token bucket and a leaky bucket?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A token bucket allows bursts (if tokens have accumulated, you can spend them all at once), while a leaky bucket enforces a strict constant rate. Token buckets suit scenarios needing occasional bursts; leaky buckets suit strict rate uniformity."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "When should I use adaptive concurrency control?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Adaptive concurrency is ideal when you do not know the target service's capacity or when its load varies over time. It automatically probes the upper limit and backs off when failures increase — much more flexible than hardcoded parameters."
+      }
+    },
+    
+    {
+      "@type": "Question",
+      "name": "Which concurrency control strategy should I use in production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most cases, a fixed semaphore is enough — simple and reliable. If the API has explicit rate limits, use a token bucket. If load is unpredictable, consider a PID controller or adaptive concurrency. Do not over-engineer."
+      }
+    }
+    
+  ]
+}
+</script><style>#title,body{line-height:1.6em}body{background:#000;color:#00c000;font-size:1.2em}#container{margin:2.4em auto;width:72%}#header{text-align:center}#header>a{font-size:.96em;margin:auto 1em}#title{font-size:1.6em;font-weight:700;margin:1em auto}#date{font-style:italic}#list>li{margin:.8em auto;list-style:disc}img{max-width:100%}a{color:inherit;text-decoration:none}#content a,a:hover{text-decoration:underline}.lang-switch{opacity:.6;font-size:.85em}.lang-switch:hover{opacity:1}pre{padding:1em;overflow:auto;background:#1b1d16}:not(pre) >code{padding:.2em;background:#1b1d16;overflow:auto}blockquote{padding:0 1em;margin:0;border-left:.25em solid #212121}.mermaid{text-align:center;margin:2em auto;display:block}@media (max-width:600px){#container{width:88%}#header>a{margin:auto .3em}}</style><script src=https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js></script><script>mermaid.initialize({startOnLoad:true,theme:'dark'})</script><title>Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting - Jam's Blog</title><body><div id=header><a href=https://blog.fullstackjam.com/en/>Jam's Blog</a><a href=https://blog.fullstackjam.com/en/about/>About</a><a href=https://blog.fullstackjam.com/en/friends/>Friends</a><a href=https://blog.fullstackjam.com/en/projects/>Projects</a><a class=lang-switch href=https://blog.fullstackjam.com/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/>[中文]</a></div><div id=container><a href=https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/ id=title>Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting</a><div id=date>2025-02-06</div><div id=content><blockquote><p>This post is also available in <a href=/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/>Chinese (中文)</a>.</blockquote><p>Sending HTTP requests at scale is trickier than it looks.<p>You write a scraper or a batch API caller. It works fine with 10 requests. Then you scale up to 10,000 and everything falls apart: 429 rate limits, event loop starvation, or your thread pool hammering the target service into the ground.<p>This post walks through concurrency control starting from the basics: semaphores first, then PID controllers, token buckets, and adaptive concurrency adjustment. Every approach includes complete Python code you can run immediately.<h2 id=the-big-picture-what-concurrency-control-is-really-about>The big picture: what concurrency control is really about</h2><p>Whether you use <code>asyncio</code> or <code>threading</code>, the core question is the same: <strong>how do you balance "as fast as possible" with "don't crash the system"?</strong><p>Here is the general flow:<pre class=mermaid>graph LR
+    A[Request Queue] --> B{Concurrency Controller}
+    B -->|Acquire token/semaphore| C[Worker Pool]
+    C --> D[Target Service]
+    D -->|Response| E{Feedback Collector}
+    E -->|Success rate / latency| B
+    E --> F[Result Aggregator]
+
+    style A fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A5F
+    style B fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style C fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    style D fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B
+    style E fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style F fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A5F</pre><p>The key is that <strong>feedback loop</strong>: success rates and latency flow back to the controller, which adjusts concurrency in real time. That is the difference between static and dynamic concurrency control.<hr><h2 id=1-semaphores-the-simplest-concurrency-limiter>1. Semaphores: the simplest concurrency limiter</h2><p>A semaphore is the starting point for concurrency control. The idea is dead simple: set a cap, allow at most N tasks to run concurrently, and make the rest wait.<h3 id=async-semaphore>Async semaphore</h3><p>In <code>asyncio</code>, use <code>asyncio.Semaphore</code>:<pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+
+async def fetch_url(semaphore: asyncio.Semaphore, client: httpx.AsyncClient, url: str):
+    async with semaphore:  # decrements on enter, increments on exit
+        response = await client.get(url)
+        return response.status_code
+
+async def main():
+    urls = [f"https://httpbin.org/delay/1" for _ in range(50)]
+    semaphore = asyncio.Semaphore(10)  # max 10 concurrent requests
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        tasks = [fetch_url(semaphore, client, url) for url in urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    success = sum(1 for r in results if isinstance(r, int) and r == 200)
+    print(f"Done: {success}/{len(urls)} succeeded")
+
+asyncio.run(main())
+</code></pre><p>The critical piece: <code>async with semaphore</code> is a context manager. On entry, the semaphore count decreases by 1. On exit, it increases by 1. When the count hits 0, any new <code>async with</code> suspends the coroutine (it does not block the thread) until another task finishes and releases the semaphore.<h3 id=thread-semaphore>Thread semaphore</h3><p>Same principle in threaded code, slightly different API:<pre class=language-python data-lang=python><code class=language-python data-lang=python>import concurrent.futures
+import threading
+import time
+import random
+
+def fetch_with_semaphore(semaphore: threading.Semaphore, task_id: int):
+    with semaphore:
+        print(f"[Task {task_id}] Starting")
+        time.sleep(random.uniform(0.1, 0.5))  # simulate network request
+        print(f"[Task {task_id}] Done")
+        return task_id
+
+def main():
+    semaphore = threading.Semaphore(5)  # max 5 threads running at once
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        futures = [
+            executor.submit(fetch_with_semaphore, semaphore, i)
+            for i in range(30)
+        ]
+        results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+    print(f"Completed {len(results)} tasks")
+
+main()
+</code></pre><h3 id=the-limitation-of-semaphores>The limitation of semaphores</h3><p>Semaphores are great, but they have an obvious problem: <strong>the concurrency cap is hardcoded</strong>.<p>You set it to 10, and it stays at 10 forever. But in reality:<ul><li>At 3 AM when the server is idle, 10 is too conservative<li>At 3 PM during peak traffic, 10 might be too aggressive<li>The target service just deployed a new version, and its capacity dropped temporarily</ul><p>We need the concurrency limit to adapt.<hr><h2 id=2-pid-controller-dynamic-adjustment-via-feedback-loop>2. PID controller: dynamic adjustment via feedback loop</h2><p>The PID controller (Proportional-Integral-Derivative) is a classic algorithm from industrial control theory. The idea: observe the gap between the actual state and the desired state (the error), then adjust the output based on that error.<p>Applied to concurrency control:<ul><li><strong>Target</strong>: keep the failure rate below a threshold (say, 5%)<li><strong>Output</strong>: concurrency level<li><strong>Feedback</strong>: actual failure rate</ul><h3 id=the-three-pid-components>The three PID components</h3><table><thead><tr><th>Component<th>What it does<th>In concurrency control<tbody><tr><td><strong>P (Proportional)</strong><td>Adjusts based on current error<td>Failure rate is high — reduce concurrency now<tr><td><strong>I (Integral)</strong><td>Accumulates historical error, eliminates steady-state offset<td>Failure rate has been slightly high for a while — keep nudging<tr><td><strong>D (Derivative)</strong><td>Adjusts based on rate of error change<td>Failure rate is spiking — respond fast</table><h3 id=full-implementation>Full implementation</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+import time
+import random
+
+class PIDController:
+    """PID controller for dynamic concurrency adjustment"""
+
+    def __init__(self, kp: float, ki: float, kd: float,
+                 target: float, min_output: int, max_output: int):
+        self.kp = kp          # proportional gain
+        self.ki = ki          # integral gain
+        self.kd = kd          # derivative gain
+        self.target = target  # target failure rate
+        self.min_output = min_output
+        self.max_output = max_output
+
+        self._integral = 0.0
+        self._prev_error = 0.0
+
+    def compute(self, current_value: float) -> int:
+        """Compute new concurrency level from current failure rate"""
+        error = self.target - current_value  # positive = room to go faster
+
+        # P: current error
+        p_term = self.kp * error
+
+        # I: accumulated error (with anti-windup clamp)
+        self._integral += error
+        self._integral = max(-50, min(50, self._integral))
+        i_term = self.ki * self._integral
+
+        # D: rate of change
+        d_term = self.kd * (error - self._prev_error)
+        self._prev_error = error
+
+        output = p_term + i_term + d_term
+        return int(max(self.min_output, min(self.max_output, output)))
+
+
+async def fetch_with_pid(url: str, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
+    """Async request with semaphore gate"""
+    async with semaphore:
+        try:
+            resp = await client.get(url, timeout=10)
+            # Simulate: random failure to demonstrate PID adjustment
+            if random.random() < 0.15:
+                return False
+            return resp.status_code == 200
+        except Exception:
+            return False
+
+
+async def main():
+    pid = PIDController(
+        kp=20.0, ki=0.5, kd=5.0,
+        target=0.05,       # target failure rate: 5%
+        min_output=2,       # min 2 concurrent
+        max_output=50       # max 50 concurrent
+    )
+
+    current_concurrency = 10
+    url = "https://httpbin.org/delay/0"
+
+    async with httpx.AsyncClient() as client:
+        for batch in range(10):
+            semaphore = asyncio.Semaphore(current_concurrency)
+            tasks = [fetch_with_pid(url, client, semaphore) for _ in range(20)]
+            results = await asyncio.gather(*tasks)
+
+            failure_rate = sum(1 for r in results if not r) / len(results)
+            new_concurrency = pid.compute(failure_rate)
+
+            print(f"Batch {batch+1}: "
+                  f"concurrency={current_concurrency}, "
+                  f"failure_rate={failure_rate:.1%}, "
+                  f"adjusted_to={new_concurrency}")
+
+            current_concurrency = new_concurrency
+
+asyncio.run(main())
+</code></pre><h3 id=pid-tuning-tips>PID tuning tips</h3><p>Getting the PID coefficients right takes some iteration. A few rules of thumb:<ol><li><strong>Start with P only</strong>: set <code>ki</code> and <code>kd</code> to 0, tune <code>kp</code> until the system roughly tracks the target<li><strong>Add I to eliminate steady-state error</strong>: if the failure rate hovers just above the target but never converges, add a small <code>ki</code><li><strong>Add D to dampen oscillation</strong>: if concurrency is swinging wildly between batches, increase <code>kd</code><li><strong>Always include anti-windup</strong>: clamp the integral term to prevent saturation, or the controller will overshoot badly after sustained error</ol><hr><h2 id=3-token-bucket-controlling-request-rate>3. Token bucket: controlling request rate</h2><p>A semaphore controls <strong>how many requests are in flight at once</strong>. A token bucket controls <strong>how many requests you can send per second</strong>. These are two different dimensions.<h3 id=token-bucket-vs-semaphore>Token bucket vs. semaphore</h3><p>Example: a semaphore of 10 means at most 10 concurrent requests. But if each request completes in 10ms, you are effectively sending 1,000 requests per second. The semaphore does not care about that.<p>The token bucket approach:<ul><li>Tokens are generated at a fixed rate (say, 100 per second)<li>Each request consumes one token<li>When the bucket is full, no more tokens are generated (there is a capacity cap)<li>No token available? Wait.</ul><h3 id=thread-safe-token-bucket>Thread-safe token bucket</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import threading
+import time
+
+class TokenBucket:
+    """Thread-safe token bucket"""
+
+    def __init__(self, rate: float, capacity: int):
+        self.rate = rate          # tokens generated per second
+        self.capacity = capacity  # max tokens in the bucket
+        self._tokens = float(capacity)
+        self._last_refill = time.monotonic()
+        self._lock = threading.Lock()
+
+    def _refill(self):
+        """Refill tokens based on elapsed time"""
+        now = time.monotonic()
+        elapsed = now - self._last_refill
+        new_tokens = elapsed * self.rate
+        self._tokens = min(self.capacity, self._tokens + new_tokens)
+        self._last_refill = now
+
+    def acquire(self, timeout: float = None) -> bool:
+        """Acquire one token. Returns True on success, False on timeout."""
+        deadline = time.monotonic() + timeout if timeout else None
+
+        while True:
+            with self._lock:
+                self._refill()
+                if self._tokens >= 1:
+                    self._tokens -= 1
+                    return True
+
+            if deadline and time.monotonic() >= deadline:
+                return False
+            time.sleep(0.01)  # retry every 10ms
+
+
+class RateLimitedExecutor:
+    """Task executor with rate limiting"""
+
+    def __init__(self, rate: float, capacity: int, max_workers: int):
+        self.bucket = TokenBucket(rate, capacity)
+        self.max_workers = max_workers
+
+    def execute(self, task_fn, task_args_list):
+        """Execute a batch of tasks with rate limiting"""
+        import concurrent.futures
+
+        def wrapped(args):
+            if self.bucket.acquire(timeout=30):
+                return task_fn(*args)
+            else:
+                raise TimeoutError("Token acquisition timed out")
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+            futures = [pool.submit(wrapped, args) for args in task_args_list]
+            return [f.result() for f in concurrent.futures.as_completed(futures)]
+
+
+# Usage
+def call_api(task_id: int):
+    print(f"[{time.strftime('%H:%M:%S')}] Task {task_id} executing")
+    time.sleep(0.1)
+    return f"Task {task_id} done"
+
+executor = RateLimitedExecutor(
+    rate=10,       # 10 requests per second
+    capacity=20,   # burst capacity of 20
+    max_workers=5
+)
+
+results = executor.execute(call_api, [(i,) for i in range(30)])
+print(f"\nCompleted {len(results)} tasks")
+</code></pre><h3 id=async-token-bucket>Async token bucket</h3><p>If you are using async code, implement the token bucket with <code>asyncio.sleep</code> instead of busy-waiting:<pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import time
+
+class AsyncTokenBucket:
+    """Async token bucket"""
+
+    def __init__(self, rate: float, capacity: int):
+        self.rate = rate
+        self.capacity = capacity
+        self._tokens = float(capacity)
+        self._last_refill = time.monotonic()
+
+    async def acquire(self):
+        """Acquire a token (suspends the coroutine, does not block the thread)"""
+        while True:
+            now = time.monotonic()
+            elapsed = now - self._last_refill
+            self._tokens = min(self.capacity, self._tokens + elapsed * self.rate)
+            self._last_refill = now
+
+            if self._tokens >= 1:
+                self._tokens -= 1
+                return True
+
+            # Calculate wait time until next token
+            wait_time = (1 - self._tokens) / self.rate
+            await asyncio.sleep(wait_time)
+</code></pre><hr><h2 id=4-adaptive-concurrency-probe-the-limit-from-scratch>4. Adaptive concurrency: probe the limit from scratch</h2><p>All the previous approaches require you to know something in advance — a concurrency cap, a target failure rate, a token rate. But what if you have no idea how much the target service can handle?<p>Adaptive concurrency control has a simple premise: <strong>start low, ramp up, and back off when errors appear</strong>. It is essentially TCP congestion control applied to HTTP requests.<h3 id=core-logic>Core logic</h3><pre><code>concurrency = 1
+after each batch:
+  if failure_rate < threshold → concurrency += step  (probe faster)
+  if failure_rate > threshold → concurrency = concurrency / 2  (back off fast)
+  concurrency = clamp(concurrency, min, max)
+</code></pre><h3 id=full-implementation-1>Full implementation</h3><pre class=language-python data-lang=python><code class=language-python data-lang=python>import asyncio
+import httpx
+import random
+
+class AdaptiveConcurrencyController:
+    """Adaptive concurrency controller — automatically probes optimal concurrency"""
+
+    def __init__(self, min_concurrency: int = 1, max_concurrency: int = 100,
+                 failure_threshold: float = 0.1, step: int = 2):
+        self.min_concurrency = min_concurrency
+        self.max_concurrency = max_concurrency
+        self.failure_threshold = failure_threshold
+        self.step = step
+
+        self.current_concurrency = min_concurrency
+        self._history = []
+
+    def adjust(self, failure_rate: float):
+        """Adjust concurrency based on failure rate"""
+        old = self.current_concurrency
+
+        if failure_rate <= self.failure_threshold:
+            # Room to spare — speed up
+            self.current_concurrency = min(
+                self.max_concurrency,
+                self.current_concurrency + self.step
+            )
+        else:
+            # Over threshold — back off fast (halve)
+            self.current_concurrency = max(
+                self.min_concurrency,
+                self.current_concurrency // 2
+            )
+
+        self._history.append((old, failure_rate, self.current_concurrency))
+        return self.current_concurrency
+
+    def report(self):
+        """Print adjustment history"""
+        print("\n--- Concurrency Adjustment History ---")
+        print(f"{'Round':>5} | {'Concurrency':>11} | {'Failure%':>8} | {'Adjusted':>8}")
+        print("-" * 45)
+        for i, (old, rate, new) in enumerate(self._history, 1):
+            arrow = "^" if new > old else ("v" if new < old else "=")
+            print(f"{i:>5} | {old:>11} | {rate:>7.1%} | {new:>7} {arrow}")
+
+
+async def fetch(client: httpx.AsyncClient, semaphore: asyncio.Semaphore, url: str):
+    async with semaphore:
+        try:
+            resp = await client.get(url, timeout=10)
+            # Simulate: higher concurrency = higher failure rate
+            simulated_failure = random.random() < (semaphore._value / 100)
+            return not simulated_failure and resp.status_code == 200
+        except Exception:
+            return False
+
+
+async def main():
+    controller = AdaptiveConcurrencyController(
+        min_concurrency=1,
+        max_concurrency=50,
+        failure_threshold=0.15,  # 15% failure rate threshold
+        step=3
+    )
+
+    url = "https://httpbin.org/delay/0"
+    batch_size = 20
+
+    async with httpx.AsyncClient() as client:
+        for round_num in range(15):
+            concurrency = controller.current_concurrency
+            semaphore = asyncio.Semaphore(concurrency)
+
+            tasks = [fetch(client, semaphore, url) for _ in range(batch_size)]
+            results = await asyncio.gather(*tasks)
+
+            failure_rate = sum(1 for r in results if not r) / len(results)
+            controller.adjust(failure_rate)
+
+    controller.report()
+
+asyncio.run(main())
+</code></pre><p>When you run this, you will see concurrency ramp up steadily, then drop sharply when the failure rate exceeds the threshold, and eventually oscillate around a stable range. That is the adaptive behavior in action.<hr><h2 id=5-choosing-the-right-approach>5. Choosing the right approach</h2><table><thead><tr><th>Scenario<th>Recommended<th>Why<tbody><tr><td>API with explicit rate limits<td>Token bucket<td>Match the bucket rate to the API limit<tr><td>Known concurrency range, want simplicity<td>Fixed semaphore<td>Three lines of code, done<tr><td>Unpredictable target service load<td>Adaptive concurrency<td>Auto-probes, no guessing<tr><td>Need precise failure rate control<td>PID controller<td>Finest-grained feedback loop<tr><td>Need both concurrency and rate control<td>Semaphore + token bucket<td>Combine both dimensions</table><h3 id=practical-advice>Practical advice</h3><ol><li><strong>Start with a fixed semaphore.</strong> In most cases, a conservative concurrency cap is all you need. Do not over-engineer.<li><strong>Instrument first.</strong> Regardless of approach, log success rates, response times, and concurrency levels. You cannot tune what you cannot measure.<li><strong>Token buckets and semaphores stack.</strong> Semaphores control how many requests are in flight. Token buckets control how many requests are sent per second. They solve different problems and combine naturally.<li><strong>Retries need backoff.</strong> Concurrency control solves "how fast to send." Retry strategy solves "what to do on failure." Use exponential backoff with jitter.<li><strong>Test and production differ wildly.</strong> Parameters that work locally will behave differently in production. Build in the ability to adjust at runtime.</ol><hr><h2 id=conclusion>Conclusion</h2><p>Concurrency control is not rocket science. At its core, it is one question: <strong>how do you balance speed against stability?</strong><ul><li><strong>Semaphores</strong> are the simplest answer, sufficient for most cases<li><strong>Token buckets</strong> solve the rate control problem<li><strong>PID controllers</strong> use feedback loops for fine-grained adjustment<li><strong>Adaptive concurrency</strong> automatically probes the optimum when you are flying blind</ul><p>Start simple. Upgrade when you hit real problems. Reaching for the most complex solution first is itself a failure of complexity management.</div><div id=comments-issue-id style=display:none>7</div><style>#comment-header,#comment-list>li{margin:1em auto}#comment-avatar,#comment-tip{margin:auto .2em}#comment-action-avatar,#comment-avatar{width:1em;height:1em}#comment-action-info>*,#comment-action-input>*,#comment-info>*{display:inline-block;vertical-align:middle}#comment-header{font-size:1.6em;font-weight:700;line-height:1.6em}#comment-tip{font-style:italic}#comment-list{list-style:none;padding:0}#comment-action-author,#comment-author{font-weight:700;margin:auto .4em}#comment-datetime{font-size:.8em;font-style:italic}#comment-body{margin:auto 1.8em}#comment-action-info>*{margin:1em .2em}#comment-action-input{height:2em;width:100%;margin:1em auto}#comment-action-input>*{height:100%;margin:0 .2em}#comment-action-textarea{width:calc(100% - 8em)}#comment-action-post{width:6em}#comment-action-login{margin:1em .3em}</style><ol id=comment-list></ol><div id=comment-action></div><script>const y=e=>{var t=/\\([\\\|`*_{}\[\]()#+\-~])/g,n=/\n *&gt; *([^]*?)(?=(\n|$){2})/g,i=/\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g,o=/(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g,a=/^.*\n( *\|( *:?-+:?-+:? *\|)* *\n|)/,c=/.*\n/g,m=/\||(.*?[^\\])\|/g;const l=(t,n)=>{e=e.replace(t,n)},d=(e,t)=>"<"+e+">"+t+"</"+e+">",r=e=>e.replace(n,((e,t)=>d("blockquote",r(u(t.replace(/^ *&gt; */gm,"")))))),s=e=>e.replace(i,((e,t,n,i,o,a)=>(e=d("li",u(a.split(RegExp("\n ?"+t+"(?:(?:\\d+|[a-zA-Z])[.)]|[*\\-+]) +","g")).map(s).join("</li><li>"))),"\n"+(n?'<ol start="'+(i?n+'">':parseInt(n,36)-9+'" style="list-style-type:'+(o?"low":"upp")+'er-alpha">')+e+"</ol>":d("ul",e))))),u=e=>e.replace(o,((e,t,n,i,o,a,c,m,l,r)=>t+d(i?l?"strong":"em":o?l?"s":"sub":a?"sup":c?"small":m?"big":"code",u(r))));var p=[],h=0;return e="\n"+e+"\n",l(/</g,"&lt;"),l(/>/g,"&gt;"),l(/\t|\r|\uf8ff/g,"  "),e=r(e),l(/^([*\-=_] *){3,}$/gm,"<hr/>"),e=s(e),l(/<\/(ol|ul)>\n\n<\1>/g,""),l(/\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g,((e,t,n,i,o)=>(p[--h]=d("pre",d("code",i||o.replace(/^    /gm,""))),h+""))),l(/((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g,((e,n,i,o,a,c,m)=>(p[--h]=a?i?'<img src="'+a+'" alt="'+o+'"/>':'<a href="'+a+'">'+u(o).replace(t,"$1")+"</a>":m,h+""))),l(/&lt;(.*?)&gt;/g,((e,n)=>'<a href="'+n+'">'+u(n).replace(t,"$1")+"</a>")),l(/\n(( *\|.*?\| *\n)+)/g,((e,n)=>{var i=n.match(a)[1];return"\n"+d("table",n.replace(c,((e,n)=>e==i?"":d("tr",e.replace(m,((e,o,a)=>a?d(i&&!n?"th":"td",u(o||"").replace(t,"$1")):""))))))})),l(/(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g,((e,n,i,o)=>n+d("h"+i.length,u(o).replace(t,"$1")))),l(/(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g,((e,n)=>d("p",u(n).replace(t,"$1")))),l(/-\d+\uf8ff/g,(e=>p[parseInt(e,10)])),e.trim()},f=e=>{let t=t=>e.next(t),n=t=>e.throw(t);return new Promise(((i,o)=>{let a=e=>{e.done?i(e.value):Promise.resolve(e.value).then(t,n).then(a,o)};a(e.next())}))};let g;const m=document.getElementById("comments-issue-id").innerText,n=new URL(window.location.href);let q,p=n.searchParams.get("github_access_token");p&&(document.cookie=`github_access_token=${p};Path=/;Secure;SameSite=Strict`,n.searchParams.delete("github_access_token"),window.location.replace(n)),null!=p||(p=null==(q=document.cookie.split(";").find((e=>e.trim().startsWith("github_access_token="))))?void 0:q.trim().substring(20));const r=()=>{document.cookie="github_access_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure;SameSite=Strict",p=null},t=()=>f(function*(){var e;let n;if(g=JSON.parse(null!=(n=null==(e=document.getElementById("comments-addition"))?void 0:e.innerText)?n:"[]"),p){if(200!==(e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"GET"})).status)return r(),yield t()}else e=yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}`,{method:"GET"});200===e.status&&(g=g.concat(yield e.json()))}()),u=()=>{g.sort(((e,t)=>new Date(e.created_at).getTime()-new Date(t.created_at).getTime()));let e=document.getElementById("comment-list");e.innerHTML="";var t=document.createElement("div");for(t.id="comment-header",t.innerText="Comments",e.appendChild(t),0===g.length&&((t=document.createElement("div")).id="comment-tip",t.innerText="No comment yet",e.appendChild(t)),t=0;t<g.length;t++){let o=document.createElement("li");var n=document.createElement("div");n.id="comment-info";var i=document.createElement("img");i.id="comment-avatar",i.src=g[t].user.avatar_url,n.appendChild(i),(i=document.createElement("a")).id="comment-author",i.innerText=g[t].user.login,g[t].user.html_url&&(i.href=g[t].user.html_url),n.appendChild(i),(i=document.createElement("div")).id="comment-datetime",i.innerText=new Date(g[t].created_at).toLocaleString(),n.appendChild(i),o.appendChild(n),(n=document.createElement("div")).id="comment-body",n.innerHTML=y(g[t].body),o.appendChild(n),e.appendChild(o)}},v=()=>f(function*(){let e=document.getElementById("comment-action");e.innerHTML="";var n=document.createElement("div");if(n.id="comment-header",n.innerText="Leave a comment",e.appendChild(n),p){if(200===(n=yield fetch(`https://comments.fullstackjam.com/userinfo?github_access_token=${p}`,{method:"GET"})).status){n=yield n.json();let o=document.createElement("div");o.id="comment-action-info";var i=document.createElement("img");i.id="comment-action-avatar",i.src=n.avatar_url,o.appendChild(i),(i=document.createElement("a")).id="comment-action-author",i.innerText=n.login,i.href=n.html_url,o.appendChild(i);let a=document.createElement("button");a.id="comment-action-logout",a.innerText="Logout",a.addEventListener("click",(()=>{r(),v()})),o.appendChild(a),e.appendChild(o),(n=document.createElement("div")).id="comment-tip",n.innerText="Before posting a comment, consider if it's relevant, sensible, and kind. Would it bother you if someone else wrote it?",e.appendChild(n),(n=document.createElement("div")).id="comment-action-input";let c=document.createElement("textarea");c.id="comment-action-textarea",c.placeholder="Leave a comment",n.appendChild(c);let l=document.createElement("button");return l.id="comment-action-post",l.innerText="Comment",l.addEventListener("click",(()=>f(function*(){a.disabled=!0,c.disabled=!0,l.disabled=!0;let e=c.value.trim();0!==e.length&&(201===(yield fetch(`https://comments.fullstackjam.com/comments?issue_id=${m}&github_access_token=${p}`,{method:"POST",body:JSON.stringify({body:e})})).status?t().then((()=>u())).then((()=>v())):(r(),yield v(),window.alert("Failed to post comment")))}()))),n.appendChild(l),void e.appendChild(n)}r()}(n=document.createElement("div")).id="comment-tip",n.innerText="Clicking the login button means you agree to use cookies to store your GitHub Access Token",e.appendChild(n),(n=document.createElement("button")).id="comment-action-login",n.innerText="Login with GitHub",n.addEventListener("click",(()=>window.location.replace(`https://comments.fullstackjam.com/login?redirect_uri=${window.location.href}`))),e.appendChild(n)}());t().then((()=>u())).then((()=>v()))</script></div>

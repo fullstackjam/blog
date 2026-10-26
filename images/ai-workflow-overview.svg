@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="blueBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <linearGradient id="amberBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Claude Code 主区域 -->
+  <rect x="20" y="20" width="560" height="480" rx="16" fill="url(#blueBg)" stroke="#93C5FD" stroke-width="2" filter="url(#shadow)"/>
+  <text x="40" y="56" font-size="18" font-weight="700" fill="#1E40AF">Claude Code</text>
+  <text x="178" y="56" font-size="14" fill="#3B82F6">主力开发</text>
+  <rect x="460" y="34" width="54" height="28" rx="14" fill="#2563EB"/>
+  <text x="487" y="53" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">70%</text>
+
+  <!-- Opus 4.8 卡片 -->
+  <rect x="44" y="80" width="244" height="130" rx="12" fill="#fff" stroke="#BFDBFE" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="64" y="110" font-size="15" font-weight="600" fill="#1E3A5F">Opus 4.8</text>
+  <text x="64" y="134" font-size="13" fill="#64748B">复杂功能开发</text>
+  <text x="64" y="154" font-size="13" fill="#64748B">架构设计</text>
+  <text x="64" y="174" font-size="13" fill="#64748B">疑难 Bug 调试</text>
+  <text x="64" y="194" font-size="12" fill="#94A3B8">需要深度推理时启用</text>
+
+  <!-- Sonnet 4.6 卡片 -->
+  <rect x="312" y="80" width="244" height="130" rx="12" fill="#fff" stroke="#BFDBFE" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="446" y="88" width="60" height="20" rx="10" fill="#D1FAE5"/>
+  <text x="476" y="102" font-size="10" font-weight="500" fill="#059669" text-anchor="middle">默认档位</text>
+  <text x="332" y="110" font-size="15" font-weight="600" fill="#1E3A5F">Sonnet 4.6</text>
+  <text x="332" y="134" font-size="13" fill="#64748B">日常开发任务</text>
+  <text x="332" y="154" font-size="13" fill="#64748B">批量修改 / 写测试</text>
+  <text x="332" y="174" font-size="13" fill="#64748B">boilerplate 代码</text>
+  <text x="332" y="194" font-size="12" fill="#94A3B8">又快又稳，大部分任务首选</text>
+
+  <!-- 向下箭头 -->
+  <path d="M300,218 L300,248" stroke="#93C5FD" stroke-width="2" stroke-dasharray="6,4"/>
+  <polygon points="294,246 300,256 306,246" fill="#93C5FD"/>
+  <text x="310" y="240" font-size="11" fill="#93C5FD">代码完成</text>
+
+  <!-- Codex Review 区域 -->
+  <rect x="44" y="264" width="512" height="100" rx="12" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="68" y="296" font-size="15" font-weight="600" fill="#92400E">Codex 交叉 Review</text>
+  <text x="246" y="296" font-size="13" fill="#B45309">via Codex in Claude 插件</text>
+  <text x="68" y="320" font-size="13" fill="#78716C">GPT 5.5 审查</text>
+  <text x="68" y="342" font-size="12" fill="#A8A29E">Opus + GPT 5.5 都是 SOTA，顶级模型互审才有意义</text>
+
+  <!-- Review 回路箭头 -->
+  <path d="M556,314 C576,314 576,168 556,168" stroke="#F59E0B" stroke-width="1.5" fill="none" stroke-dasharray="5,4" marker-end="url(#arrowAmber)"/>
+  <defs>
+    <marker id="arrowAmber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#F59E0B"/>
+    </marker>
+  </defs>
+  <text x="562" y="250" font-size="10" fill="#D97706" transform="rotate(-90,562,250)">发现问题 → 修复</text>
+
+  <!-- Claude Code 底部分割线和说明 -->
+  <line x1="44" y1="388" x2="556" y2="388" stroke="#BFDBFE" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="44" y="412" font-size="12" fill="#64748B">有些任务 Claude 出的活本身就没问题，不一定每次都走 Codex review</text>
+
+  <!-- 中间分隔 -->
+  <line x1="605" y1="60" x2="605" y2="460" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="6,6"/>
+
+  <!-- OpenCode 区域 -->
+  <rect x="630" y="20" width="250" height="480" rx="16" fill="url(#greenBg)" stroke="#6EE7B7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="650" y="56" font-size="18" font-weight="700" fill="#065F46">OpenCode</text>
+  <text x="760" y="56" font-size="14" fill="#10B981">打杂</text>
+  <rect x="816" y="34" width="54" height="28" rx="14" fill="#059669"/>
+  <text x="843" y="53" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">30%</text>
+
+  <!-- 模型信息 -->
+  <rect x="650" y="74" width="210" height="48" rx="8" fill="#fff" stroke="#A7F3D0" stroke-width="1"/>
+  <text x="666" y="95" font-size="12" fill="#64748B">模型: GPT 5.5 / DeepSeek V4 Pro</text>
+  <text x="666" y="112" font-size="11" fill="#94A3B8">+ Oh my openAgent 插件</text>
+
+  <!-- 定时任务卡片 -->
+  <rect x="650" y="142" width="210" height="120" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="670" y="170" font-size="14" font-weight="600" fill="#1E3A5F">Multica 定时任务</text>
+  <text x="670" y="194" font-size="12" fill="#64748B">代码检查 / 依赖扫描</text>
+  <text x="670" y="214" font-size="12" fill="#64748B">自动认领、执行、上报</text>
+  <text x="670" y="242" font-size="11" fill="#94A3B8">全程有记录，随时可追溯</text>
+
+  <!-- 飞书派活卡片 -->
+  <rect x="650" y="282" width="210" height="140" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="670" y="310" font-size="14" font-weight="600" fill="#1E3A5F">飞书派活</text>
+  <text x="670" y="334" font-size="12" fill="#64748B">Lark Bridge 桥接本地</text>
+  <text x="670" y="358" font-size="12" fill="#64748B">查接口 / 改配置 / 跑 lint</text>
+  <text x="670" y="382" font-size="12" fill="#64748B">走路开会时顺手处理</text>
+  <text x="670" y="406" font-size="11" fill="#94A3B8">WebSocket 长连接，流式卡片</text>
+
+  <!-- OpenCode 优势标签 -->
+  <rect x="650" y="440" width="210" height="48" rx="8" fill="rgba(255,255,255,0.7)" stroke="#A7F3D0" stroke-width="1"/>
+  <text x="666" y="460" font-size="11" fill="#059669">fallback 自动切换 · 兼容 CLAUDE.md</text>
+  <text x="666" y="476" font-size="11" fill="#059669">agents.md · .claude/skills</text>
+</svg>
