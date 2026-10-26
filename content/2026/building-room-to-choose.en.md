@@ -2,95 +2,80 @@
 title = "Giving Yourself More Room to Choose"
 date = 2026-10-26
 draft = false
-description = "Learning English, using AI, sharing your work, and staying adaptable can all be worthwhile. Here is how I would turn those ideas into practical habits without turning life into a race you can never win."
+description = "Using English, finding a place for AI in everyday work, sharing what you learn, and leaving room for change. A few things worth doing over the years."
 tags = ["personal-growth", "AI", "information-literacy", "long-term-thinking"]
 +++
 
-I recently came across a list of advice for the future: learn English, use AI, build a personal brand, keep your assets flexible, follow global information sources, and be ready to leave whenever you need to.
+Some advice I read recently about learning, work, and everyday life left me thinking about a question: what is worth doing consistently over the next few years, alongside the work right in front of me?
 
-There is something worth keeping in those ideas. But as I read on, the list started to make every part of life sound inadequate: your English is not good enough, you are not using enough tools, you have no side income, your assets are not flexible enough. Even living a settled life begins to sound reckless.
+The things that come to mind are fairly ordinary. Use English to reach more sources of information. Bring AI into everyday tasks and gradually find ways of working with it. Write down problems I have solved so that both I and other people can use that experience again. Beyond work, leave some room to adjust my skills, projects, and living arrangements.
 
-I don't agree with that reasoning. There is no universal checklist for upgrading a life, and no particular year when a new set of survival requirements suddenly applies to everyone.
-
-Once I strip away the claims about what we “must” do and what will “inevitably” happen, there is one goal I want to keep: **become better at making judgments, and give yourself more room to choose.**
+What appeals to me about these things is what they might make possible later. A little time spent today could give me another way to approach a future problem. Over time, I might be able to do more, judge things more clearly, and have more choices in how I live.
 
 <!--more-->
 
-## Another language, another way to check a claim
+## Use English for things you care about
 
-English is worth learning. Being able to read documentation, papers, and original discussions gives you another way to check a claim, with less dependence on someone else's retelling. That value becomes clearer when you have a specific question to answer.
+What attracts me most about English is the range of information it lets me reach directly. Understanding documentation, a technical talk, or a community discussion makes it possible to follow the leads further and take part in the conversation myself.
 
-Suppose an article claims a technology delivers a tenfold performance improvement. You follow the link to the original benchmark and discover that its data size, hardware, and access patterns differ from yours. English has helped by letting you inspect the conditions behind the claim.
+Technical work offers plenty of opportunities to practice. When a problem comes up, I can look for an answer in the official documentation, read the relevant issues, and try to understand why the designers made a particular choice. Reading with a question in mind gives unfamiliar words and terms context. It also makes it easier to decide what deserves a closer look.
 
-So you don't need to wait until your English is “good enough.” The next time you run into a problem at work, try reading a section of the original documentation or tracing a technical claim back to its source. Twenty minutes twice a week is a manageable start. Use translation or AI when you get stuck, but keep the original nearby, paying particular attention to versions, conditions, and exceptions.
+For example, when reading a performance benchmark, I can follow the original description of the data size, hardware, and access patterns as well as the final numbers. Understanding those conditions helps me decide whether the result is relevant to my own situation. Language practice and technical learning happen together.
 
-After reading, explain in your own words what question it answers, what evidence it offers, and what remains uncertain. If you can repeat the conclusion but cannot explain when it applies, go back and read again. You get reading practice while discovering gaps in your understanding of the problem.
+A small, regular block of time is enough to begin. Translation and AI can help with difficult passages, with a return to the original for the important parts. Afterwards, I can write a few sentences about which question the reading answered and what I still haven't understood, then add to those notes when a similar question comes up. That builds both language ability and an understanding of the subject.
 
-This is also a reminder that language does not determine quality. English content has its share of marketing, bias, and recycled claims; Chinese content includes careful research and practical experience. Scrolling through recommendations in another language does not automatically get you out of an information bubble.
+Sources can expand naturally with my interests. A document leads to its author, the author to a discussion, and the discussion to another approach. Why do people reach different conclusions about the same problem? How do their evidence and assumptions differ? Those differences are worth spending time on.
 
-Primary sources need scrutiny too. A product's makers know its features well, but their account of its effectiveness may be incomplete. An eyewitness knows what happened around them, but only saw part of the event. For an important judgment, find another source that reaches a different conclusion and compare the evidence and assumptions. Sometimes the disagreement comes from a difference in perspective. Sometimes the sources are discussing different situations altogether.
+Language gives me access; evaluating what I find still takes work. Reaching more sources and learning to compare and check them can make reading part of how I think through a problem. That is the everyday ability I want from English: when I want to understand something, I can go and look, read, and ask for myself.
 
-If your collection of saved links keeps growing but you still struggle to judge a claim, your reading method may need to change. Whether you can use a piece of information to make a specific judgment tells you more than how many articles you have read.
+## Give AI a specific place in everyday work
 
-## Count checking and rework before deciding whether AI helps
+AI is worth spending time with. Organizing material, drafting, processing data, and programming all offer tasks to try. Finding useful ways to work with it could reduce repetitive effort and make it easier to try ideas that have been sitting aside because of the tedious work involved.
 
-Bringing AI into your work is worth exploring. But “one person can be an entire company” leaves too much out: where demand comes from, how results are checked, who maintains the work, and who is responsible when something goes wrong.
+I would start with small tasks that recur. For example, to turn sanitized troubleshooting notes into an article draft, I could provide the source material, the context readers need, and the questions the article should answer, then ask AI to help organize it. I would check the facts, explain the tradeoffs, and mark anything that remains unconfirmed.
 
-Take troubleshooting notes. AI can quickly turn scattered notes into a plausible article. But if it presents guesses as facts, drops version constraints, and supplies a few unverified explanations, you still have to correct it line by line. Faster generation has not necessarily become faster delivery.
+After a few attempts, the division of work should become clearer. What information needs to be provided first? Which passages keep needing a rewrite? Does a good example help? Each observation can inform the next attempt. Counting clarification, checking, and rework in the time spent shows whether the whole task is becoming easier.
 
-To find out whether it helps, choose a small, recurring task: organizing public information, turning sanitized troubleshooting notes into a draft, or generating a script to process local data. Write down the inputs, expected output, and acceptance criteria first. That keeps a polished-looking result from quietly lowering your standards.
+When an approach works, it is worth saving the necessary context, steps, and checks. Similar tasks can then start from that point instead of requiring a fresh explanation. Once the process is stable, suitable parts can become scripts or automation, with explicit confirmation before sending, publishing, or changing an external system.
 
-Try it a few times, counting clarification, checking, and rework in the total time, then compare it with your previous approach. Also watch for conditions it repeatedly misses and how much of the process you can reuse next time.
+That gradual accumulation is what interests me. A conversation solves the immediate problem; the method it leaves behind helps with the next one. As tasks grow more complex, it should also become clearer which capabilities I need, giving me a basis for choosing tools and paid plans.
 
-Those observations should shape how you use the tool. Perhaps AI helps organize material but should leave the conclusions to you. Perhaps providing a good example substantially reduces rework. Or perhaps the task is simple enough that doing it yourself is faster. When a tool fails to help, you don't have to assume that you are the one falling behind.
+Over time, the familiarity should extend beyond a product's interface to how I describe a problem, provide material, and judge a result. That experience can carry over to the next tool and help me think more clearly about the work itself.
 
-Once it proves useful, save the necessary context, steps, and checks. Establish a small process you understand before trying to automate it. For sending, publishing, or changing an external system, put a confirmation step before the action takes effect. Removing repetitive work does not remove the need to decide what you are responsible for.
+## Leave a record of the work you have done
 
-Paying for a tool follows the same logic. Find a problem worth solving first, then decide whether the paid capabilities remove friction from the process you already have. A subscription is not progress in itself. A modest use that reliably saves time is worth keeping.
+One attraction of blogging is that it leaves something I can return to after the time has been spent. Once a problem is solved, a clear account of what happened can help my future self and give someone facing a similar problem a chance to find it.
 
-## Leave something useful behind when you solve a problem
+An article can begin with a small question: what happened, why I chose an approach, how I checked that it worked, and what limitations remain. Organizing those answers may also reveal gaps in my understanding. A solution might work without my being able to explain one of the choices. Tests might pass without covering the scenario that originally worried me. Working through those gaps makes writing part of learning.
 
-Sharing your work is worthwhile. It pushes you to explain what you only half understand and gives others a chance to see what you can do. But there is a long road from publishing, to attracting an audience, to earning a reliable income. Treating a personal brand as unemployment insurance trades one uncertainty for another.
+Before sharing it, I can fill in the context readers need and check for information that should not be public. Failed attempts are worth including when they explain a tradeoff. If someone can understand, reproduce, or challenge the result, the record has a chance to improve further.
 
-I would rather start with work already done. The next time you solve a problem that someone might encounter again, spend a little extra time explaining what happened, why you chose that approach, how you verified it, and what limitations remain.
+A growing body of work also helps people get to know you. What you care about, the problems you are good at solving, and the care you take can all become visible through concrete examples. That familiarity and trust may lead to conversations, collaboration, or new work opportunities.
 
-Writing those answers can reveal things you haven't thought through. Perhaps the solution works, but you cannot explain why it was preferable to another approach. Perhaps the tests passed without covering the scenario that worried you in the first place. When you find a gap, do the necessary verification or state honestly what remains unconfirmed. Writing then becomes part of thinking through the problem, rather than simply packaging the result.
+This seems like a practical starting point for a personal brand: keep doing work you care about and share the parts worth keeping. An article, a small tool, or an experiment can each give someone a way to discover your work.
 
-Before publishing, check for information that should not be public and fill in the context a reader needs. They did not sit through your investigation and should not have to guess how you reached the conclusion. Failed attempts are worth including when they explain a tradeoff; you don't need to preserve every detail of the process.
+One small piece a month could be a starting pace, adjusted to the time and material available. Blogs, repositories, and personal websites can hold the results, with originals and backups kept safe. Gradually, there is a body of work of your own that remains useful and presentable when you change teams, companies, or platforms.
 
-A clear article, a small tool someone uses, or a reproducible experiment can all become part of a useful body of work. Choose a pace you can sustain, such as one small piece each month. Set traffic numbers aside at first. Would the record help you with the same problem a few months later? Could someone else use it to understand, reproduce, or challenge your result?
+## Leave some room for future changes
 
-If so, it already serves a purpose. You don't need to publish constantly, and every learning experience does not need a route to monetization. What I want to leave behind is work that others can inspect and that I can reuse. Building an audience can wait.
+Experience and work you can take with you can make a change of environment easier. English broadens the range of people you can communicate with. Experience using tools helps you adapt to new ways of working. Public work makes it easier for others to understand what you can do. These apparently separate efforts begin to connect.
 
-Blogs, repositories, and personal websites can all hold this work. Keep originals and backups so your accumulated effort does not depend on a single platform.
+Living arrangements can be considered in a similar way. If I wanted to change jobs, which expenses and commitments would affect the decision? If I moved to another city, what would need preparation: family arrangements, working conditions, or language? Making the questions specific helps reveal what I actually need.
 
-## Leave room for change, and reasons to stay
+Some preparations are small, such as organizing a portfolio or backing up records. Others take longer, such as developing a transferable skill or discussing possible places to live with family. I can start with the one most useful now, then consider the next.
 
-Being able to move matters. Skills and experience that remain useful across teams, industries, and cities give you more options. But being “ready to leave at any moment” is so abstract that it can leave you feeling perpetually unprepared.
+Understanding income and expenses belongs here too. Knowing which costs are fixed and which arrangements can change makes it easier to assess what preparation a transition requires. Specific decisions about assets and debt need to fit family responsibilities and the life I want to live.
 
-Consider a few specific changes instead, and see what you actually depend on:
+What I hope to gain is room to consider an opportunity seriously when it appears, a way to take gradual steps when change is needed, and the ability to continue contentedly when I like the life I have. Family, friends, and relationships built through years of working together are also things worth cherishing.
 
-1. If my current income stopped, which expenses would be hardest to adjust?
-2. If I changed companies, which skills would remain useful, and which depend heavily on my current environment?
-3. If a platform became unavailable, could I still retrieve my articles, projects, and important records?
-4. If I moved to another city, what would need advance preparation: family arrangements, language, or working conditions?
+More choice means being able to decide more clearly where, with whom, and how I want to live.
 
-The answers will be more concrete than a general instruction to keep your assets flexible. Some dependencies call for a backup, some for documenting work you can show, and some for a serious conversation with your family. Pick a problem that exists today and is reasonably affordable to address. Take one step without trying to prepare for every possibility at once.
+## Make time for things to accumulate
 
-Financial arrangements also deserve more thought than a slogan about carrying no debt and earning in dollars. Those labels do not account for a household's expenses, responsibilities, or goals. Nor do they guarantee security. Understand your actual circumstances before deciding what to change; an inspirational article is not a sufficient basis for buying or selling. If living abroad becomes a real plan, check the relevant residence, work, and tax requirements. Having a visa and being able to build a long-term life somewhere are different questions.
+These efforts can grow out of everyday life. Reading helps answer a question at work. An AI experiment leaves a reusable process. A solved problem becomes an article. When the activities connect, they become easier to sustain.
 
-After reviewing your dependencies, you may find that you want to keep some of them. Family, friends, long working relationships, and familiarity with a place all have real value. Choosing to take responsibility within a relationship does not mean you are trapped. Giving those things up to remain ready to leave has a cost too.
+I can choose one thing to try for a few weeks, then look back at what it has brought. Which approaches improved my judgment? Which reduced repetitive work? Which deserve more time? What I learn can also change the original plan, bringing the next step closer to what I need.
 
-I would rather judge preparation by whether it makes a change easier to handle. Can you restore a backup? Can you explain your experience to another team? Has your family reached an understanding about a possible change? Those are easier to check than an abstract notion of freedom. More room to choose can also make it easier to stay with peace of mind.
+I want to learn English because there are things I want to read for myself. I want to use AI because there is repetitive work I would like to do less of. I want to write a blog because some problems deserve a record. Those wishes are enough reason to begin.
 
-## You don't have to spend every day preparing for another life
-
-All of this takes time. If pursuing more options fills every spare hour with English practice, new tools, side projects, and managing an online presence, even rest can start to feel like something you need to justify.
-
-Pick one thing to try for a few weeks, then look back. Did reading improve your judgment? Did AI reduce the work involved in the whole task? Did writing clarify your understanding? Did reducing a dependency make everyday life easier? Keep what helps, scale down what costs too much, and stop what isn't useful for now. What happens when you act should also be allowed to change your original thinking.
-
-I want a boundary around these experiments: they should serve the life I want to live. If I can finish work in less time, I can use those hours to earn more. I can also exercise, spend time with family, or do nothing at all.
-
-I want to learn English because there are things I want to read for myself. I want to use AI because there is repetitive work I would like to do less of. I want to write a blog because some problems deserve a record. I don't need to promise myself a particular income or number of opportunities in return.
-
-Understand a little more, accomplish a little more, and leave yourself a little more room. That is already worth doing.
+Time saved can also go to exercise, family, and rest. Years from now, I hope these efforts will have helped me explore further and made everyday life a little more comfortable along the way.
