@@ -52,7 +52,7 @@ Worse, rolling back depends on you running `kubectl rollout undo` or manually sy
 
 What I wanted was a flow like this:
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     A[Git Push] --> B[ArgoCD Sync]
     B --> C[Create Canary Pod]
@@ -73,7 +73,7 @@ graph LR
     style E fill:#FEF3C7,stroke:#D97706,color:#92400E
     style G fill:#FEF3C7,stroke:#D97706,color:#92400E
     style I fill:#FEE2E2,stroke:#DC2626,color:#991B1B
-{% end %}
+{% </mermaid> %}
 
 Push code, and the system automatically handles the full loop of probe, observe, promote or abort. No human in the loop. That is what GitOps should look like.
 

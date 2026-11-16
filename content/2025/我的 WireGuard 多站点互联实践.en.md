@@ -58,7 +58,7 @@ I went with WireGuard in a Hub-and-Spoke architecture: one Alibaba Cloud ECS ins
 
 Here's what my network looks like:
 
-{{ mermaid(body="
+{% <mermaid> %}
 flowchart TD
     Internet[Public Internet]
 
@@ -90,7 +90,7 @@ flowchart TD
 
     OP1 -- LAN Network --> OtherA
     OP2 -- LAN Network --> OtherB
-") }}
+{% </mermaid> %}
 
 Key points:
 
@@ -105,7 +105,7 @@ WireGuard's core is public key cryptography. Each node holds a key pair (private
 
 Here's how a connection is established:
 
-{{ mermaid(body="
+{% <mermaid> %}
 sequenceDiagram
     participant S as Server<br/>(Private: S_priv, Public: S_pub)
     participant C as Client<br/>(Private: C_priv, Public: C_pub)
@@ -126,7 +126,7 @@ sequenceDiagram
     Note over S,C: Data transfer
     S->>C: Send encrypted data
     C->>S: Send encrypted data
-") }}
+{% </mermaid> %}
 
 Some technical details worth noting:
 

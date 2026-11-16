@@ -31,10 +31,10 @@
 <meta property="og:description" content="{% if og_desc %}{{ og_desc | striptags }}{% else %}{{ config.description }}{% endif %}" />
 <meta property="og:url" content="{{ page.permalink | safe }}" />
 {% if page.date %}
-<meta property="article:published_time" content="{{ page.date | date(format='%+') }}" />
+<meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%dT%H:%M:%S%:z') }}" />
 {% endif %}
 {% if page.updated %}
-<meta property="article:modified_time" content="{{ page.updated | date(format='%+') }}" />
+<meta property="article:modified_time" content="{{ page.updated | date(format='%Y-%m-%dT%H:%M:%S%:z') }}" />
 {% endif %}
 {% if page.taxonomies.tags %}
 {% for tag in page.taxonomies.tags %}

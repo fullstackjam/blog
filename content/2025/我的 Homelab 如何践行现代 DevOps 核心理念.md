@@ -48,7 +48,7 @@ answer = "建议分步走：先用 Ansible 管机器配置，把基础设施代�
 
 先上一张图，看看这三年我的 Homelab 是怎么一步步进化的：
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     subgraph "第一阶段：手工时代"
         A[手动 SSH 配置] --> B[雪花服务器]
@@ -81,7 +81,7 @@ graph LR
     style I fill:#D1FAE5,stroke:#10B981
     style J fill:#DBEAFE,stroke:#3B82F6
     style K fill:#DBEAFE,stroke:#3B82F6
-{% end %}
+{% </mermaid> %}
 
 每个阶段都是被上一个阶段的痛点逼出来的。下面展开讲。
 
@@ -99,6 +99,7 @@ graph LR
 
 后来实在受不了了，开始用 **Ansible** 来管理。从操作系统安装到软件配置，全部写成剧本（playbook）。
 
+{% raw %}
 ```yaml
 # 节点初始化剧本（简化版）
 - hosts: k8s_nodes
@@ -129,6 +130,7 @@ graph LR
         name: containerd
         state: present
 ```
+{% endraw %}
 
 现在想重建整个集群，一行命令搞定：
 

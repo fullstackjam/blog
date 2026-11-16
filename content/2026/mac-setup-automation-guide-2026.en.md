@@ -290,6 +290,7 @@ Look at that config. It's elegant. The same file produces the exact same system 
 
 Ansible is the industry standard for server automation, and people have adapted it for Mac. Jeff Geerling's [mac-dev-playbook](https://github.com/geerlingguy/mac-dev-playbook) is probably the most popular example.
 
+{% raw %}
 ```yaml
 - name: Install Homebrew packages
   community.general.homebrew:
@@ -299,6 +300,7 @@ Ansible is the industry standard for server automation, and people have adapted 
     - fd
     - bat
 ```
+{% endraw %}
 
 The idempotency is genuinely nice — you can re-run it without breaking things. But there's something absurd about writing enterprise YAML to install VS Code on your personal laptop. And when a playbook fails (it will), the error messages read like server logs, not helpful diagnostics.
 

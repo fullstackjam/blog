@@ -18,7 +18,7 @@ Newly added English-language articles go to English Accumulation. It pulls out e
 
 The whole chain has four layers: GitHub handles the daily collection and digest, Cloudflare hosts the public reading list site, Grok Bot runs the reading assistant and English Accumulation, and Notion stores my reading list.
 
-{{ mermaid(body="
+{% <mermaid> %}
 flowchart TD
   subgraph github [GitHub]
     A[RSS and other sources] --> B[Actions: runs Horizon once a day around 08:50]
@@ -52,6 +52,6 @@ flowchart TD
   end
   I[Articles I add by hand] --> G
   K[Sentences, screenshots, videos, or blogs I send] --> H
-") }}
+{% </mermaid> %}
 
 For me, the key is that each layer does one job: Horizon finds and filters, Notion keeps things for the long term, and English Accumulation turns the English I've read into expressions I can actually use. Collection never runs twice, and no article in the same digest gets scored twice.

@@ -58,7 +58,7 @@ answer = "Tailscale 和 ZeroTier 确实更方便开箱即用，但它们依赖�
 
 下面这张图就是我现在的网络结构：
 
-{{ mermaid(body="
+{% <mermaid> %}
 flowchart TD
     Internet[Public Internet]
 
@@ -90,7 +90,7 @@ flowchart TD
 
     OP1 -- LAN Network --> OtherA
     OP2 -- LAN Network --> OtherB
-") }}
+{% </mermaid> %}
 
 关键点：
 
@@ -105,7 +105,7 @@ WireGuard 的核心是公钥加密体系，每个节点持有一对密钥（私�
 
 下面是连接建立的过程：
 
-{{ mermaid(body="
+{% <mermaid> %}
 sequenceDiagram
     participant S as 服务器<br/>(私钥S_priv, 公钥S_pub)
     participant C as 客户端<br/>(私钥C_priv, 公钥C_pub)
@@ -126,7 +126,7 @@ sequenceDiagram
     Note over S,C: 数据传输
     S->>C: 发送加密数据
     C->>S: 发送加密数据
-") }}
+{% </mermaid> %}
 
 几个值得注意的技术细节：
 

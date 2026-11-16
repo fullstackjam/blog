@@ -41,7 +41,7 @@ This post walks through how I use GNU Stow to manage all my configs, paired with
 
 The project does exactly one thing: **manage config file symlinks**. Software installation is handled by OpenBoot.
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     A["curl openboot.dev"] --> B["Install Homebrew<br/>+ packages"]
     A --> C["clone dotfiles<br/>to ~/.dotfiles"]
@@ -63,7 +63,7 @@ graph LR
     style D4 fill:#fff,stroke:#94A3B8,color:#64748B
     style D5 fill:#fff,stroke:#94A3B8,color:#64748B
     style D6 fill:#fff,stroke:#94A3B8,color:#64748B
-{% end %}
+{% </mermaid> %}
 
 Full automated setup in one line:
 

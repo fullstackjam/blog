@@ -39,7 +39,7 @@ answer = "默认情况下 Stow 会用目录级别的符号链接（folding）—
 
 项目只做一件事：**管理配置文件的符号链接**。软件安装交给 OpenBoot。
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     A["curl openboot.dev"] --> B["安装 Homebrew<br/>+ 软件包"]
     A --> C["clone dotfiles<br/>到 ~/.dotfiles"]
@@ -61,7 +61,7 @@ graph LR
     style D4 fill:#fff,stroke:#94A3B8,color:#64748B
     style D5 fill:#fff,stroke:#94A3B8,color:#64748B
     style D6 fill:#fff,stroke:#94A3B8,color:#64748B
-{% end %}
+{% </mermaid> %}
 
 全自动部署只需要一行：
 

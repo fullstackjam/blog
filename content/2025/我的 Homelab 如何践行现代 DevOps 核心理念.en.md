@@ -52,7 +52,7 @@ Early on, I couldn't even explain the difference between a Pod and a Service. I 
 
 My homelab evolved across three phases:
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     subgraph "Phase 1: Manual Era"
         A[Manual SSH Setup] --> B[Snowflake Servers]
@@ -85,7 +85,7 @@ graph LR
     style I fill:#D1FAE5,stroke:#10B981
     style J fill:#DBEAFE,stroke:#3B82F6
     style K fill:#DBEAFE,stroke:#3B82F6
-{% end %}
+{% </mermaid> %}
 
 Each phase was born out of frustration with the previous one. Let me walk through them.
 
@@ -105,6 +105,7 @@ When a machine died, the only option was a fresh OS install. And after reinstall
 
 I switched to **Ansible**. Everything from OS setup to software configuration became a playbook.
 
+{% raw %}
 ```yaml
 # Node initialization playbook (simplified)
 - hosts: k8s_nodes
@@ -135,6 +136,7 @@ I switched to **Ansible**. Everything from OS setup to software configuration be
         name: containerd
         state: present
 ```
+{% endraw %}
 
 Now rebuilding the entire cluster is one command:
 

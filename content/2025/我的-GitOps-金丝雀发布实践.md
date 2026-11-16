@@ -50,7 +50,7 @@ answer = "这是个常见坑。没流量的时候 PromQL 返回空值，Argo Rol
 
 我想要的是这样一个流程：
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     A[Git Push] --> B[ArgoCD Sync]
     B --> C[创建 Canary Pod]
@@ -71,7 +71,7 @@ graph LR
     style E fill:#FEF3C7,stroke:#D97706,color:#92400E
     style G fill:#FEF3C7,stroke:#D97706,color:#92400E
     style I fill:#FEE2E2,stroke:#DC2626,color:#991B1B
-{% end %}
+{% </mermaid> %}
 
 代码推上去，系统自己走完试探、观察、推进或止损这一圈，不用人盯着。这才是 GitOps 该有的样子。
 

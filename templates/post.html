@@ -30,7 +30,7 @@
 <div id="content">
 {{ page.content | safe }}
 </div>
-{% if page.extra.comments.issue_id %}
+{% if page.extra.comments?.issue_id %}
 <div id="comments-issue-id" style="display:none">{{ page.extra.comments.issue_id | safe }}</div>
 {% if page.extra.comments.addition %}
 <div id="comments-addition" style="display:none">{{ page.extra.comments.addition | json_encode() | safe }}</div>
