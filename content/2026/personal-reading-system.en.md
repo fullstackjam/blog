@@ -12,11 +12,11 @@ I built myself a daily reading system on top of the open-source project Horizon.
 
 Every day at around 08:50 (Asia/Shanghai), GitHub Actions runs Horizon once: it pulls articles from RSS and other sources, scores and filters them with DeepSeek, generates that day's digest, and publishes it to [horizon.fullstackjam.com](https://horizon.fullstackjam.com). This is the only time collection runs. The public site is for browsing; the repository is [fullstackjam/horizon](https://github.com/fullstackjam/horizon).
 
-Once the digest is generated, the reading assistant inside Grok Bot reads it and adds those articles to my Notion reading list, reusing the scores Horizon has already produced rather than rescoring everything. The list in Notion doesn't come only from this digest — I add articles by hand too. Those entries usually have no score, so around 10:00 the assistant uses a local Horizon MCP to fill in only the empty Score fields.
+Grok Bot runs two bots: a reading assistant and English Accumulation. Once the digest is generated, the reading assistant reads it and adds those articles to my Notion reading list, reusing the scores Horizon has already produced rather than rescoring everything. The list in Notion doesn't come only from this digest — I add articles by hand too. Those entries usually have no score, so around 10:00 the assistant uses a local Horizon MCP to fill in only the empty Score fields.
 
-English-language articles newly added to the list go to another Grok Bot, English Accumulation. It pulls out expressions worth learning, records them in a phrase book, and uses spaced repetition to help me put them to use. Sentences I come across myself — in videos, blogs, or chats — can be sent to it directly.
+Newly added English-language articles go to English Accumulation. It pulls out expressions worth learning, records them in a phrase book, and uses spaced repetition to help me put them to use. Sentences I come across myself — in videos, blogs, or chats — can be sent to it directly.
 
-The whole chain has four layers: GitHub handles the daily collection and digest, Cloudflare hosts the public reading list site, Grok Bot handles writing, scoring, and English accumulation, and Notion stores my reading list.
+The whole chain has four layers: GitHub handles the daily collection and digest, Cloudflare hosts the public reading list site, Grok Bot runs the reading assistant and English Accumulation, and Notion stores my reading list.
 
 {{ mermaid(body="
 flowchart TD
@@ -31,17 +31,27 @@ flowchart TD
   end
 
   subgraph grok [Grok Bot]
-    C --> F[Reading assistant reads the digest]
+    subgraph reader [Reading assistant]
+      F[Reads the digest]
+      G[Writes to the Notion list]
+      J[Local Horizon MCP scores one article]
+    end
+    subgraph english [English Accumulation]
+      H[Receives new English articles]
+      L[Extracts expressions into a phrase book]
+      M[Spaced repetition]
+    end
+    C --> F
     E --> F
-    F --> G[Write to the Notion reading list]
-    F --> H[Hand new English originals to English Accumulation]
-    I[Articles I add by hand] --> G
-    G -.->|around 10:00, if Score is missing| J[Local Horizon MCP scores a single article]
+    F --> G
+    F -->|new English articles| H
+    G -.->|around 10:00, if Score is missing| J
     J -.-> G
-    K[Sentences, screenshots, videos, or blogs I send] --> H
-    H --> L[Extract useful expressions into a phrase book]
-    L --> M[Spaced repetition]
+    H --> L
+    L --> M
   end
+  I[Articles I add by hand] --> G
+  K[Sentences, screenshots, videos, or blogs I send] --> H
 ") }}
 
 For me, the key is that each layer does one job: Horizon finds and filters, Notion keeps things for the long term, and English Accumulation turns the English I've read into expressions I can actually use. Collection never runs twice, and no article in the same digest gets scored twice.
