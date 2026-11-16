@@ -95,7 +95,11 @@
 <link rel="Shortcut Icon" href="{{ config.base_url | safe }}/favicon.svg" />
 <link rel="Bootmark" href="{{ config.base_url | safe }}/favicon.svg" />
 {% block rss %}
-<link rel="alternate" type="application/rss+xml" title="Jam's Blog" href="{{ get_url(path="rss.xml", trailing_slash=false) }}">
+{% if lang == "en" %}
+<link rel="alternate" type="application/rss+xml" title="Jam's Blog" href="{{ config.base_url | safe }}/en/rss.xml">
+{% else %}
+<link rel="alternate" type="application/rss+xml" title="Jam 的博客" href="{{ config.base_url | safe }}/rss.xml">
+{% endif %}
 {% endblock %}
 
 {# Additional SEO blocks for specific pages #}
