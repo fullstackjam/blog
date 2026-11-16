@@ -18,34 +18,6 @@ Grok Bot 上跑着两个 bot：阅读助手和「英语积累」。摘要生成�
 
 整套链路可以看成四层：GitHub Actions 负责每天采集和生成摘要，Cloudflare 托管 horizon 和 PhraseFolio 两个站点，Grok Bot 上跑着阅读助手和「英语积累」两个 bot，Notion 存放我的阅读清单。
 
-{% <mermaid> %}
-flowchart TD
-  S[RSS 等来源] --> A
-
-  subgraph github [GitHub]
-    A[GitHub Actions<br/>fullstackjam/horizon]
-    P[GitHub Pages]
-    A --> P
-  end
-
-  subgraph cf [Cloudflare]
-    H[horizon.fullstackjam.com]
-    F[phrasefolio.fullstackjam.com]
-  end
-
-  P --> H
-
-  subgraph gb [Grok Bot]
-    R[阅读助手]
-    E[英语积累]
-  end
-
-  H --> R
-  R -->|写入清单与补评| N[Notion 阅读清单]
-  R -->|新的英文原文| E
-  E --> F
-  M[我手动加的文章] --> N
-  U[我发来的句子、截图、视频] --> E
-{% </mermaid> %}
+<img src="/images/reading-system.svg" alt="个人阅读系统架构：GitHub Actions 采集并发布到 GitHub Pages，Cloudflare 托管 horizon 和 PhraseFolio，Grok Bot 跑阅读助手和英语积累，清单存在 Notion" style="width:100%;max-width:820px;" />
 
 对我来说，这条链路的关键是各管一段：Horizon 负责发现和筛选，Notion 负责长期保存，英语积累负责把读过的英文变成能用的表达。采集不会跑两遍，同一篇摘要里的文章，也不会再被打一遍分。

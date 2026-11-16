@@ -18,34 +18,6 @@ Newly added English-language articles go to English Accumulation. It pulls out e
 
 The whole chain has four layers: GitHub Actions handles the daily collection and digest, Cloudflare hosts the horizon and PhraseFolio sites, Grok Bot runs the reading assistant and English Accumulation, and Notion stores my reading list.
 
-{% <mermaid> %}
-flowchart TD
-  S[RSS and other sources] --> A
-
-  subgraph github [GitHub]
-    A[GitHub Actions<br/>fullstackjam/horizon]
-    P[GitHub Pages]
-    A --> P
-  end
-
-  subgraph cf [Cloudflare]
-    H[horizon.fullstackjam.com]
-    F[phrasefolio.fullstackjam.com]
-  end
-
-  P --> H
-
-  subgraph gb [Grok Bot]
-    R[Reading assistant]
-    E[English Accumulation]
-  end
-
-  H --> R
-  R -->|writes the list and scores| N[Notion reading list]
-  R -->|new English articles| E
-  E --> F
-  M[Articles I add] --> N
-  U[Sentences, screenshots, videos I send] --> E
-{% </mermaid> %}
+<img src="/images/reading-system.en.svg" alt="Personal reading system: GitHub Actions collects and publishes to GitHub Pages, Cloudflare serves horizon and PhraseFolio, Grok Bot runs the reading assistant and English Accumulation, and the list lives in Notion" style="width:100%;max-width:820px;" />
 
 For me, the key is that each layer does one job: Horizon finds and filters, Notion keeps things for the long term, and English Accumulation turns the English I've read into expressions I can actually use. Collection never runs twice, and no article in the same digest gets scored twice.
