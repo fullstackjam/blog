@@ -10,48 +10,42 @@ tags = ["阅读", "自动化", "Horizon", "Notion", "AI"]
 
 <!--more-->
 
-每天大约早上 08:50（Asia/Shanghai），GitHub Actions 会跑一次 Horizon：从 RSS 等来源抓取文章，用 DeepSeek 打分、筛选，生成当日摘要，并发布到 [horizon.fullstackjam.com](https://horizon.fullstackjam.com)。采集只发生这一次。公开网站是给人浏览的，仓库在 [fullstackjam/horizon](https://github.com/fullstackjam/horizon)。
+每天大约早上 08:50（Asia/Shanghai），GitHub Actions 会跑一次 Horizon：从 RSS 等来源抓取文章，用 DeepSeek 打分、筛选，生成当日摘要，发布到 GitHub Pages。horizon.fullstackjam.com 这个公开站点外面套了一层 Cloudflare，仓库在 [fullstackjam/horizon](https://github.com/fullstackjam/horizon)。采集只发生这一次。
 
 Grok Bot 上跑着两个 bot：阅读助手和「英语积累」。摘要生成后，阅读助手会读取这份摘要，写入我的 Notion 阅读清单，分数直接复用 Horizon 已经打好的结果，不会再全部重打。Notion 里的清单并不只来自这份摘要，我也会手动加文章。这类条目通常没有分数，阅读助手大约会在 10:00 用本地的 Horizon MCP，只给空着的 Score 补评。
 
-新写入清单的英文原文，会交给「英语积累」。它从文章里抽出值得学的表达，记进词句本，再用间隔复习帮我把这些表达用出来。我自己在视频、博客或聊天里遇到的好句子，也可以直接发给它。
+新写入清单的英文原文，会交给「英语积累」。它从文章里抽出值得学的表达，写进 [PhraseFolio](https://phrasefolio.fullstackjam.com) 这个词句本网页，再用间隔复习帮我把这些表达用出来。我自己在视频、博客或聊天里遇到的好句子，也可以直接发给它。
 
-整套链路可以看成四层：GitHub 负责每天采集和生成摘要，Cloudflare 托管公开阅读清单网站，Grok Bot 上跑着阅读助手和「英语积累」两个 bot，Notion 存放我的阅读清单。
+整套链路可以看成四层：GitHub Actions 负责每天采集和生成摘要，Cloudflare 托管 horizon 和 PhraseFolio 两个站点，Grok Bot 上跑着阅读助手和「英语积累」两个 bot，Notion 存放我的阅读清单。
 
 {% <mermaid> %}
 flowchart TD
+  S[RSS 等来源] --> A
+
   subgraph github [GitHub]
-    A[RSS 等来源] --> B[Actions：每天约 08:50 跑一次 Horizon]
-    B --> C[当日摘要]
-    B --> D[发布到 fullstackjam/horizon 的 gh-pages]
+    A[GitHub Actions<br/>fullstackjam/horizon]
+    P[GitHub Pages]
+    A --> P
   end
 
-  subgraph cloudflare [Cloudflare]
-    D --> E[horizon.fullstackjam.com]
+  subgraph cf [Cloudflare]
+    H[horizon.fullstackjam.com]
+    F[phrasefolio.fullstackjam.com]
   end
 
-  subgraph grok [Grok Bot]
-    subgraph reader [阅读助手]
-      F[读取当日摘要]
-      G[写入 Notion 阅读清单]
-      J[本地 Horizon MCP 给单篇补分]
-    end
-    subgraph english [英语积累]
-      H[接收新的英文原文]
-      L[抽出好词好句，写入词句本]
-      M[间隔复习]
-    end
-    C --> F
-    E --> F
-    F --> G
-    F -->|新的英文原文| H
-    G -.->|约 10:00，若缺 Score| J
-    J -.-> G
-    H --> L
-    L --> M
+  P --> H
+
+  subgraph gb [Grok Bot]
+    R[阅读助手]
+    E[英语积累]
   end
-  I[我手动加入的文章] --> G
-  K[我发给它的句子、截图、视频或博客] --> H
+
+  H --> R
+  R -->|写入清单与补评| N[Notion 阅读清单]
+  R -->|新的英文原文| E
+  E --> F
+  M[我手动加的文章] --> N
+  U[我发来的句子、截图、视频] --> E
 {% </mermaid> %}
 
 对我来说，这条链路的关键是各管一段：Horizon 负责发现和筛选，Notion 负责长期保存，英语积累负责把读过的英文变成能用的表达。采集不会跑两遍，同一篇摘要里的文章，也不会再被打一遍分。

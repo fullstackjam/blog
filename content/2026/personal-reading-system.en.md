@@ -10,48 +10,42 @@ I built myself a daily reading system on top of the open-source project Horizon.
 
 <!--more-->
 
-Every day at around 08:50 (Asia/Shanghai), GitHub Actions runs Horizon once: it pulls articles from RSS and other sources, scores and filters them with DeepSeek, generates that day's digest, and publishes it to [horizon.fullstackjam.com](https://horizon.fullstackjam.com). This is the only time collection runs. The public site is for browsing; the repository is [fullstackjam/horizon](https://github.com/fullstackjam/horizon).
+Every day at around 08:50 (Asia/Shanghai), GitHub Actions runs Horizon once: it pulls articles from RSS and other sources, scores and filters them with DeepSeek, generates that day's digest, and publishes it to GitHub Pages. The public site horizon.fullstackjam.com sits behind Cloudflare, and the repository is [fullstackjam/horizon](https://github.com/fullstackjam/horizon). This is the only time collection runs.
 
 Grok Bot runs two bots: a reading assistant and English Accumulation. Once the digest is generated, the reading assistant reads it and adds those articles to my Notion reading list, reusing the scores Horizon has already produced rather than rescoring everything. The list in Notion doesn't come only from this digest — I add articles by hand too. Those entries usually have no score, so around 10:00 the assistant uses a local Horizon MCP to fill in only the empty Score fields.
 
-Newly added English-language articles go to English Accumulation. It pulls out expressions worth learning, records them in a phrase book, and uses spaced repetition to help me put them to use. Sentences I come across myself — in videos, blogs, or chats — can be sent to it directly.
+Newly added English-language articles go to English Accumulation. It pulls out expressions worth learning, writes them to [PhraseFolio](https://phrasefolio.fullstackjam.com), my phrase notebook, and uses spaced repetition to help me put them to use. Sentences I come across myself — in videos, blogs, or chats — can be sent to it directly.
 
-The whole chain has four layers: GitHub handles the daily collection and digest, Cloudflare hosts the public reading list site, Grok Bot runs the reading assistant and English Accumulation, and Notion stores my reading list.
+The whole chain has four layers: GitHub Actions handles the daily collection and digest, Cloudflare hosts the horizon and PhraseFolio sites, Grok Bot runs the reading assistant and English Accumulation, and Notion stores my reading list.
 
 {% <mermaid> %}
 flowchart TD
+  S[RSS and other sources] --> A
+
   subgraph github [GitHub]
-    A[RSS and other sources] --> B[Actions: runs Horizon once a day around 08:50]
-    B --> C[Daily digest]
-    B --> D[Publish to gh-pages in fullstackjam/horizon]
+    A[GitHub Actions<br/>fullstackjam/horizon]
+    P[GitHub Pages]
+    A --> P
   end
 
-  subgraph cloudflare [Cloudflare]
-    D --> E[horizon.fullstackjam.com]
+  subgraph cf [Cloudflare]
+    H[horizon.fullstackjam.com]
+    F[phrasefolio.fullstackjam.com]
   end
 
-  subgraph grok [Grok Bot]
-    subgraph reader [Reading assistant]
-      F[Reads the digest]
-      G[Writes to the Notion list]
-      J[Local Horizon MCP scores one article]
-    end
-    subgraph english [English Accumulation]
-      H[Receives new English articles]
-      L[Extracts expressions into a phrase book]
-      M[Spaced repetition]
-    end
-    C --> F
-    E --> F
-    F --> G
-    F -->|new English articles| H
-    G -.->|around 10:00, if Score is missing| J
-    J -.-> G
-    H --> L
-    L --> M
+  P --> H
+
+  subgraph gb [Grok Bot]
+    R[Reading assistant]
+    E[English Accumulation]
   end
-  I[Articles I add by hand] --> G
-  K[Sentences, screenshots, videos, or blogs I send] --> H
+
+  H --> R
+  R -->|writes the list and scores| N[Notion reading list]
+  R -->|new English articles| E
+  E --> F
+  M[Articles I add] --> N
+  U[Sentences, screenshots, videos I send] --> E
 {% </mermaid> %}
 
 For me, the key is that each layer does one job: Horizon finds and filters, Notion keeps things for the long term, and English Accumulation turns the English I've read into expressions I can actually use. Collection never runs twice, and no article in the same digest gets scored twice.
