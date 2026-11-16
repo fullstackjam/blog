@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="blueBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <linearGradient id="amberBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowBlueRev" markerWidth="10" markerHeight="8" refX="2" refY="4" orient="auto">
+      <path d="M10,0 L0,4 L10,8 Z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="36" font-size="18" font-weight="700" fill="#1E40AF" text-anchor="middle">Python snake_case  &lt;--&gt;  Pydantic 模型  &lt;--&gt;  API camelCase</text>
+
+  <!-- Python Backend Card -->
+  <rect x="20" y="60" width="250" height="340" rx="16" fill="url(#blueBg)" stroke="#93C5FD" stroke-width="2" filter="url(#shadow)"/>
+  <text x="145" y="96" font-size="16" font-weight="700" fill="#1E40AF" text-anchor="middle">Python 后端</text>
+  <rect x="52" y="86" width="16" height="4" rx="2" fill="#2563EB"/>
+  <text x="145" y="118" font-size="13" fill="#3B82F6" text-anchor="middle">PEP 8 / snake_case</text>
+
+  <!-- Python code example card -->
+  <rect x="40" y="136" width="210" height="240" rx="12" fill="#fff" stroke="#BFDBFE" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="60" y="166" font-size="13" font-weight="600" fill="#1E3A5F">变量名</text>
+  <text x="60" y="190" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">item_id</text>
+  <text x="60" y="212" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">search_query</text>
+  <text x="60" y="234" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">created_at</text>
+  <text x="60" y="256" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">user_name</text>
+  <line x1="56" y1="274" x2="234" y2="274" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="60" y="298" font-size="12" fill="#94A3B8">PEP 8 风格</text>
+  <text x="60" y="318" font-size="12" fill="#94A3B8">Python 中可读性好</text>
+  <text x="60" y="338" font-size="12" fill="#94A3B8">IDE 自动补全</text>
+  <text x="60" y="358" font-size="11" fill="#059669">populate_by_name=True</text>
+
+  <!-- Pydantic Model Card (center) -->
+  <rect x="325" y="60" width="250" height="340" rx="16" fill="url(#amberBg)" stroke="#FCD34D" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="96" font-size="16" font-weight="700" fill="#92400E" text-anchor="middle">Pydantic 模型</text>
+  <text x="450" y="118" font-size="13" fill="#B45309" text-anchor="middle">alias_generator + to_camel</text>
+
+  <!-- Pydantic model detail card -->
+  <rect x="345" y="136" width="210" height="240" rx="12" fill="#fff" stroke="#FDE68A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="365" y="166" font-size="13" font-weight="600" fill="#1E3A5F">配置</text>
+  <text x="365" y="190" font-size="12" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">alias_generator</text>
+  <text x="365" y="210" font-size="12" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">  = to_camel</text>
+  <text x="365" y="234" font-size="12" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">populate_by_name</text>
+  <text x="365" y="254" font-size="12" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">  = True</text>
+  <line x1="361" y1="272" x2="539" y2="272" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="365" y="296" font-size="12" fill="#94A3B8">自动校验</text>
+  <text x="365" y="316" font-size="12" fill="#94A3B8">双向映射</text>
+  <text x="365" y="336" font-size="12" fill="#94A3B8">类型安全</text>
+  <text x="365" y="358" font-size="11" fill="#059669">GET: Query(alias=...)</text>
+
+  <!-- API / Frontend Card -->
+  <rect x="630" y="60" width="250" height="340" rx="16" fill="url(#greenBg)" stroke="#6EE7B7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="755" y="96" font-size="16" font-weight="700" fill="#065F46" text-anchor="middle">API / 前端</text>
+  <text x="755" y="118" font-size="13" fill="#10B981" text-anchor="middle">JavaScript / camelCase</text>
+
+  <!-- API example card -->
+  <rect x="650" y="136" width="210" height="240" rx="12" fill="#fff" stroke="#A7F3D0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="670" y="166" font-size="13" font-weight="600" fill="#1E3A5F">JSON 字段</text>
+  <text x="670" y="190" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">itemId</text>
+  <text x="670" y="212" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">searchQuery</text>
+  <text x="670" y="234" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">createdAt</text>
+  <text x="670" y="256" font-size="13" fill="#64748B" font-family="'SF Mono', 'Fira Code', monospace">userName</text>
+  <line x1="666" y1="274" x2="844" y2="274" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="670" y="298" font-size="12" fill="#94A3B8">JS 命名习惯</text>
+  <text x="670" y="318" font-size="12" fill="#94A3B8">整洁的 REST API</text>
+  <text x="670" y="338" font-size="12" fill="#94A3B8">前端友好</text>
+  <text x="670" y="358" font-size="11" fill="#059669">OpenAPI 文档自动生成</text>
+
+  <!-- Arrows: Python <-> Pydantic -->
+  <line x1="270" y1="210" x2="325" y2="210" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="325" y1="250" x2="270" y2="250" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowBlueRev)"/>
+  <text x="297" y="200" font-size="10" fill="#2563EB" text-anchor="middle">写入</text>
+  <text x="297" y="270" font-size="10" fill="#2563EB" text-anchor="middle">读取</text>
+
+  <!-- Arrows: Pydantic <-> API -->
+  <line x1="575" y1="210" x2="630" y2="210" stroke="#059669" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="630" y1="250" x2="575" y2="250" stroke="#059669" stroke-width="2" marker-end="url(#arrowBlueRev)"/>
+  <text x="602" y="200" font-size="10" fill="#059669" text-anchor="middle">序列化</text>
+  <text x="602" y="270" font-size="10" fill="#059669" text-anchor="middle">反序列化</text>
+</svg>

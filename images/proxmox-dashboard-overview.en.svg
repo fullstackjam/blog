@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="blueBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <linearGradient id="amberBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <linearGradient id="gaugeCpu" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+    <linearGradient id="gaugeMem" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <linearGradient id="gaugeStore" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+    <linearGradient id="headerBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E3A5F"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer frame -->
+  <rect x="10" y="10" width="880" height="500" rx="16" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- Top toolbar -->
+  <rect x="10" y="10" width="880" height="50" rx="16" fill="url(#headerBg)"/>
+  <rect x="10" y="44" width="880" height="16" fill="url(#headerBg)"/>
+  <text x="30" y="42" font-size="18" font-weight="700" fill="#fff">Proxmox VE</text>
+  <text x="168" y="42" font-size="13" fill="#93C5FD">Web Management Interface</text>
+
+  <!-- Toolbar buttons -->
+  <rect x="520" y="24" width="80" height="28" rx="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="560" y="43" font-size="11" fill="#DBEAFE" text-anchor="middle">Console</text>
+  <rect x="610" y="24" width="80" height="28" rx="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="650" y="43" font-size="11" fill="#DBEAFE" text-anchor="middle">Shutdown</text>
+  <rect x="700" y="24" width="80" height="28" rx="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="740" y="43" font-size="11" fill="#DBEAFE" text-anchor="middle">Reboot</text>
+
+  <!-- Left sidebar -->
+  <rect x="10" y="60" width="200" height="450" fill="url(#blueBg)" stroke="#BFDBFE" stroke-width="1"/>
+
+  <!-- Sidebar: Datacenter tree -->
+  <text x="28" y="90" font-size="13" font-weight="600" fill="#1E40AF">Datacenter</text>
+
+  <!-- Node -->
+  <rect x="24" y="102" width="172" height="30" rx="6" fill="#fff" stroke="#BFDBFE" stroke-width="1"/>
+  <circle cx="40" cy="117" r="5" fill="#059669"/>
+  <text x="52" y="121" font-size="12" font-weight="500" fill="#1E3A5F">pve (node)</text>
+  <text x="150" y="121" font-size="10" fill="#059669">online</text>
+
+  <!-- VMs -->
+  <text x="44" y="152" font-size="11" fill="#64748B">VM 100 - ubuntu-srv</text>
+  <circle cx="36" cy="148" r="4" fill="#2563EB"/>
+  <text x="44" y="172" font-size="11" fill="#64748B">VM 101 - docker-host</text>
+  <circle cx="36" cy="168" r="4" fill="#2563EB"/>
+  <text x="44" y="192" font-size="11" fill="#64748B">VM 102 - k3s-master</text>
+  <circle cx="36" cy="188" r="4" fill="#2563EB"/>
+
+  <!-- CTs -->
+  <text x="44" y="222" font-size="11" fill="#64748B">CT 200 - nginx-proxy</text>
+  <circle cx="36" cy="218" r="4" fill="#D97706"/>
+  <text x="44" y="242" font-size="11" fill="#64748B">CT 201 - pihole-dns</text>
+  <circle cx="36" cy="238" r="4" fill="#D97706"/>
+
+  <!-- Templates -->
+  <text x="44" y="272" font-size="11" fill="#94A3B8">9000 - template</text>
+  <circle cx="36" cy="268" r="4" fill="#94A3B8"/>
+
+  <!-- Storage section -->
+  <line x1="24" y1="290" x2="196" y2="290" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="28" y="312" font-size="12" font-weight="500" fill="#1E40AF">Storage</text>
+  <text x="44" y="334" font-size="11" fill="#64748B">local (dir)</text>
+  <text x="44" y="354" font-size="11" fill="#64748B">local-lvm (lvm-thin)</text>
+
+  <!-- Sidebar legend -->
+  <line x1="24" y1="378" x2="196" y2="378" stroke="#BFDBFE" stroke-width="1"/>
+  <circle cx="36" cy="398" r="4" fill="#2563EB"/>
+  <text x="48" y="402" font-size="10" fill="#64748B">VM (QEMU)</text>
+  <circle cx="36" cy="418" r="4" fill="#D97706"/>
+  <text x="48" y="422" font-size="10" fill="#64748B">CT (LXC)</text>
+  <circle cx="36" cy="438" r="4" fill="#94A3B8"/>
+  <text x="48" y="442" font-size="10" fill="#64748B">Template</text>
+
+  <!-- Main content area -->
+  <!-- Node Summary title -->
+  <text x="230" y="90" font-size="16" font-weight="600" fill="#1E3A5F">Node: pve - Summary</text>
+  <line x1="230" y1="100" x2="870" y2="100" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Resource gauges row -->
+  <!-- CPU gauge card -->
+  <rect x="230" y="114" width="195" height="130" rx="12" fill="#fff" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="250" y="142" font-size="13" font-weight="600" fill="#1E3A5F">CPU</text>
+  <text x="390" y="142" font-size="11" fill="#94A3B8" text-anchor="end">12 cores</text>
+  <!-- gauge bar bg -->
+  <rect x="250" y="156" width="155" height="14" rx="7" fill="#EFF6FF"/>
+  <!-- gauge bar fill -->
+  <rect x="250" y="156" width="54" height="14" rx="7" fill="url(#gaugeCpu)"/>
+  <text x="250" y="190" font-size="22" font-weight="700" fill="#2563EB">35%</text>
+  <text x="250" y="210" font-size="11" fill="#94A3B8">4.2 / 12 cores used</text>
+  <text x="250" y="232" font-size="10" fill="#94A3B8">Intel i5-12400</text>
+
+  <!-- Memory gauge card -->
+  <rect x="440" y="114" width="195" height="130" rx="12" fill="#fff" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="460" y="142" font-size="13" font-weight="600" fill="#1E3A5F">Memory</text>
+  <text x="600" y="142" font-size="11" fill="#94A3B8" text-anchor="end">64 GiB</text>
+  <rect x="460" y="156" width="155" height="14" rx="7" fill="#ECFDF5"/>
+  <rect x="460" y="156" width="93" height="14" rx="7" fill="url(#gaugeMem)"/>
+  <text x="460" y="190" font-size="22" font-weight="700" fill="#059669">60%</text>
+  <text x="460" y="210" font-size="11" fill="#94A3B8">38.4 / 64.0 GiB used</text>
+  <text x="460" y="232" font-size="10" fill="#94A3B8">DDR4-3200</text>
+
+  <!-- Storage gauge card -->
+  <rect x="650" y="114" width="210" height="130" rx="12" fill="#fff" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="670" y="142" font-size="13" font-weight="600" fill="#1E3A5F">Storage</text>
+  <text x="826" y="142" font-size="11" fill="#94A3B8" text-anchor="end">512 GiB NVMe</text>
+  <rect x="670" y="156" width="170" height="14" rx="7" fill="#FFFBEB"/>
+  <rect x="670" y="156" width="42" height="14" rx="7" fill="url(#gaugeStore)"/>
+  <text x="670" y="190" font-size="22" font-weight="700" fill="#D97706">25%</text>
+  <text x="670" y="210" font-size="11" fill="#94A3B8">128 / 512 GiB used</text>
+  <text x="670" y="232" font-size="10" fill="#94A3B8">local (dir)</text>
+
+  <!-- Bottom section: Network + System info -->
+  <!-- Network card -->
+  <rect x="230" y="260" width="300" height="180" rx="12" fill="#fff" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="250" y="290" font-size="13" font-weight="600" fill="#1E3A5F">Network (vmbr0)</text>
+
+  <!-- Mini network chart lines -->
+  <polyline points="260,350 290,340 320,345 350,320 380,330 410,315 440,325 470,310 500,318" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="260,365 290,360 320,358 350,350 380,355 410,348 440,352 470,345 500,340" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4,3"/>
+
+  <!-- Network legend -->
+  <line x1="260" y1="400" x2="280" y2="400" stroke="#2563EB" stroke-width="2"/>
+  <text x="286" y="404" font-size="10" fill="#64748B">In: 12.4 Mbps</text>
+  <line x1="370" y1="400" x2="390" y2="400" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="396" y="404" font-size="10" fill="#64748B">Out: 3.2 Mbps</text>
+
+  <text x="260" y="428" font-size="10" fill="#94A3B8">IP: 192.168.2.217 / Port: 8006</text>
+
+  <!-- System info card -->
+  <rect x="545" y="260" width="315" height="180" rx="12" fill="#fff" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="565" y="290" font-size="13" font-weight="600" fill="#1E3A5F">System</text>
+
+  <text x="565" y="316" font-size="11" fill="#64748B">PVE Version</text>
+  <text x="760" y="316" font-size="11" fill="#1E3A5F" text-anchor="end">8.3.2</text>
+  <line x1="565" y1="326" x2="826" y2="326" stroke="#F1F5F9" stroke-width="1"/>
+
+  <text x="565" y="344" font-size="11" fill="#64748B">Kernel</text>
+  <text x="826" y="344" font-size="11" fill="#1E3A5F" text-anchor="end">6.8.12-1-pve</text>
+  <line x1="565" y1="354" x2="826" y2="354" stroke="#F1F5F9" stroke-width="1"/>
+
+  <text x="565" y="372" font-size="11" fill="#64748B">Uptime</text>
+  <text x="760" y="372" font-size="11" fill="#1E3A5F" text-anchor="end">45 days</text>
+  <line x1="565" y1="382" x2="826" y2="382" stroke="#F1F5F9" stroke-width="1"/>
+
+  <text x="565" y="400" font-size="11" fill="#64748B">Load Avg</text>
+  <text x="760" y="400" font-size="11" fill="#1E3A5F" text-anchor="end">0.42 0.38 0.31</text>
+  <line x1="565" y1="410" x2="826" y2="410" stroke="#F1F5F9" stroke-width="1"/>
+
+  <text x="565" y="428" font-size="11" fill="#64748B">KVM</text>
+  <text x="760" y="428" font-size="11" fill="#059669" text-anchor="end">Supported</text>
+
+  <!-- Bottom status bar -->
+  <rect x="10" y="460" width="880" height="50" rx="0" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="10" y="494" width="880" height="16" rx="16" fill="#F1F5F9"/>
+  <circle cx="36" cy="484" r="5" fill="#059669"/>
+  <text x="48" y="488" font-size="11" fill="#64748B">3 VMs running</text>
+  <circle cx="160" cy="484" r="5" fill="#D97706"/>
+  <text x="172" y="488" font-size="11" fill="#64748B">2 CTs running</text>
+  <text x="300" y="488" font-size="11" fill="#94A3B8">|</text>
+  <text x="320" y="488" font-size="11" fill="#64748B">CPU: 35%</text>
+  <text x="400" y="488" font-size="11" fill="#64748B">RAM: 60%</text>
+  <text x="490" y="488" font-size="11" fill="#64748B">HDD: 25%</text>
+</svg>

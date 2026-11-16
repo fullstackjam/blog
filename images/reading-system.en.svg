@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 940" width="820" height="940" font-family="-apple-system, 'Noto Sans SC', 'PingFang SC', sans-serif" role="img" aria-labelledby="t d">
+<title id="t">Personal reading system architecture</title>
+<desc id="d">GitHub Actions fetches and scores articles from RSS and other sources, then publishes to GitHub Pages. Cloudflare serves horizon and PhraseFolio. Grok Bot runs the reading assistant and English Accumulation, and the list lives in Notion.</desc>
+<defs>
+  <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+    <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.10"/>
+  </filter>
+  <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EFF6FF"/><stop offset="100%" stop-color="#DBEAFE"/></linearGradient>
+  <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFFBEB"/><stop offset="100%" stop-color="#FEF3C7"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ECFDF5"/><stop offset="100%" stop-color="#D1FAE5"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5F3FF"/><stop offset="100%" stop-color="#EDE9FE"/></linearGradient>
+  <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L8,4 L0,8 Z" fill="#94A3B8"/>
+  </marker>
+</defs>
+<rect x="110" y="16" width="200" height="36" rx="18.0" fill="#F8FAFC" stroke="#CBD5E1" stroke-dasharray="4 4"/>
+<text x="210.0" y="38.0" text-anchor="middle" font-size="12" fill="#64748B">RSS and other sources</text>
+<rect x="40" y="70" width="360" height="250" rx="16" fill="url(#blue)" stroke="#93C5FD" stroke-width="2" filter="url(#shadow)"/>
+<text x="60" y="98" font-size="18" font-weight="700" fill="#1E40AF">GitHub</text>
+<text x="132" y="98" font-size="12" fill="#64748B">repo fullstackjam/horizon</text>
+<rect x="60" y="128" width="320" height="88" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="80" y="158" font-size="15" font-weight="600" fill="#1E3A5F">GitHub Actions</text>
+<text x="80" y="178" font-size="11.5" fill="#94A3B8">runs daily at 08:50</text>
+<text x="80" y="200" font-size="12.5" fill="#475569">Fetches RSS and other sources</text>
+<text x="80" y="222" font-size="12.5" fill="#475569">Scores and filters with DeepSeek</text>
+<rect x="60" y="236" width="320" height="64" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="80" y="266" font-size="15" font-weight="600" fill="#1E3A5F">GitHub Pages</text>
+<text x="80" y="286" font-size="11.5" fill="#94A3B8">publishes the daily digest</text>
+<rect x="40" y="350" width="740" height="190" rx="16" fill="url(#amber)" stroke="#FCD34D" stroke-width="2" filter="url(#shadow)"/>
+<text x="60" y="378" font-size="18" font-weight="700" fill="#92400E">Cloudflare</text>
+<text x="180" y="378" font-size="12" fill="#64748B">two sites</text>
+<rect x="60" y="406" width="300" height="100" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="80" y="436" font-size="15" font-weight="600" fill="#1E3A5F">horizon.fullstackjam.com</text>
+<text x="80" y="456" font-size="11.5" fill="#94A3B8">public reading site</text>
+<text x="80" y="478" font-size="12.5" fill="#475569">Daily digest</text>
+<text x="80" y="500" font-size="12.5" fill="#475569">Custom domain in front of Pages</text>
+<rect x="470" y="406" width="290" height="100" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="490" y="436" font-size="15" font-weight="600" fill="#1E3A5F">phrasefolio.fullstackjam.com</text>
+<text x="490" y="456" font-size="11.5" fill="#94A3B8">phrase notebook</text>
+<text x="490" y="478" font-size="12.5" fill="#475569">Saved expressions and examples</text>
+<text x="490" y="500" font-size="12.5" fill="#475569">Filtered by review state</text>
+<rect x="40" y="570" width="740" height="190" rx="16" fill="url(#green)" stroke="#6EE7B7" stroke-width="2" filter="url(#shadow)"/>
+<text x="60" y="598" font-size="18" font-weight="700" fill="#065F46">Grok Bot</text>
+<text x="156" y="598" font-size="12" fill="#64748B">two bots</text>
+<rect x="60" y="626" width="300" height="100" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="80" y="656" font-size="15" font-weight="600" fill="#1E3A5F">Reading assistant</text>
+<text x="80" y="676" font-size="11.5" fill="#94A3B8">reads the digest, writes the list</text>
+<text x="80" y="698" font-size="12.5" fill="#475569">Writes to the Notion reading list</text>
+<text x="80" y="720" font-size="12.5" fill="#475569">Scores with local MCP when missing</text>
+<rect x="470" y="626" width="290" height="100" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="490" y="656" font-size="15" font-weight="600" fill="#1E3A5F">English Accumulation</text>
+<text x="490" y="676" font-size="11.5" fill="#94A3B8">turns reading into usable phrases</text>
+<text x="490" y="698" font-size="12.5" fill="#475569">Extracts useful expressions</text>
+<text x="490" y="720" font-size="12.5" fill="#475569">Writes to PhraseFolio, spaced review</text>
+<rect x="60" y="790" width="300" height="70" rx="14" fill="url(#violet)" stroke="#C4B5FD" stroke-width="2" filter="url(#shadow)"/>
+<text x="80" y="820" font-size="15" font-weight="600" fill="#5B21B6">Notion reading list</text>
+<text x="80" y="842" font-size="12" fill="#64748B">manually added entries get scored too</text>
+<rect x="60" y="880" width="250" height="36" rx="18.0" fill="#F8FAFC" stroke="#CBD5E1" stroke-dasharray="4 4"/>
+<text x="185.0" y="902.0" text-anchor="middle" font-size="12" fill="#64748B">Articles I add by hand</text>
+<rect x="470" y="880" width="290" height="36" rx="18.0" fill="#F8FAFC" stroke="#CBD5E1" stroke-dasharray="4 4"/>
+<text x="615.0" y="902.0" text-anchor="middle" font-size="12" fill="#64748B">Sentences, screenshots, videos</text>
+<g stroke="#94A3B8" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+  <path d="M210,52 L210,126"/>
+  <path d="M210,216 L210,234"/>
+  <path d="M210,300 L210,404"/>
+  <path d="M210,506 L210,624"/>
+  <path d="M210,726 L210,788"/>
+  <path d="M362,676 L468,676"/>
+  <path d="M760,676 L792,676 L792,456 L762,456"/>
+  <path d="M185,878 L185,862"/>
+  <path d="M615,878 L615,728"/>
+</g>
+<text x="415" y="666" text-anchor="middle" font-size="11" fill="#64748B">new English articles</text>
+<text x="222" y="762" font-size="11" fill="#64748B">writes / scores</text>
+</svg>

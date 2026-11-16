@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="-apple-system, 'Noto Sans SC', sans-serif">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <filter id="shadow2">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+  </defs>
+  <rect width="900" height="460" rx="16" fill="url(#bg2)"/>
+  <text x="450" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#1E3A5F">BIOS / UEFI 与 POST 自检</text>
+
+  <!-- Motherboard card -->
+  <g filter="url(#shadow2)">
+    <rect x="50" y="70" width="260" height="340" rx="14" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="180" y="100" text-anchor="middle" font-size="15" font-weight="600" fill="#1E3A5F">主板</text>
+    <!-- BIOS chip -->
+    <rect x="80" y="120" width="200" height="50" rx="8" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+    <text x="180" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">BIOS / UEFI 固件</text>
+    <text x="180" y="160" text-anchor="middle" font-size="10" fill="#64748B">存储在 ROM / Flash 芯片上</text>
+    <!-- CMOS -->
+    <rect x="80" y="185" width="200" height="44" rx="8" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+    <text x="180" y="205" text-anchor="middle" font-size="12" font-weight="600" fill="#92400E">CMOS（电池供电）</text>
+    <text x="180" y="221" text-anchor="middle" font-size="10" fill="#64748B">日期、时间、启动顺序</text>
+    <!-- CPU -->
+    <rect x="80" y="244" width="92" height="44" rx="8" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="126" y="264" text-anchor="middle" font-size="12" font-weight="600" fill="#5B21B6">CPU</text>
+    <text x="126" y="279" text-anchor="middle" font-size="10" fill="#64748B">处理器</text>
+    <!-- RAM -->
+    <rect x="188" y="244" width="92" height="44" rx="8" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+    <text x="234" y="264" text-anchor="middle" font-size="12" font-weight="600" fill="#5B21B6">RAM</text>
+    <text x="234" y="279" text-anchor="middle" font-size="10" fill="#64748B">内存</text>
+    <!-- Peripherals -->
+    <rect x="80" y="303" width="200" height="44" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="180" y="323" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">外设</text>
+    <text x="180" y="339" text-anchor="middle" font-size="10" fill="#64748B">键盘、显示器、硬盘</text>
+    <text x="180" y="393" text-anchor="middle" font-size="10" fill="#94A3B8">硬件层</text>
+  </g>
+
+  <!-- POST sequence -->
+  <g filter="url(#shadow2)">
+    <rect x="380" y="70" width="470" height="340" rx="14" fill="#fff" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="615" y="100" text-anchor="middle" font-size="15" font-weight="600" fill="#1E3A5F">POST（加电自检）</text>
+
+    <rect x="410" y="120" width="410" height="46" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="450" y="140" font-size="12" font-weight="600" fill="#059669">1.</text>
+    <text x="470" y="140" font-size="12" fill="#334155">CPU 寄存器和指令测试</text>
+    <text x="470" y="156" font-size="10" fill="#64748B">验证处理器功能</text>
+
+    <rect x="410" y="178" width="410" height="46" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="450" y="198" font-size="12" font-weight="600" fill="#059669">2.</text>
+    <text x="470" y="198" font-size="12" fill="#334155">内存（RAM）测试</text>
+    <text x="470" y="214" font-size="10" fill="#64748B">检查容量和读写完整性</text>
+
+    <rect x="410" y="236" width="410" height="46" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="450" y="256" font-size="12" font-weight="600" fill="#059669">3.</text>
+    <text x="470" y="256" font-size="12" fill="#334155">硬件设备枚举</text>
+    <text x="470" y="272" font-size="10" fill="#64748B">检测存储、显卡、USB、网络</text>
+
+    <rect x="410" y="294" width="410" height="46" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+    <text x="450" y="314" font-size="12" font-weight="600" fill="#059669">4.</text>
+    <text x="470" y="314" font-size="12" fill="#334155">定位启动设备</text>
+    <text x="470" y="330" font-size="10" fill="#64748B">按启动顺序：硬盘、USB、网络 (PXE)</text>
+
+    <rect x="410" y="352" width="410" height="40" rx="10" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+    <text x="615" y="377" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">移交给引导加载程序 --&gt;</text>
+  </g>
+
+  <!-- Arrow from motherboard to POST -->
+  <line x1="310" y1="240" x2="380" y2="240" stroke="#059669" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <text x="450" y="445" text-anchor="middle" font-size="10" fill="#94A3B8">blog.fullstackjam.com</text>
+</svg>

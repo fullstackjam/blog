@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Jam&#39;s Blog</title>
+      <link>https://blog.fullstackjam.com</link>
+      <description>A developer&#39;s journey through code, automation, and modern web development.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.fullstackjam.com/en/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 16 Nov 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Building a Personal Reading System</title>
+          <pubDate>Mon, 16 Nov 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2026/personal-reading-system/</link>
+          <guid>https://blog.fullstackjam.com/en/2026/personal-reading-system/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2026/personal-reading-system/">&lt;p&gt;I built myself a daily reading system on top of the open-source project Horizon. The problem it solves is simple: good articles are scattered everywhere and attention is limited. I want to see, each day, the few pieces worth reading carefully — and worth rereading later — and then add them to my own list.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Giving Yourself More Room to Choose</title>
+          <pubDate>Mon, 26 Oct 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2026/building-room-to-choose/</link>
+          <guid>https://blog.fullstackjam.com/en/2026/building-room-to-choose/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2026/building-room-to-choose/">&lt;p&gt;Some advice I read recently about learning, work, and everyday life left me thinking about a question: what is worth doing consistently over the next few years, alongside the work right in front of me?&lt;/p&gt;
+&lt;p&gt;The things that come to mind are fairly ordinary. Use English to reach more sources of information. Bring AI into everyday tasks and gradually find ways of working with it. Write down problems I have solved so that both I and other people can use that experience again. Beyond work, leave some room to adjust my skills, projects, and living arrangements.&lt;/p&gt;
+&lt;p&gt;What appeals to me about these things is what they might make possible later. A little time spent today could give me another way to approach a future problem. Over time, I might be able to do more, judge things more clearly, and have more choices in how I live.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Git&#39;s First Commit: Five Designs That Held Up for Twenty Years</title>
+          <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2026/git-first-commit-design/</link>
+          <guid>https://blog.fullstackjam.com/en/2026/git-first-commit-design/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2026/git-first-commit-design/">&lt;p&gt;I&#39;ve used Git for years without really understanding it. A while back, on a whim, I checked out Git&#39;s own repository at its very first commit:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;commit e83c5163316f89bfbde7d9ab23ca2e25604af290
+Author: Linus Torvalds &amp;lt;torvalds@ppc970.osdl.org&amp;gt;
+Date:   Thu Apr 7 15:13:13 2005 -0700
+
+    Initial revision of &amp;quot;git&amp;quot;, the information manager from hell
+
+ 11 files changed, 1244 insertions(+)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;1,244 lines, 11 files. Reading them surprised me: several design decisions in there have barely changed in twenty years, and they&#39;re still running inside the Git I use every day.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Claude Code + Codex + OpenCode: My AI Coding Toolkit</title>
+          <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2026/ai-coding-workflow/</link>
+          <guid>https://blog.fullstackjam.com/en/2026/ai-coding-workflow/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2026/ai-coding-workflow/">&lt;p&gt;&quot;I just use Claude Code for everything. Why would I need anything else?&quot;&lt;/p&gt;
+&lt;p&gt;If that&#39;s what you&#39;re thinking, I get it. A month ago I thought the same. Claude Code is strong — one tool for all your daily dev work, no problem.&lt;/p&gt;
+&lt;p&gt;But after a while, I found three problems that one tool can&#39;t solve.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>I&#39;ve set up 20+ Macs. Here&#39;s every way to automate it (so you don&#39;t waste a weekend).</title>
+          <pubDate>Sat, 14 Feb 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2026/mac-setup-automation-guide-2026/</link>
+          <guid>https://blog.fullstackjam.com/en/2026/mac-setup-automation-guide-2026/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2026/mac-setup-automation-guide-2026/">&lt;p&gt;TL;DR: most people just need Homebrew plus a setup tool like &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;OpenBoot&lt;/a&gt;, about 15 minutes total. If you fuss over your dotfiles, look at chezmoi. If you want full reproducibility and don&#39;t mind the learning curve, nix-darwin. This guide covers all five approaches with commands you can run today.&lt;/p&gt;
+&lt;p&gt;I&#39;ve set up more Macs than I care to admit — personal machines, work laptops, loaners, and that one time I rage-wiped my drive at 2am because I&#39;d broken my Python environment beyond repair.&lt;/p&gt;
+&lt;p&gt;You know the feeling. You unbox a new Mac, you&#39;re excited for about twelve minutes, then you open Terminal.&lt;/p&gt;
+&lt;p&gt;It&#39;s a desert. No Git, no Node, no Docker, no VS Code. Your shell is a bare &lt;code&gt;zsh&lt;/code&gt; prompt that doesn&#39;t even know your name. Finder hides file extensions like they&#39;re state secrets, and the Dock has that slow animation that makes you want to throw the machine out the window. Clipboard history, gone. Aliases, vanished.&lt;/p&gt;
+&lt;p&gt;So you start installing by hand. Homebrew homepage, copy-paste the install command, start typing. Two hours later you&#39;ve installed maybe half of what you actually use. A week later you&#39;re mid bug-fix and realize you forgot &lt;code&gt;jq&lt;/code&gt;. Two weeks later you notice you never set your git email, and every commit at the new job says &quot;unknown.&quot;&lt;/p&gt;
+&lt;p&gt;I&#39;ve tried every level of automation to fix this — the &quot;I&#39;ll remember it&quot; approach (I didn&#39;t), big shell scripts that broke halfway through, whole weekends lost in Nix.&lt;/p&gt;
+&lt;h2 id=&quot;first-the-problem-is-bigger-than-you-think&quot;&gt;First, the problem is bigger than you think&lt;/h2&gt;
+&lt;p&gt;Before I show you the tools, I want to talk about scope. Most developers undercount their setup. I counted once. My dev environment has 83 individual things across 8 categories. If you think your setup is &quot;just Homebrew and VS Code,&quot; you&#39;re lying to yourself.&lt;/p&gt;
+&lt;h3 id=&quot;1-package-manager&quot;&gt;1. Package manager&lt;/h3&gt;
+&lt;p&gt;macOS still ships without a package manager. Step zero is always Homebrew. I&#39;ve done this so many times I can type the URL from memory, which is a sad state of affairs.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;/bin/bash -c &amp;quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This also grabs the Xcode Command Line Tools. Without this, nothing else works.&lt;/p&gt;
+&lt;h3 id=&quot;2-cli-tools-20-50-packages&quot;&gt;2. CLI tools (20-50 packages)&lt;/h3&gt;
+&lt;p&gt;These are the tools that live in your muscle memory. You don&#39;t realize how much you rely on them until you type &lt;code&gt;rg&lt;/code&gt; and get &lt;code&gt;command not found&lt;/code&gt;.&lt;/p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Category&lt;/th&gt;&lt;th&gt;Tools&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Search &amp;amp; navigation&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;ripgrep, fd, fzf, zoxide, tree&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;File viewing&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;bat, eza, jq, yq&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;System monitoring&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;htop, btop&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Git&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;gh, lazygit, git-delta, git-lfs&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Networking&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;curl, wget, httpie&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Documentation&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;tealdeer (tldr)&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;Most of us have at least 30 of these. The nightmare isn&#39;t installing them; it&#39;s remembering that you need &lt;code&gt;tealdeer&lt;/code&gt; until the moment you&#39;re trying to remember the flags for &lt;code&gt;tar&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;3-gui-applications-10-25-apps&quot;&gt;3. GUI applications (10-25 apps)&lt;/h3&gt;
+&lt;p&gt;The stuff that lives in &lt;code&gt;/Applications&lt;/code&gt;. This is where you spend your day.&lt;/p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Category&lt;/th&gt;&lt;th&gt;Apps&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Editors&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;VS Code, Cursor, Zed, WebStorm&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Terminals&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Warp, iTerm2, Ghostty, Kitty&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Browsers&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Chrome, Arc, Firefox&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Productivity&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Raycast, Rectangle, Maccy, Stats&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Dev tools&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;OrbStack, Postman, TablePlus&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Communication&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Slack, Discord, Notion&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;h3 id=&quot;4-programming-languages-runtimes&quot;&gt;4. Programming languages &amp;amp; runtimes&lt;/h3&gt;
+&lt;p&gt;The heavy hitters. Node, Go, Python, Rust, Deno, Bun. Plus the package managers like &lt;code&gt;pnpm&lt;/code&gt;, &lt;code&gt;uv&lt;/code&gt;, and &lt;code&gt;cargo&lt;/code&gt;. Setting these up manually is a recipe for version mismatch hell.&lt;/p&gt;
+&lt;h3 id=&quot;5-shell-configuration&quot;&gt;5. Shell configuration&lt;/h3&gt;
+&lt;p&gt;This is your home. Oh-My-Zsh, Starship, plugins for syntax highlighting and auto-suggestions. Your &lt;code&gt;.zshrc&lt;/code&gt; is basically your developer fingerprint.&lt;/p&gt;
+&lt;h3 id=&quot;6-dotfiles&quot;&gt;6. Dotfiles&lt;/h3&gt;
+&lt;p&gt;The configuration files: &lt;code&gt;.gitconfig&lt;/code&gt;, &lt;code&gt;.zshrc&lt;/code&gt;, &lt;code&gt;.vimrc&lt;/code&gt;, &lt;code&gt;.ssh/config&lt;/code&gt;. These make your tools actually behave. Without them, your terminal feels like someone else&#39;s house.&lt;/p&gt;
+&lt;h3 id=&quot;7-git-identity&quot;&gt;7. Git identity&lt;/h3&gt;
+&lt;p&gt;The two lines everyone forgets. Every time.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;git config --global user.name &amp;quot;Your Name&amp;quot;
+git config --global user.email &amp;quot;you@example.com&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;8-macos-preferences&quot;&gt;8. macOS preferences&lt;/h3&gt;
+&lt;p&gt;The &quot;fixes&quot; for macOS&#39;s annoying defaults. I have a list of &lt;code&gt;defaults write&lt;/code&gt; commands that I run immediately because I can&#39;t stand a slow Dock or hidden path bars.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;# Show file extensions in Finder
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show path bar in Finder
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Speed up Dock auto-hide delay
+defaults write com.apple.dock autohide-delay -float 0
+
+# Fast keyboard repeat
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+# Save screenshots as PNG
+defaults write com.apple.screencapture type -string &amp;quot;png&amp;quot;
+
+# Disable press-and-hold for keys (enable key repeat)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;total-count&quot;&gt;Total count&lt;/h3&gt;
+&lt;p&gt;When you add it all up, a &quot;standard&quot; setup is easily &lt;strong&gt;60-100 items&lt;/strong&gt;. Doing that manually takes a full afternoon, and you&#39;ll still be finding missing pieces for the next month.&lt;/p&gt;
+&lt;h2 id=&quot;level-1-the-brewfile&quot;&gt;Level 1: the Brewfile&lt;/h2&gt;
+&lt;p&gt;I used a Brewfile for about a year. It&#39;s the simplest automation because Homebrew has it built in.&lt;/p&gt;
+&lt;h3 id=&quot;create-a-brewfile-from-your-current-mac&quot;&gt;Create a Brewfile from your current Mac&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;brew bundle dump --file=~/Brewfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This spits out a list of everything you have:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;ruby&quot;&gt;tap &amp;quot;homebrew/bundle&amp;quot;
+brew &amp;quot;ripgrep&amp;quot;
+brew &amp;quot;fd&amp;quot;
+brew &amp;quot;bat&amp;quot;
+brew &amp;quot;fzf&amp;quot;
+brew &amp;quot;node&amp;quot;
+brew &amp;quot;go&amp;quot;
+brew &amp;quot;lazygit&amp;quot;
+cask &amp;quot;visual-studio-code&amp;quot;
+cask &amp;quot;warp&amp;quot;
+cask &amp;quot;raycast&amp;quot;
+cask &amp;quot;google-chrome&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;restore-on-a-new-mac&quot;&gt;Restore on a new Mac&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;brew bundle --file=~/Brewfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I liked the Brewfile because it has zero dependencies and it&#39;s easy to read. You can just throw it in a GitHub repo and you&#39;re done. But I eventually moved away from it.&lt;/p&gt;
+&lt;p&gt;The problem is that it only handles packages. It doesn&#39;t touch your shell config, your macOS preferences, or your git identity. You&#39;re only automating about 30% of the job. Also, maintaining it is a bit of a chore — you have to manually edit the file every time you want to add something new, and if you have 80 lines, it&#39;s a mess. There&#39;s no way to categorize things or remember why you installed that random utility three months ago.&lt;/p&gt;
+&lt;h2 id=&quot;level-2-the-shell-script&quot;&gt;Level 2: The shell script&lt;/h2&gt;
+&lt;p&gt;This is the next logical step. You get tired of the Brewfile&#39;s limitations and write a bash script to do everything. I had one of these for a while.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;#!/bin/bash
+set -euo pipefail
+
+echo &amp;quot;Installing Homebrew...&amp;quot;
+/bin/bash -c &amp;quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&amp;quot;
+
+echo &amp;quot;Installing packages...&amp;quot;
+brew install ripgrep fd bat fzf node go docker lazygit gh
+
+echo &amp;quot;Installing apps...&amp;quot;
+brew install --cask visual-studio-code warp raycast google-chrome
+
+echo &amp;quot;Setting up Oh-My-Zsh...&amp;quot;
+sh -c &amp;quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&amp;quot;
+
+echo &amp;quot;Configuring macOS...&amp;quot;
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+defaults write com.apple.dock autohide-delay -float 0
+
+echo &amp;quot;Configuring git...&amp;quot;
+git config --global user.name &amp;quot;Your Name&amp;quot;
+git config --global user.email &amp;quot;you@example.com&amp;quot;
+
+echo &amp;quot;Done!&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It covers more ground, but here&#39;s what went wrong when I actually used it: one time I ran mine and a single &lt;code&gt;brew install&lt;/code&gt; failed because of a network hiccup, and the whole thing just stopped. Or worse, it kept going and I had no idea what actually finished.&lt;/p&gt;
+&lt;p&gt;Shell scripts are also fragile because they aren&#39;t idempotent. If you run a script twice, it usually yells at you. The Oh-My-Zsh installer will complain, the git config will overwrite everything, and you&#39;ll get a bunch of &quot;already installed&quot; warnings from Homebrew. And let&#39;s be honest: sitting there staring at 80 packages installing with zero progress bar is just anxiety-inducing.&lt;/p&gt;
+&lt;p&gt;When I shared a version of this on Reddit, someone replied with their 200-line shell script that did something similar. Which proved my point — if you need 200 lines of bash to set up a Mac, maybe bash isn&#39;t the right tool for the job.&lt;/p&gt;
+&lt;h2 id=&quot;level-3-dotfile-managers&quot;&gt;Level 3: Dotfile managers&lt;/h2&gt;
+&lt;p&gt;If you&#39;re serious about your configuration, you eventually look into dotfile managers. These are built specifically to sync your configuration files across machines.&lt;/p&gt;
+&lt;h3 id=&quot;chezmoi&quot;&gt;chezmoi&lt;/h3&gt;
+&lt;p&gt;I used chezmoi for about two months. It can template your dotfiles so the same repo works on your work laptop and personal machine, and it even encrypts secrets.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;chezmoi init --apply your-github-username
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here&#39;s the thing though: I spent more time learning chezmoi&#39;s directory structure and commands than I spent actually setting up my dotfiles. If you manage configs across five machines with different OSes, it&#39;s worth it. If you just want your &lt;code&gt;.zshrc&lt;/code&gt; on two Macs, it&#39;s a lot of ceremony for a symlink.&lt;/p&gt;
+&lt;h3 id=&quot;dotbot&quot;&gt;dotbot&lt;/h3&gt;
+&lt;p&gt;This is a lightweight alternative. It uses YAML and lives as a git submodule in your dotfiles repo. It&#39;s simple and does one thing well, but it&#39;s very limited.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;yaml&quot;&gt;- link:
+    ~/.zshrc: zshrc
+    ~/.gitconfig: gitconfig
+    ~/.vimrc: vimrc
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It handles symlinks and shell commands, but it won&#39;t install your apps or touch your macOS preferences. You&#39;re still left doing the hard work yourself.&lt;/p&gt;
+&lt;h3 id=&quot;mackup&quot;&gt;mackup&lt;/h3&gt;
+&lt;p&gt;Mackup is great for application settings. It backs everything up to iCloud or Dropbox.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;mackup backup    # save settings
+mackup restore   # restore on new machine
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It&#39;s the only tool that reliably handles settings for things like VS Code and iTerm2 that aren&#39;t stored in simple dotfiles. But again, it doesn&#39;t install the actual apps. You still need Homebrew for that.&lt;/p&gt;
+&lt;h3 id=&quot;the-gap&quot;&gt;The gap&lt;/h3&gt;
+&lt;p&gt;Dotfile managers handle configuration files. They don&#39;t handle installation. You still need a Brewfile or a script to actually get the tools on your machine. At one point I had a Brewfile, a dotbot config, AND a shell script for macOS preferences. Three systems to maintain for one laptop. That&#39;s when I started thinking about whether someone had solved this already.&lt;/p&gt;
+&lt;h2 id=&quot;level-4-infrastructure-as-code&quot;&gt;Level 4: Infrastructure-as-code&lt;/h2&gt;
+&lt;p&gt;This is for the engineering purists who want their Mac to be as reproducible as a production server.&lt;/p&gt;
+&lt;h3 id=&quot;nix-darwin&quot;&gt;nix-darwin&lt;/h3&gt;
+&lt;p&gt;I tried nix-darwin for a weekend. I thought I&#39;d emerge with a perfectly reproducible system. Instead I emerged with a mass of error messages and a newfound respect for anyone who actually uses Nix daily.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;nix&quot;&gt;{ pkgs, ... }: {
+  environment.systemPackages = with pkgs; [
+    ripgrep fd bat fzf nodejs go
+  ];
+  homebrew.casks = [ &amp;quot;visual-studio-code&amp;quot; &amp;quot;warp&amp;quot; ];
+  system.defaults.dock.autohide = true;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Look at that config. It&#39;s elegant. The same file produces the exact same system on any Mac, and you can roll back if something breaks. The problem is getting there. Nix has its own language, its own package manager, its own way of thinking about software. I spent most of my weekend on the Nix discourse forums trying to figure out why my shell wasn&#39;t loading. If you&#39;re already in the Nix ecosystem on Linux, this is the natural choice. If not — prepare to invest a week or two before it pays off.&lt;/p&gt;
+&lt;h3 id=&quot;ansible-geerlingguy-mac-dev-playbook&quot;&gt;Ansible (geerlingguy/mac-dev-playbook)&lt;/h3&gt;
+&lt;p&gt;Ansible is the industry standard for server automation, and people have adapted it for Mac. Jeff Geerling&#39;s &lt;a rel=&quot;external&quot; href=&quot;https://github.com/geerlingguy/mac-dev-playbook&quot;&gt;mac-dev-playbook&lt;/a&gt; is probably the most popular example.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;yaml&quot;&gt;- name: Install Homebrew packages
+  community.general.homebrew:
+    name: &amp;quot;{{ item }}&amp;quot;
+  loop:
+    - ripgrep
+    - fd
+    - bat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The idempotency is genuinely nice — you can re-run it without breaking things. But there&#39;s something absurd about writing enterprise YAML to install VS Code on your personal laptop. And when a playbook fails (it will), the error messages read like server logs, not helpful diagnostics.&lt;/p&gt;
+&lt;h3 id=&quot;the-tradeoff&quot;&gt;The tradeoff&lt;/h3&gt;
+&lt;p&gt;These tools are rigorous, but they&#39;re a sledgehammer for a nail. You&#39;ll spend hours configuring things before you even get to your first &lt;code&gt;npm install&lt;/code&gt;. If you&#39;re managing 500 laptops for a corporate IT department, use Ansible. If you&#39;re one person, it&#39;s probably too much.&lt;/p&gt;
+&lt;h2 id=&quot;level-5-full-automation&quot;&gt;Level 5: full automation&lt;/h2&gt;
+&lt;p&gt;I spent years bouncing between these levels. I wanted something that handled all 8 categories — packages, apps, shell, dotfiles, macOS preferences, git, language runtimes — but without the configuration nightmare of Nix or Ansible.&lt;/p&gt;
+&lt;p&gt;I&#39;m biased — I built &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;OpenBoot&lt;/a&gt; because I was tired of wasting my Sundays on this. I wanted a tool that felt like a modern CLI app, not a server config.&lt;/p&gt;
+&lt;h3 id=&quot;install&quot;&gt;Install&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;brew install openbootdotdev/tap/openboot
+openboot
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you&#39;re on a brand new machine without Homebrew, you can just run the install script:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;curl -fsSL openboot.dev/install.sh | bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;what-actually-happens&quot;&gt;What actually happens&lt;/h3&gt;
+&lt;p&gt;When you run it, a terminal UI opens up. It&#39;s not a text file; it&#39;s an interactive menu with 80+ tools organized by category.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;You pick a preset (&lt;code&gt;minimal&lt;/code&gt;, &lt;code&gt;developer&lt;/code&gt;, or &lt;code&gt;full&lt;/code&gt;) or toggle things one by one.&lt;/li&gt;
+&lt;li&gt;You hit Enter.&lt;/li&gt;
+&lt;li&gt;Homebrew starts installing your packages 4x in parallel (with retry logic so it doesn&#39;t just die).&lt;/li&gt;
+&lt;li&gt;Your shell gets configured with Oh-My-Zsh and the best plugins.&lt;/li&gt;
+&lt;li&gt;Your macOS preferences get fixed.&lt;/li&gt;
+&lt;li&gt;Your git identity gets set up.&lt;/li&gt;
+&lt;li&gt;Your dotfiles get cloned and linked.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The &lt;code&gt;developer&lt;/code&gt; preset covers what 90% of us need. It installs 29 CLI tools, 14 GUI apps, and 5 npm packages. On a decent connection, it takes about 15 minutes.&lt;/p&gt;
+&lt;h3 id=&quot;why-this-beats-a-shell-script&quot;&gt;Why this beats a shell script&lt;/h3&gt;
+&lt;p&gt;The big difference is the interactivity. You see every tool before it&#39;s installed. You can toggle Notion off if you don&#39;t use it, or add &lt;code&gt;kubectl&lt;/code&gt; if you&#39;re a DevOps person. No YAML, no editing scripts.&lt;/p&gt;
+&lt;p&gt;It also has smart detection. If you already have Node installed, it just skips it. You can run it once a month to make sure your system hasn&#39;t drifted, and it won&#39;t break anything.&lt;/p&gt;
+&lt;h3 id=&quot;three-presets&quot;&gt;Three presets&lt;/h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Preset&lt;/th&gt;&lt;th&gt;CLI tools&lt;/th&gt;&lt;th&gt;GUI apps&lt;/th&gt;&lt;th&gt;NPM packages&lt;/th&gt;&lt;th&gt;Best for&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;minimal&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;19&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;Minimalists, servers&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;developer&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;29&lt;/td&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Most developers&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;full&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;48&lt;/td&gt;&lt;td&gt;25&lt;/td&gt;&lt;td&gt;9&lt;/td&gt;&lt;td&gt;Polyglot / DevOps&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;h3 id=&quot;snapshot-capture-your-current-mac&quot;&gt;Snapshot: capture your current Mac&lt;/h3&gt;
+&lt;p&gt;If you&#39;ve already spent years perfecting your setup, you don&#39;t want to start from scratch. This is the feature that got the most attention when I shared this on Reddit.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot snapshot
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It scans your system — Homebrew packages, cask apps, npm globals, macOS preferences, shell config, git identity — and bundles it into a config file. You can upload it to &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;openboot.dev&lt;/a&gt; and get a shareable URL.&lt;/p&gt;
+&lt;p&gt;What gets captured:&lt;/p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Category&lt;/th&gt;&lt;th&gt;How&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Homebrew formulae&lt;/td&gt;&lt;td&gt;&lt;code&gt;brew leaves&lt;/code&gt; (only the stuff you actually installed)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Homebrew casks&lt;/td&gt;&lt;td&gt;&lt;code&gt;brew list --cask&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;NPM global packages&lt;/td&gt;&lt;td&gt;&lt;code&gt;npm list -g&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;macOS preferences&lt;/td&gt;&lt;td&gt;23 whitelisted developer settings&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Shell config&lt;/td&gt;&lt;td&gt;Oh-My-Zsh theme, plugins, aliases&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Git config&lt;/td&gt;&lt;td&gt;name, email, editor, default branch&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Dev tool versions&lt;/td&gt;&lt;td&gt;Go, Node, Python, Rust, Docker&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;I was careful about security: no SSH keys, no API tokens, no &lt;code&gt;.env&lt;/code&gt; files. Only the public-facing stuff.&lt;/p&gt;
+&lt;h3 id=&quot;share-your-setup&quot;&gt;Share your setup&lt;/h3&gt;
+&lt;p&gt;Every config gets a URL like &lt;code&gt;openboot.dev/fullstackjam/my-setup&lt;/code&gt;. Now, if someone asks &quot;what tools do you use?&quot;, you just send them the link. They can replicate your exact environment with one command:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot install yourname/my-setup
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can browse what other developers are running at &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev/explore&quot;&gt;openboot.dev/explore&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;for-teams-replacing-the-onboarding-doc&quot;&gt;For teams: replacing the onboarding doc&lt;/h2&gt;
+&lt;p&gt;Every company has that one Google Doc. It&#39;s called &quot;Developer Environment Setup,&quot; it&#39;s 47 steps long, and it was last updated in 2023 by a guy who moved to a different department. Step 12 tells you to install Node 18, but the project won&#39;t even build without Node 22. Step 23 says &quot;ask Sarah for the .env template,&quot; but Sarah doesn&#39;t work here anymore.&lt;/p&gt;
+&lt;p&gt;I&#39;ve seen whole weeks wasted on this. With OpenBoot, you can replace that entire doc with one line in your &lt;code&gt;CONTRIBUTING.md&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;markdown&quot;&gt;## Development Setup
+
+    openboot install acme/frontend
+
+Preview first: `openboot install acme/frontend --dry-run`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The new hire runs that, goes to grab coffee, and twenty minutes later they have the exact same environment as the rest of the team. They can actually push code before lunch on their first day.&lt;/p&gt;
+&lt;h2 id=&quot;how-they-compare&quot;&gt;How they compare&lt;/h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Brewfile&lt;/th&gt;&lt;th&gt;Shell script&lt;/th&gt;&lt;th&gt;chezmoi&lt;/th&gt;&lt;th&gt;nix-darwin&lt;/th&gt;&lt;th&gt;OpenBoot&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Packages&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;GUI apps&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Shell config&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;DIY&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;macOS prefs&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;DIY&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Git identity&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;DIY&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Dotfiles&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;DIY&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Basic&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Interactive UI&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Rollback&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Works offline&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Sharing&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;File&lt;/td&gt;&lt;td&gt;File&lt;/td&gt;&lt;td&gt;Git repo&lt;/td&gt;&lt;td&gt;Git repo&lt;/td&gt;&lt;td&gt;URL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Team support&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;Manual&lt;/td&gt;&lt;td&gt;Manual&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Built-in&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Learning curve&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;5 min&lt;/td&gt;&lt;td&gt;10 min&lt;/td&gt;&lt;td&gt;1 hour&lt;/td&gt;&lt;td&gt;1-2 weeks&lt;/td&gt;&lt;td&gt;5 min&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Covers&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;~30%&lt;/td&gt;&lt;td&gt;~70%&lt;/td&gt;&lt;td&gt;~20%&lt;/td&gt;&lt;td&gt;~90%&lt;/td&gt;&lt;td&gt;~85%&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;Honestly, the right tool depends on how much you care. Brewfile if packages are all you need. chezmoi if your dotfiles are your identity. Nix if you want to go full declarative and don&#39;t mind the learning investment.&lt;/p&gt;
+&lt;p&gt;I built OpenBoot because I wanted the coverage of Nix without spending a week learning a new language. It doesn&#39;t do everything — no rollback, no Linux, dotfile support is basic compared to chezmoi — but it handles the part that matters for most setups without asking you to write YAML or learn Nix expressions.&lt;/p&gt;
+&lt;h2 id=&quot;the-tools-most-developers-install-in-2026&quot;&gt;The tools most developers install in 2026&lt;/h2&gt;
+&lt;p&gt;I spend a lot of time looking at community configs on &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev/explore&quot;&gt;openboot.dev/explore&lt;/a&gt; and reading threads on r/macapps and Hacker News. If you don&#39;t have these tools, you&#39;re working harder than you need to.&lt;/p&gt;
+&lt;h3 id=&quot;cli-tools-everyone-installs&quot;&gt;CLI tools everyone installs&lt;/h3&gt;
+&lt;p&gt;The ones I can&#39;t live without: &lt;strong&gt;ripgrep&lt;/strong&gt; and &lt;strong&gt;fd&lt;/strong&gt;. They replace &lt;code&gt;grep&lt;/code&gt; and &lt;code&gt;find&lt;/code&gt; with something that&#39;s actually fast. I can never remember &lt;code&gt;find&lt;/code&gt;&#39;s syntax anyway. &lt;strong&gt;fzf&lt;/strong&gt; turns any list into a searchable menu — pipe your command history through it and suddenly Ctrl+R is usable. &lt;strong&gt;zoxide&lt;/strong&gt; remembers where you go, so &lt;code&gt;z blog&lt;/code&gt; takes me to this repo from anywhere.&lt;/p&gt;
+&lt;p&gt;For looking at things: &lt;strong&gt;bat&lt;/strong&gt; (cat with syntax highlighting — you won&#39;t go back), &lt;strong&gt;eza&lt;/strong&gt; (ls but with git status in the listing), &lt;strong&gt;jq&lt;/strong&gt; (essential if you ever touch JSON), and &lt;strong&gt;delta&lt;/strong&gt; (makes git diffs readable in the terminal).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;lazygit&lt;/strong&gt; deserves its own mention. I resisted it for a long time because I&#39;m stubborn about doing git from the command line. Then I had to do an interactive rebase across 30 commits and I caved. It&#39;s genuinely better for complex git operations.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;gh&lt;/strong&gt; rounds it out — I do almost all my PR reviews from the terminal now.&lt;/p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Tool&lt;/th&gt;&lt;th&gt;Replaces&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;ripgrep&lt;/td&gt;&lt;td&gt;grep&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;fd&lt;/td&gt;&lt;td&gt;find&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;bat&lt;/td&gt;&lt;td&gt;cat&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;eza&lt;/td&gt;&lt;td&gt;ls&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;zoxide&lt;/td&gt;&lt;td&gt;cd&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;fzf&lt;/td&gt;&lt;td&gt;Ctrl+R&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;lazygit&lt;/td&gt;&lt;td&gt;git CLI (for complex stuff)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;delta&lt;/td&gt;&lt;td&gt;git diff&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;jq&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;gh&lt;/td&gt;&lt;td&gt;browser-based PR reviews&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;h3 id=&quot;gui-apps-developers-actually-use&quot;&gt;GUI apps developers actually use&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;VS Code&lt;/strong&gt; is still the default. I flirt with other editors but keep coming back for the extension ecosystem. &lt;strong&gt;Cursor&lt;/strong&gt; is eating into that lead though — I&#39;ve been using it more and more for anything that involves writing new code.&lt;/p&gt;
+&lt;p&gt;For terminals, I&#39;m on &lt;strong&gt;Warp&lt;/strong&gt; right now. &lt;strong&gt;Raycast&lt;/strong&gt; replaced Alfred for me instantly — the clipboard history alone is worth it, and the extensions are wild. &lt;strong&gt;Rectangle&lt;/strong&gt; does window management and it&#39;s free, which is all I need to say about that.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;OrbStack&lt;/strong&gt; is the one I evangelize the most. I switched from Docker Desktop and my fans went quiet for the first time in months. If you&#39;re running Docker on a Mac and you haven&#39;t tried it, you&#39;re suffering unnecessarily.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Arc&lt;/strong&gt; is polarizing but I like the vertical tabs and workspaces.&lt;/p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;App&lt;/th&gt;&lt;th&gt;Category&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;VS Code / Cursor&lt;/td&gt;&lt;td&gt;Editor&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Warp&lt;/td&gt;&lt;td&gt;Terminal&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Raycast&lt;/td&gt;&lt;td&gt;Launcher&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Rectangle&lt;/td&gt;&lt;td&gt;Window management&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;OrbStack&lt;/td&gt;&lt;td&gt;Docker &amp;amp; Linux VMs&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Arc&lt;/td&gt;&lt;td&gt;Browser&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;h3 id=&quot;the-2026-additions&quot;&gt;The 2026 additions&lt;/h3&gt;
+&lt;p&gt;A few newer tools that have earned a permanent spot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Ghostty&lt;/strong&gt; — Mitchell Hashimoto&#39;s terminal emulator. Native rendering, stupid fast, and it just looks right. I keep going back to Warp for the AI features but Ghostty tempts me every time I open it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Zed&lt;/strong&gt; — I use this when I need to open a massive file and don&#39;t want to wait for VS Code to index the universe.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Ollama&lt;/strong&gt; — Local LLMs. Mostly for plane rides and for when I don&#39;t want to send code to an API.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;uv&lt;/strong&gt; — Python finally has a package manager that doesn&#39;t make me want to quit programming.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Bun&lt;/strong&gt; — Replaced Node for all my throwaway scripts. The startup time difference is embarrassing.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;quick-start-recipes&quot;&gt;Quick-start recipes&lt;/h2&gt;
+&lt;h3 id=&quot;the-minimalist-19-cli-tools-5-apps&quot;&gt;The minimalist (19 CLI tools, 5 apps)&lt;/h3&gt;
+&lt;p&gt;For the people who want to keep their machine as lean as possible.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;brew install openbootdotdev/tap/openboot
+openboot --preset minimal
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This gives you the essentials: ripgrep, fd, bat, fzf, eza, zoxide, lazygit, gh, htop, btop, plus Warp, Raycast, Rectangle, Maccy, and Stats.&lt;/p&gt;
+&lt;h3 id=&quot;the-full-stack-developer-29-cli-tools-14-apps-5-npm-packages&quot;&gt;The full-stack developer (29 CLI tools, 14 apps, 5 npm packages)&lt;/h3&gt;
+&lt;p&gt;The sweet spot. This is what I use on my primary machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot --preset developer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Adds: Node, Go, Docker, pnpm, tmux, neovim, VS Code, Chrome, Arc, OrbStack, TablePlus, and global npm packages like TypeScript and Prettier.&lt;/p&gt;
+&lt;h3 id=&quot;the-everything-preset-48-cli-tools-25-apps-9-npm-packages&quot;&gt;The everything preset (48 CLI tools, 25 apps, 9 npm packages)&lt;/h3&gt;
+&lt;p&gt;For the polyglots and the DevOps engineers.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot --preset full
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Adds: Python, Rust, Deno, Bun, kubectl, Helm, Terraform, AWS CLI, PostgreSQL, Redis, Ollama, Cursor, Figma, Firefox, and Obsidian.&lt;/p&gt;
+&lt;h3 id=&quot;from-a-teammate-s-setup&quot;&gt;From a teammate&#39;s setup&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot install teammate/their-setup
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;ci-automation-no-interaction&quot;&gt;CI / automation (no interaction)&lt;/h3&gt;
+&lt;p&gt;If you&#39;re setting up a machine in a lab or a headless environment:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;OPENBOOT_GIT_NAME=&amp;quot;Your Name&amp;quot; \
+OPENBOOT_GIT_EMAIL=&amp;quot;you@example.com&amp;quot; \
+openboot --preset developer --silent
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;preview-without-installing-anything&quot;&gt;Preview without installing anything&lt;/h3&gt;
+&lt;p&gt;If you&#39;re nervous about what a tool might do to your system:&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot --preset developer --dry-run
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;after-setup-maintenance&quot;&gt;After setup: maintenance&lt;/h2&gt;
+&lt;p&gt;Setup isn&#39;t a one-time thing. You&#39;re constantly adding and removing tools.&lt;/p&gt;
+&lt;h3 id=&quot;keep-packages-updated&quot;&gt;Keep packages updated&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot update            # update everything in one go
+openboot update --dry-run  # see what&amp;#39;s about to change
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;clean-up-drift&quot;&gt;Clean up drift&lt;/h3&gt;
+&lt;p&gt;We all install things we only use once.&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot clean              # compare against your original snapshot
+openboot clean --dry-run    # see what you can safely remove
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;check-system-health&quot;&gt;Check system health&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;bash&quot;&gt;openboot doctor
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Whatever you pick, don&#39;t do it by hand again. Your weekend is better spent writing code than typing &lt;code&gt;brew install&lt;/code&gt; one package at a time.&lt;/p&gt;
+&lt;p&gt;If you want to see what I&#39;ve been building, it&#39;s &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;OpenBoot&lt;/a&gt; — open source, MIT licensed.&lt;/p&gt;
+&lt;h2 id=&quot;quick-answers-to-things-people-ask-me&quot;&gt;Quick answers to things people ask me&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Fastest way to set up a new Mac?&lt;/strong&gt; Homebrew + OpenBoot. Fifteen to twenty minutes on a decent connection.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Brewfile or full automation?&lt;/strong&gt; Brewfile if you only need packages installed. That&#39;s like 30% of a real setup though — it won&#39;t touch your shell, your git config, or your macOS preferences.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;chezmoi vs Brewfile?&lt;/strong&gt; Different jobs. Brewfile installs software. chezmoi syncs config files. You&#39;d need both plus something else to cover everything.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Is nix-darwin worth it?&lt;/strong&gt; If you&#39;re already in the Nix ecosystem, absolutely. If not, you&#39;re looking at 1-2 weeks before it starts paying off. Most people bounce off it.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Can I share my setup with my team?&lt;/strong&gt; That&#39;s the whole point of &lt;code&gt;openboot snapshot&lt;/code&gt;. One URL, one command. Beats the Google Doc that nobody maintains.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Is &lt;code&gt;curl | bash&lt;/code&gt; safe?&lt;/strong&gt; Read the script first — it&#39;s &lt;a rel=&quot;external&quot; href=&quot;https://github.com/openbootdotdev/openboot&quot;&gt;on GitHub&lt;/a&gt;. Or just use &lt;code&gt;--dry-run&lt;/code&gt; to see what it would do. No SSH keys, tokens, or .env files are ever touched.&lt;/p&gt;
+&lt;h2 id=&quot;resources&quot;&gt;Resources&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;OpenBoot&lt;/a&gt; — Full setup automation with TUI and sharing&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://github.com/openbootdotdev/openboot&quot;&gt;OpenBoot on GitHub&lt;/a&gt; — Open source, MIT licensed&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev/explore&quot;&gt;Explore community configs&lt;/a&gt; — See what other developers install&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://github.com/Homebrew/homebrew-bundle&quot;&gt;Homebrew Bundle docs&lt;/a&gt; — Brewfile reference&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://chezmoi.io&quot;&gt;chezmoi&lt;/a&gt; — Dotfile management&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://github.com/LnL7/nix-darwin&quot;&gt;nix-darwin&lt;/a&gt; — Declarative macOS config&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://github.com/jaywcjlove/awesome-mac&quot;&gt;awesome-mac&lt;/a&gt; — Curated Mac app list&lt;/li&gt;
+&lt;li&gt;&lt;a rel=&quot;external&quot; href=&quot;https://www.reddit.com/r/macapps/comments/1r245va/os_new_mac_day_is_supposed_to_be_exciting_not_a/&quot;&gt;Discussion on r/macapps&lt;/a&gt; — Community feedback and tips&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+      </item>
+      <item>
+          <title>My GitOps Canary Deployment Journey: Argo Rollouts with Gateway API</title>
+          <pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/wo-de-gitops-jin-si-que-fa-bu-shi-jian/">&lt;p&gt;Remember my &lt;a rel=&quot;external&quot; href=&quot;https://github.com/fullstackjam/k8s-gitops&quot;&gt;k8s-gitops&lt;/a&gt; project? It brought Infrastructure as Code to my Homelab -- ArgoCD keeps the cluster in sync with the Git repo, and the question of &quot;how do I deploy things&quot; was finally solved.&lt;/p&gt;
+&lt;p&gt;But after running it for a few months, a new anxiety crept in: &lt;strong&gt;how do I update things safely?&lt;/strong&gt;&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>My Dotfiles Project: Automating Modern Dev Environment Setup</title>
+          <pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/wo-de-dotfiles-xiang-mu-xian-dai-hua-kai-fa-huan-jing-zi-dong-hua-pei-zhi/">&lt;p&gt;The worst part of setting up a new machine isn&#39;t installing software — Homebrew handles that in one command. The painful part is all the config files scattered across your system. &lt;code&gt;.gitconfig&lt;/code&gt; in your home directory, SSH config in &lt;code&gt;.ssh/&lt;/code&gt;, Zsh config, terminal config, AI coding tool configs... Manually moving everything takes half a day, and you will forget something.&lt;/p&gt;
+&lt;p&gt;This post walks through how I use GNU Stow to manage all my configs, paired with &lt;a rel=&quot;external&quot; href=&quot;https://openboot.dev&quot;&gt;OpenBoot&lt;/a&gt; for software installation, so a new machine gets everything in one command.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>My WireGuard Multi-Site VPN Setup: Connecting Home Networks</title>
+          <pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/wo-de-wireguard-duo-zhan-dian-hu-lian-shi-jian/">&lt;p&gt;I have two homes with network gear in each, plus I frequently need to access my NAS and VMs remotely. I wanted a VPN that could tie everything together. After trying OpenVPN and IPSec, I settled on WireGuard -- the config files are short, performance is excellent, and it runs in kernel space. The overall experience is noticeably better than the alternatives.&lt;/p&gt;
+&lt;p&gt;This post documents the entire process from planning to deployment, including the pitfalls I hit and practical lessons learned.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>How My Homelab Embodies Modern DevOps Principles</title>
+          <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/wo-de-homelab-ru-he-jian-xing-xian-dai-devops-he-xin-li-nian/">&lt;p&gt;Three years ago, when I started tinkering with &lt;a rel=&quot;external&quot; href=&quot;https://github.com/fullstackjam/k8s-gitops&quot;&gt;k8s-gitops&lt;/a&gt;, I just wanted a Kubernetes cluster I could actually touch. Something to experiment with — break things, fix things, understand how they really work.&lt;/p&gt;
+&lt;p&gt;I didn&#39;t plan to end up with a production-grade setup that follows enterprise DevOps practices. That just sort of happened, one painful lesson at a time.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>From Editor Wars to Model Wars: Reflections on AI-Assisted Programming</title>
+          <pubDate>Wed, 24 Sep 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/cong-bian-ji-qi-zhan-zheng-dao-mo-xing-zhan-zheng-wo-de-ai-bian-cheng-chen-si-lu/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/cong-bian-ji-qi-zhan-zheng-dao-mo-xing-zhan-zheng-wo-de-ai-bian-cheng-chen-si-lu/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/cong-bian-ji-qi-zhan-zheng-dao-mo-xing-zhan-zheng-wo-de-ai-bian-cheng-chen-si-lu/">&lt;p&gt;I got another Cursor Pro bill yesterday. Twenty bucks.&lt;/p&gt;
+&lt;p&gt;I did the math — close to $200 on Cursor this month alone. It stings a little, but I don&#39;t regret it. It doesn&#39;t feel like paying for software. It feels like buying power-ups in a game you can&#39;t stop playing.&lt;/p&gt;
+&lt;p&gt;A few months in, my feelings are mixed. It&#39;s genuinely changed how I work. It&#39;s also left me with this nagging sense that the ground is moving under me. I think every programmer my age is going to have to deal with this one way or another.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Debugging SSL Issues After Python Upgrade: Configuration Changes from Python 3.8 to 3.11</title>
+          <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/pai-cha-python-ban-ben-sheng-ji-hou-de-ssl-wen-ti-cong-python-3-8-dao-3-11-de-pei-zhi-bian-hua/">&lt;p&gt;Upgrading Python versions is supposed to be routine — until all your SSL connections break at once.&lt;/p&gt;
+&lt;p&gt;That&#39;s exactly what happened when I upgraded a project from Python 3.8 to 3.11. Code that had been running fine for over a year started throwing &lt;code&gt;certificate verify failed&lt;/code&gt; on every HTTPS request. After some digging, I found out the certificates were fine. Python itself had quietly tightened its SSL defaults starting in 3.10.&lt;/p&gt;
+&lt;p&gt;This post walks through the debugging process, what actually changed, and three approaches to fix it.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Optimizing Async and Multi-threaded Concurrency: Algorithms for Rate Limiting</title>
+          <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/">&lt;blockquote&gt;
+&lt;p&gt;This post is also available in &lt;a href=&quot;/2025/ru-he-you-hua-yi-bu-ke-hu-duan-he-duo-xian-cheng-bing-fa-qing-qiu-kong-zhi-bing-fa-liang-de-suan-fa-yan-jiu/&quot;&gt;Chinese (中文)&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Sending HTTP requests at scale is trickier than it looks.&lt;/p&gt;
+&lt;p&gt;You write a scraper or a batch API caller. It works fine with 10 requests. Then you scale up to 10,000 and everything falls apart: 429 rate limits, event loop starvation, or your thread pool hammering the target service into the ground.&lt;/p&gt;
+&lt;p&gt;This post walks through concurrency control starting from the basics: semaphores first, then PID controllers, token buckets, and adaptive concurrency adjustment. Every approach includes complete Python code you can run immediately.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Unifying Python and RESTful API Naming Conventions with Pydantic</title>
+          <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/</link>
+          <guid>https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2025/shi-yong-pydantic-tong-yi-python-he-restful-api-de-ming-ming-gui-fan/">&lt;blockquote&gt;
+&lt;p&gt;This post is also available in &lt;a href=&quot;/2025/%E4%BD%BF%E7%94%A8-pydantic-%E7%BB%9F%E4%B8%80-python-%E5%92%8C-restful-api-%E7%9A%84%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/&quot;&gt;Chinese&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Every Python backend developer has had this conversation: you write &lt;code&gt;item_id&lt;/code&gt; in your code, the API returns &lt;code&gt;item_id&lt;/code&gt; in JSON, and then a frontend colleague asks — &quot;Can you change that to &lt;code&gt;itemId&lt;/code&gt;? We use camelCase in JavaScript.&quot;&lt;/p&gt;
+&lt;p&gt;You can either manually map every field (tedious and error-prone), or make the frontend deal with underscores (ugly in JS). Neither option is great.&lt;/p&gt;
+&lt;p&gt;Pydantic solves this with a single config line.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>On Running: Why Tracking Matters More Than Willpower</title>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2024/running-tracker/</link>
+          <guid>https://blog.fullstackjam.com/en/2024/running-tracker/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2024/running-tracker/">&lt;p&gt;I&#39;ve been running for a while now. As someone who spends 10+ hours a day staring at a screen, picking up running was probably one of the best decisions I&#39;ve made.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>My Homelab Part 1: Proxmox VE Installation and Basic Configuration</title>
+          <pubDate>Mon, 04 Mar 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/</link>
+          <guid>https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2024/si-jia-homelab-pian-yi-proxmox-an-zhuang-he-ji-ben-pei-zhi/">&lt;p&gt;I have been running a homelab for a while now, and this post documents the full process of getting Proxmox VE up and running as the virtualization foundation. This is Part 1 of my &quot;Homelab&quot; series. Let&#39;s get the hypervisor sorted first.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Why I Started Blogging Again</title>
+          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2023/wei-shen-me-wo-you-kai-shi-xie-bo-ke-liao/</link>
+          <guid>https://blog.fullstackjam.com/en/2023/wei-shen-me-wo-you-kai-shi-xie-bo-ke-liao/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2023/wei-shen-me-wo-you-kai-shi-xie-bo-ke-liao/">&lt;p&gt;For over a year, I didn&#39;t write a single blog post. It&#39;s not that I had nothing to say — ideas kept popping up — I just couldn&#39;t muster the energy to write them down. Looking back, I wish I had.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Chrome, Terminal, and Vim Keyboard Shortcuts: A Practical Guide</title>
+          <pubDate>Sun, 24 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2022/chrome-terminal-and-vim-keyboard-shortcuts/</link>
+          <guid>https://blog.fullstackjam.com/en/2022/chrome-terminal-and-vim-keyboard-shortcuts/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2022/chrome-terminal-and-vim-keyboard-shortcuts/">&lt;p&gt;Keyboard shortcuts are one of those things where you think &quot;why bother memorizing this?&quot; while learning them, and &quot;how did I ever live without this?&quot; once they&#39;re muscle memory.&lt;/p&gt;
+&lt;p&gt;This post covers the shortcuts I actually use every day across three tools: Chrome browser, shell terminal, and Vim editor. This isn&#39;t an exhaustive dump of every shortcut from the official docs — it&#39;s the ones I reach for in real work. Shortcuts with strikethrough are ones that exist but I rarely use in practice.&lt;/p&gt;</description>
+      </item>
+      <item>
+          <title>Linux Basics: System Startup, Filesystems, and Partitions</title>
+          <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://blog.fullstackjam.com/en/2022/linux-basics-and-system-startup/</link>
+          <guid>https://blog.fullstackjam.com/en/2022/linux-basics-and-system-startup/</guid>
+          <description xml:base="https://blog.fullstackjam.com/en/2022/linux-basics-and-system-startup/">&lt;p&gt;What does Linux actually do in those few seconds between pressing the power button and seeing a login prompt? I&#39;d always treated it as a black box, so I sat down and traced the whole thing, and cleaned up my understanding of filesystems and partitions while I was at it. These are my own notes.&lt;/p&gt;</description>
+      </item>
+    </channel>
+</rss>
